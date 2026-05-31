@@ -1378,7 +1378,12 @@ function renderForm() {
 
         <div style="margin-top:28px;">
           <label class="field-label">Mô tả chi tiết</label>
-          <textarea class="textarea" style="margin-top:8px;" data-field="notes" placeholder="Mô tả thực địa: loại hẻm, nội thất, đậu xe, tiện ích, tâm lý chủ nhà, điểm nổi bật..." oninput="updateForm('notes', this.value)">${esc(f.notes||'')}</textarea>
+          <textarea class="textarea" style="margin-top:8px;" id="notes-textarea" data-field="notes" placeholder="Paste bài đăng hoặc ghi chú thực địa vào đây, rồi bấm Điền tự động..." oninput="updateForm('notes', this.value)">${esc(f.notes||'')}</textarea>
+          <button type="button" onclick="autoFillFromNotes()" id="autofill-btn"
+            style="margin-top:10px;width:100%;padding:13px;border-radius:12px;border:1.5px solid #FF1744;background:white;color:#FF1744;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span id="autofill-icon">✨</span>
+            <span id="autofill-text">Điền tự động từ mô tả</span>
+          </button>
         </div>
 
       </div>
@@ -1988,6 +1993,78 @@ function saveApiKeyAndContinue() {
   setState({ showApiModal: false });
   const p = state.properties.find(x => x.id === state.currentId);
   if (p && state.screen === 'ai') callGeminiAI(p);
+}
+
+async function autoFillFromNotes() {
+  const notes = state.formData.notes || '';
+  if (!notes.trim()) {
+    alert('Vui lòng nhập mô tả trước khi điền tự động.');
+    return;
+  }
+  const apiKey = getApiKey();
+  if (!apiKey) { setState({ showApiModal: true }); return; }
+
+  // Hiển thị loading
+  const btn = document.getElementById('autofill-btn');
+  const icon = document.getElementById('autofill-icon');
+  const text = document.getElementById('autofill-text');
+  if (btn) { btn.disabled = true; if(icon) icon.textContent = '⏳'; if(text) text.textContent = 'Đang phân tích...'; }
+
+  try {
+    const prompt = `Đọc đoạn mô tả bất động sản sau và trích xuất thông tin. Chỉ trả về JSON thuần, không markdown, không backtick:
+
+MÔ TẢ:
+${notes}
+
+Trả về JSON với các trường sau (để trống "" nếu không có thông tin):
+{
+  "address": "địa chỉ đầy đủ",
+  "width": "số mét ngang (chỉ số, không đơn vị)",
+  "length": "số mét dài (chỉ số, không đơn vị)",
+  "area": "diện tích m2 (chỉ số, không đơn vị, để trống nếu có ngang×dài)",
+  "floors": "số tầng (chỉ số)",
+  "direction": "hướng cửa chính (một trong: Đông, Tây, Nam, Bắc, Đông Nam, Đông Bắc, Tây Nam, Tây Bắc)",
+  "alleyType": "loại đường (một trong: mt=mặt tiền, alley1=hẻm>6m, alley2=hẻm3-5m, alley3=hẻm<3m)",
+  "shape": "hình dạng (một trong: rectangle=vuông vức, flared=nở hậu, L=chữL, taper=tóp hậu, xeo=xéo méo, triangle=tam giác)",
+  "legal": "pháp lý (một trong: pink_book=sổ hồng, red_book=sổ đỏ, co_owned=đồng sở hữu, pending=chờ sổ)",
+  "askingPrice": "giá bán (chỉ số tỷ, ví dụ 9 hoặc 9.5)",
+  "doMoi": "độ mới % (một trong: 100,90,80,60,40,20,10)"
+}`;
+
+    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1 } })
+    });
+
+    const data = await resp.json();
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const extracted = JSON.parse(clean);
+
+    // Điền vào form — chỉ điền trường còn trống
+    const f = state.formData;
+    const updated = { ...f };
+    if (extracted.address && !f.address) updated.address = extracted.address;
+    if (extracted.width && !f.width) updated.width = extracted.width;
+    if (extracted.length && !f.length) updated.length = extracted.length;
+    if (extracted.area && !f.area) updated.area = extracted.area;
+    if (extracted.floors && !f.floors) updated.floors = extracted.floors;
+    if (extracted.direction && !f.direction) updated.direction = extracted.direction;
+    if (extracted.alleyType && f.alleyType === 'mt') updated.alleyType = extracted.alleyType;
+    if (extracted.shape && f.shape === 'rectangle') updated.shape = extracted.shape;
+    if (extracted.legal && f.legal === 'pink_book') updated.legal = extracted.legal;
+    if (extracted.askingPrice && !f.askingPrice) updated.askingPrice = extracted.askingPrice;
+    if (extracted.doMoi && f.doMoi === '80') updated.doMoi = extracted.doMoi;
+
+    setState({ formData: updated });
+
+  } catch(e) {
+    alert('Không phân tích được. Vui lòng thử lại.');
+    console.error(e);
+  } finally {
+    if (btn) { btn.disabled = false; if(icon) icon.textContent = '✨'; if(text) text.textContent = 'Điền tự động từ mô tả'; }
+  }
 }
 
 function addIssue(v) {
