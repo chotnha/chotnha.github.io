@@ -1355,10 +1355,7 @@ function renderList() {
           ${p.askingPrice ? `<span style="font-size:14px;font-weight:700;">Chào: ${fmtTy(parseFloat(p.askingPrice))}</span>` : '<span></span>'}
           <span class="verdict-badge none">⚪ Chưa định giá</span>
         </div>`}
-        <div style="display:flex;gap:8px;margin-top:10px;">
-          <button onclick="event.stopPropagation();openValuation('${p.id}')" style="flex:1;padding:7px;border-radius:8px;border:1px solid #FF1744;background:white;color:#FF1744;font-size:12px;font-weight:700;cursor:pointer;">📊 Định giá</button>
-          <button onclick="event.stopPropagation();openAI('${p.id}')" style="flex:1;padding:7px;border-radius:8px;border:1px solid #1a1a1a;background:white;color:#1a1a1a;font-size:12px;font-weight:700;cursor:pointer;">✨ AI</button>
-        </div>
+
       </div>
       <div class="prop-card-delete" onclick="deleteProperty('${p.id}')">🗑<br/>Xóa</div>
     </div>`;
@@ -1440,11 +1437,15 @@ function renderList() {
         ` : `
           ${hasActiveFilter ? `<div style="font-size:13px;color:#888;margin-bottom:12px;">Tìm thấy ${filtered.length} hồ sơ</div>` : ''}
           ${cards}
-          ${hasMore ? `
-          <button onclick="setState({listPage:${page+1}})"
-            style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px;">
-            Xem thêm (${filtered.length - paged.length} hồ sơ)
-          </button>` : ''}
+${filtered.length > PAGE_SIZE ? `
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 0;flex-wrap:wrap;">
+            ${page > 1 ? `<button onclick="setState({listPage:${page-1}})" style="width:36px;height:36px;border-radius:8px;border:1.5px solid #E8E8E8;background:white;font-size:14px;cursor:pointer;">‹</button>` : '<div style="width:36px;"></div>'}
+            ${Array.from({length:Math.ceil(filtered.length/PAGE_SIZE)}, (_,i)=>i+1).map(n => `
+              <button onclick="setState({listPage:${n}})"
+                style="width:36px;height:36px;border-radius:8px;border:1.5px solid ${n===page?'#FF1744':'#E8E8E8'};background:${n===page?'#FF1744':'white'};color:${n===page?'white':'#1a1a1a'};font-size:13px;font-weight:700;cursor:pointer;">${n}</button>
+            `).join('')}
+            ${page < Math.ceil(filtered.length/PAGE_SIZE) ? `<button onclick="setState({listPage:${page+1}})" style="width:36px;height:36px;border-radius:8px;border:1.5px solid #E8E8E8;background:white;font-size:14px;cursor:pointer;">›</button>` : '<div style="width:36px;"></div>'}
+          </div>` : ''}
         `}
       </div>
 
