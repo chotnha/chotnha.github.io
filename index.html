@@ -1266,6 +1266,9 @@ function renderList() {
         <button onclick="setState({listFilter:'all'})" style="padding:6px 16px;border-radius:20px;border:1.5px solid ${filter==='all'?'#FF1744':'#E8E8E8'};background:${filter==='all'?'#FF1744':'white'};color:${filter==='all'?'white':'#1a1a1a'};font-size:13px;font-weight:600;cursor:pointer;">
           Tất cả (${allProps.length})
         </button>
+        <button onclick="setState({listFilter:'starred'})" style="padding:6px 16px;border-radius:20px;border:1.5px solid ${filter==='starred'?'#FF1744':'#E8E8E8'};background:${filter==='starred'?'#FF1744':'white'};color:${filter==='starred'?'white':'#1a1a1a'};font-size:13px;font-weight:600;cursor:pointer;">
+          ⭐ Theo dõi (${allProps.filter(p=>p.isStarred).length})
+        </button>
       </div>
 
       <div class="content-pad">
@@ -1286,7 +1289,7 @@ function renderList() {
                 <div class="prop-addr">${esc(p.address)||'Chưa có địa chỉ'}</div>
                 <div style="display:flex;align-items:center;gap:6px;">
                   ${valued?'<span class="badge-valued">📊</span>':''}
-
+                  <button onclick="toggleStar('${p.id}', event)" style="background:none;border:none;cursor:pointer;font-size:18px;padding:2px;line-height:1;">${p.isStarred ? '⭐' : '☆'}</button>
                 </div>
               </div>
               <div class="prop-specs">
@@ -1603,7 +1606,7 @@ function renderDetail() {
       </div>
       <div class="bottom-bar">
         <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;">
-
+          <button onclick="toggleStar('${p.id}')" style="padding:12px 14px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;font-size:20px;cursor:pointer;line-height:1;">${p.isStarred ? '⭐' : '☆'}</button>
           <button class="btn-secondary" onclick="editProperty('${p.id}')">✎ Sửa</button>
           <button class="btn-primary" onclick="openValuation('${p.id}')">📊 Định giá</button>
         </div>
