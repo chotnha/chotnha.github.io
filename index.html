@@ -2223,13 +2223,12 @@ function purposeLabel(s) {
 
 async function toggleStar(id, e) {
   e && e.stopPropagation();
-  const user = firebase.auth().currentUser;
-  if (!user) return;
   const p = state.properties.find(x => x.id === id);
   if (!p) return;
   const newVal = !p.isStarred;
-  await db.collection('users').doc(user.uid).collection('properties').doc(id).update({ isStarred: newVal });
-  state.properties = state.properties.map(x => x.id === id ? { ...x, isStarred: newVal } : x);
+  const newProps = state.properties.map(x => x.id === id ? { ...x, isStarred: newVal } : x);
+  state.properties = newProps;
+  if (currentUser) saveDataToFirestore(newProps);
   render();
 }
 
