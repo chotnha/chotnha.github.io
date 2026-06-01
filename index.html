@@ -730,7 +730,7 @@ function calculateValuation(p) {
   const askingPrice = parseFloat(p.askingPrice)||0;
   const giaTT      = parseFloat(p.giaTT)||0;
   const donGiaXD   = parseFloat(p.donGiaXD)||7;
-  const hienTrang  = parseFloat(p.hienTrang)||80;
+  const hienTrang  = parseFloat(p.hienTrang || p.doMoi)||80;
   const loGioiArea = parseFloat(p.loGioiArea)||0;
   const loGioiRate = parseFloat(p.loGioiRate)||80;
   const extraArea  = parseFloat(p.extraArea)||0;
@@ -898,8 +898,8 @@ function calculateValuation(p) {
   if (weaknesses.length === 0) weaknesses.push('Không có điểm yếu nghiêm trọng');
 
   return {
-    giaTriDatTT, giaTriDatSauLoi, giaTriNha, adjustments, adjSum,
-    estimatedValue, verdict, verdictDat, verdictTong,
+    giaTriDatTT, giaTriLoGioi, giaTriExtra, giaTriDatTongCong, giaTriDatSauLoi, giaTriNha,
+    adjustments, adjSum, estimatedValue, verdict, verdictDat, verdictTong,
     chenhLechDatPct, chenhLechDatTien,
     chenhLechTongPct, chenhLechTongTien,
     donGiaRao, giaTT, heSoLoi, totalPenaltyPct, issueDetails,
@@ -907,7 +907,6 @@ function calculateValuation(p) {
     strengths, weaknesses,
     area, sanXD, donGiaXD, hienTrang,
     loGioiArea, loGioiRate, extraArea, extraRate,
-    giaTriDatTT, giaTriLoGioi, giaTriExtra, giaTriDatTongCong, giaTriDatSauLoi, giaTriNha,
   };
 }
 
