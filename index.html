@@ -698,12 +698,6 @@ let state = {
   listFilter: 'all',
   listPage: 1,
   swipeId: null,
-  searchText: '',
-  filterPriceMin: '',
-  filterPriceMax: '',
-  filterAlley: '',
-  filterVerdict: '',
-  showFilterPanel: false,
   currentId: null,
   formData: null,
   properties: [],
@@ -1283,36 +1277,8 @@ function renderList() {
   const filter = state.listFilter || 'all';
   const page = state.listPage || 1;
   const PAGE_SIZE = 10;
-  const search = (state.searchText||'').toLowerCase().trim();
-  const fPriceMin = parseFloat(state.filterPriceMin)||0;
-  const fPriceMax = parseFloat(state.filterPriceMax)||0;
-  const fAlley = state.filterAlley||'';
-  const fVerdict = state.filterVerdict||'';
-  const showPanel = state.showFilterPanel;
-
   const allProps = state.properties;
-
-  // Áp dụng filters
-  let filtered = allProps;
-  if (filter === 'starred') filtered = filtered.filter(p => p.isStarred);
-  if (search) filtered = filtered.filter(p => (p.address||'').toLowerCase().includes(search));
-  if (fPriceMin) filtered = filtered.filter(p => parseFloat(p.askingPrice) >= fPriceMin);
-  if (fPriceMax) filtered = filtered.filter(p => parseFloat(p.askingPrice) <= fPriceMax);
-  if (fAlley) filtered = filtered.filter(p => p.alleyType === fAlley);
-  if (fVerdict) {
-    filtered = filtered.filter(p => {
-      const r = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
-      if (!r) return fVerdict === 'none';
-      const diff = ((parseFloat(p.askingPrice) - r.estimatedValue) / r.estimatedValue * 100);
-      if (fVerdict === 'good') return diff < -5;
-      if (fVerdict === 'mid') return diff >= -5 && diff <= 5;
-      if (fVerdict === 'warn') return diff > 5 && diff <= 20;
-      if (fVerdict === 'bad') return diff > 20;
-      return true;
-    });
-  }
-
-  const hasActiveFilter = search || fPriceMin || fPriceMax || fAlley || fVerdict;
+  const filtered = filter === 'starred' ? allProps.filter(p => p.isStarred) : allProps;
   const paged = filtered.slice(0, page * PAGE_SIZE);
   const hasMore = filtered.length > paged.length;
 
@@ -1321,8 +1287,8 @@ function renderList() {
     const estCard = rCard ? rCard.estimatedValue : null;
     const valued = p.askingPrice && estCard;
     const diff = valued ? ((parseFloat(p.askingPrice) - estCard) / estCard * 100).toFixed(1) : null;
-    const verdictType = diff === null ? 'none' : diff > 20 ? 'bad' : diff > 5 ? 'warn' : diff < -5 ? 'good' : 'mid';
-    const verdictText = diff === null ? '⚪ Chưa định giá' : diff > 20 ? `🔴 +${diff}%` : diff > 5 ? `🟠 +${diff}%` : diff < -5 ? `🟢 ${diff}%` : `🟡 ${diff}%`;
+    const verdictType = diff === null ? 'none' : diff > 20 ? 'bad' : diff > 5 ? 'warn' : diff < -5 ? 'good' : 'none';
+    const verdictText = diff === null ? '⚪ Chưa định giá' : diff > 20 ? `🔴 +${diff}% vs TT` : diff > 5 ? `🟠 +${diff}% vs TT` : diff < -5 ? `🟢 ${diff}% vs TT` : `🟡 ${diff}% vs TT`;
 
     const specs = [
       p.area ? p.area+'m²' : '',
@@ -1331,6 +1297,7 @@ function renderList() {
       p.alleyType ? alleyLabel(p.alleyType) : '',
       p.direction || '',
       p.legal ? legalLabel(p.legal) : '',
+      p.doMoi && p.doMoi !== '80' ? 'Độ mới '+p.doMoi+'%' : '',
     ].filter(Boolean);
 
     return `
@@ -1338,24 +1305,32 @@ function renderList() {
       <div class="prop-card" onclick="openProperty('${p.id}')">
         <div class="prop-head">
           <div class="prop-addr" style="font-size:15px;font-weight:700;flex:1;line-height:1.3;">${esc(p.address)||'Chưa có địa chỉ'}</div>
-          <button onclick="toggleStar('${p.id}', event)" style="background:none;border:none;cursor:pointer;font-size:18px;padding:2px 0 2px 8px;line-height:1;flex-shrink:0;">${p.isStarred ? '⭐' : '☆'}</button>
+          <div style="display:flex;align-items:center;gap:6px;margin-left:8px;flex-shrink:0;">
+            <button onclick="toggleStar('${p.id}', event)" style="background:none;border:none;cursor:pointer;font-size:18px;padding:2px;line-height:1;">${p.isStarred ? '⭐' : '☆'}</button>
+          </div>
         </div>
+
         <div style="font-size:12px;color:#555;margin-bottom:8px;line-height:1.6;">${specs.join(' · ')}</div>
+
         ${valued ? `
         <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #f0f0f0;">
           <div>
             <span style="font-size:12px;color:#888;">Chào: </span>
             <span style="font-size:15px;font-weight:800;">${fmtTy(parseFloat(p.askingPrice))}</span>
-            <span style="font-size:12px;color:#888;margin-left:6px;">TT: </span>
+            <span style="font-size:12px;color:#888;margin-left:8px;">TT: </span>
             <span style="font-size:14px;font-weight:700;color:#2E7D32;">${fmtTy(estCard)}</span>
           </div>
           <span class="verdict-badge ${verdictType}">${verdictText}</span>
         </div>` : `
-        <div style="padding-top:8px;border-top:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;">
-          ${p.askingPrice ? `<span style="font-size:14px;font-weight:700;">Chào: ${fmtTy(parseFloat(p.askingPrice))}</span>` : '<span></span>'}
-          <span class="verdict-badge none">⚪ Chưa định giá</span>
+        <div style="padding-top:8px;border-top:1px solid #f0f0f0;">
+          ${p.askingPrice ? `<span style="font-size:14px;font-weight:700;">Chào: ${fmtTy(parseFloat(p.askingPrice))}</span>` : ''}
+          <span class="verdict-badge none" style="margin-left:8px;">⚪ Chưa định giá</span>
         </div>`}
 
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button onclick="event.stopPropagation();openValuation('${p.id}')" style="flex:1;padding:7px;border-radius:8px;border:1px solid #FF1744;background:white;color:#FF1744;font-size:12px;font-weight:700;cursor:pointer;">📊 Định giá</button>
+          <button onclick="event.stopPropagation();openAI('${p.id}')" style="flex:1;padding:7px;border-radius:8px;border:1px solid #1a1a1a;background:white;color:#1a1a1a;font-size:12px;font-weight:700;cursor:pointer;">✨ AI</button>
+        </div>
       </div>
       <div class="prop-card-delete" onclick="deleteProperty('${p.id}')">🗑<br/>Xóa</div>
     </div>`;
@@ -1368,85 +1343,32 @@ function renderList() {
       <div class="topbar">
         <button class="topbar-back" onclick="nav('home')">‹</button>
         <div class="topbar-title">Danh sách hồ sơ</div>
-        <button onclick="setState({showFilterPanel:!${showPanel}})" style="background:none;border:none;cursor:pointer;padding:4px 8px;font-size:13px;font-weight:700;color:${hasActiveFilter?'#FF1744':'#1a1a1a'};">
-          ⚡ Lọc${hasActiveFilter?' ●':''}
-        </button>
+        <div class="topbar-spacer"></div>
       </div>
 
-      <!-- Search bar -->
-      <div style="padding:10px 16px 0;background:#fff;">
-        <div style="display:flex;align-items:center;background:#F5F5F5;border-radius:12px;padding:10px 14px;gap:8px;">
-          <span style="font-size:16px;">🔍</span>
-          <input type="text" placeholder="Tìm theo địa chỉ..."
-            value="${esc(state.searchText||'')}"
-            oninput="setState({searchText:this.value,listPage:1})"
-            style="flex:1;border:none;background:none;font-size:14px;outline:none;color:#1a1a1a;">
-          ${state.searchText ? `<button onclick="setState({searchText:'',listPage:1})" style="background:none;border:none;cursor:pointer;font-size:16px;color:#888;">×</button>` : ''}
-        </div>
-      </div>
-
-      <!-- Quick filter chips -->
-      <div style="display:flex;gap:8px;padding:10px 16px;overflow-x:auto;white-space:nowrap;border-bottom:1px solid #E8E8E8;background:#fff;">
-        <button onclick="setState({listFilter:'all',listPage:1})" style="padding:5px 14px;border-radius:20px;border:1.5px solid ${filter==='all'&&!hasActiveFilter?'#FF1744':'#E8E8E8'};background:${filter==='all'&&!hasActiveFilter?'#FF1744':'white'};color:${filter==='all'&&!hasActiveFilter?'white':'#1a1a1a'};font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">
+      <div style="display:flex;gap:8px;padding:10px 16px 0;background:#fff;border-bottom:1px solid #E8E8E8;">
+        <button onclick="setState({listFilter:'all',listPage:1})" style="padding:6px 16px;border-radius:20px;border:1.5px solid ${filter==='all'?'#FF1744':'#E8E8E8'};background:${filter==='all'?'#FF1744':'white'};color:${filter==='all'?'white':'#1a1a1a'};font-size:13px;font-weight:600;cursor:pointer;">
           Tất cả (${allProps.length})
         </button>
-        <button onclick="setState({listFilter:'starred',listPage:1})" style="padding:5px 14px;border-radius:20px;border:1.5px solid ${filter==='starred'?'#FF1744':'#E8E8E8'};background:${filter==='starred'?'#FF1744':'white'};color:${filter==='starred'?'white':'#1a1a1a'};font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">
-          ⭐ Theo dõi
-        </button>
-        <button onclick="setState({filterVerdict:fVerdict==='good'?'':'good',listPage:1})" style="padding:5px 14px;border-radius:20px;border:1.5px solid ${fVerdict==='good'?'#2E7D32':'#E8E8E8'};background:${fVerdict==='good'?'#F0FFF4':'white'};color:${fVerdict==='good'?'#2E7D32':'#1a1a1a'};font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">
-          🟢 Dưới TT
-        </button>
-        <button onclick="setState({filterVerdict:fVerdict==='bad'?'':'bad',listPage:1})" style="padding:5px 14px;border-radius:20px;border:1.5px solid ${fVerdict==='bad'?'#FF1744':'#E8E8E8'};background:${fVerdict==='bad'?'#FFF5F5':'white'};color:${fVerdict==='bad'?'#FF1744':'#1a1a1a'};font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">
-          🔴 Vượt TT
-        </button>
-        <button onclick="setState({filterAlley:fAlley==='mt'?'':'mt',listPage:1})" style="padding:5px 14px;border-radius:20px;border:1.5px solid ${fAlley==='mt'?'#FF1744':'#E8E8E8'};background:${fAlley==='mt'?'#FF1744':'white'};color:${fAlley==='mt'?'white':'#1a1a1a'};font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">
-          Mặt tiền
-        </button>
-        <button onclick="setState({filterAlley:fAlley==='alley1'||fAlley==='alley2'?'':'alley1',listPage:1})" style="padding:5px 14px;border-radius:20px;border:1.5px solid ${fAlley==='alley1'||fAlley==='alley2'?'#FF1744':'#E8E8E8'};background:${fAlley==='alley1'||fAlley==='alley2'?'#FF1744':'white'};color:${fAlley==='alley1'||fAlley==='alley2'?'white':'#1a1a1a'};font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">
-          Hẻm xe hơi
+        <button onclick="setState({listFilter:'starred',listPage:1})" style="padding:6px 16px;border-radius:20px;border:1.5px solid ${filter==='starred'?'#FF1744':'#E8E8E8'};background:${filter==='starred'?'#FF1744':'white'};color:${filter==='starred'?'white':'#1a1a1a'};font-size:13px;font-weight:600;cursor:pointer;">
+          ⭐ Theo dõi (${allProps.filter(p=>p.isStarred).length})
         </button>
       </div>
-
-      <!-- Filter panel mở rộng -->
-      ${showPanel ? `
-      <div style="background:#F9F9F9;padding:14px 16px;border-bottom:2px solid #E8E8E8;">
-        <div style="font-size:12px;font-weight:700;color:#888;margin-bottom:10px;letter-spacing:0.8px;">LỌC THEO KHOẢNG GIÁ</div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input type="number" placeholder="Từ (tỷ)" value="${state.filterPriceMin||''}"
-            oninput="setState({filterPriceMin:this.value,listPage:1})"
-            style="flex:1;padding:10px;border:1.5px solid #E8E8E8;border-radius:10px;font-size:14px;background:white;">
-          <span style="color:#888;">–</span>
-          <input type="number" placeholder="Đến (tỷ)" value="${state.filterPriceMax||''}"
-            oninput="setState({filterPriceMax:this.value,listPage:1})"
-            style="flex:1;padding:10px;border:1.5px solid #E8E8E8;border-radius:10px;font-size:14px;background:white;">
-        </div>
-        ${hasActiveFilter ? `
-        <button onclick="setState({searchText:'',filterPriceMin:'',filterPriceMax:'',filterAlley:'',filterVerdict:'',listFilter:'all',listPage:1,showFilterPanel:false})"
-          style="margin-top:10px;width:100%;padding:10px;border-radius:10px;border:1.5px solid #FF1744;background:white;color:#FF1744;font-size:13px;font-weight:700;cursor:pointer;">
-          × Xóa tất cả bộ lọc
-        </button>` : ''}
-      </div>` : ''}
 
       <div class="content-pad" style="padding-top:12px;">
         ${filtered.length === 0 ? `
           <div class="empty-state">
-            <div class="empty-icon">🔍</div>
-            <div class="empty-title">Không tìm thấy</div>
-            <div class="empty-desc">Thử thay đổi bộ lọc</div>
+            <div class="empty-icon">${filter==='starred'?'⭐':'📋'}</div>
+            <div class="empty-title">${filter==='starred'?'Chưa có căn nào được theo dõi':'Chưa có hồ sơ'}</div>
+            <div class="empty-desc">${filter==='starred'?'Bấm ⭐ để theo dõi':'Bấm + để thêm BĐS đầu tiên'}</div>
           </div>
-        ` : `
-          ${hasActiveFilter ? `<div style="font-size:13px;color:#888;margin-bottom:12px;">Tìm thấy ${filtered.length} hồ sơ</div>` : ''}
-          ${cards}
-${filtered.length > PAGE_SIZE ? `
-          <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 0;flex-wrap:wrap;">
-            ${page > 1 ? `<button onclick="setState({listPage:${page-1}})" style="width:36px;height:36px;border-radius:8px;border:1.5px solid #E8E8E8;background:white;font-size:14px;cursor:pointer;">‹</button>` : '<div style="width:36px;"></div>'}
-            ${Array.from({length:Math.ceil(filtered.length/PAGE_SIZE)}, (_,i)=>i+1).map(n => `
-              <button onclick="setState({listPage:${n}})"
-                style="width:36px;height:36px;border-radius:8px;border:1.5px solid ${n===page?'#FF1744':'#E8E8E8'};background:${n===page?'#FF1744':'white'};color:${n===page?'white':'#1a1a1a'};font-size:13px;font-weight:700;cursor:pointer;">${n}</button>
-            `).join('')}
-            ${page < Math.ceil(filtered.length/PAGE_SIZE) ? `<button onclick="setState({listPage:${page+1}})" style="width:36px;height:36px;border-radius:8px;border:1.5px solid #E8E8E8;background:white;font-size:14px;cursor:pointer;">›</button>` : '<div style="width:36px;"></div>'}
-          </div>` : ''}
-        `}
+        ` : cards}
+
+        ${hasMore ? `
+        <button onclick="setState({listPage:${page+1}})"
+          style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px;">
+          Xem thêm (${filtered.length - paged.length} hồ sơ)
+        </button>` : ''}
       </div>
 
       <div class="bottom-bar">
