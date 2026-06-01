@@ -1668,10 +1668,10 @@ function renderValuation() {
           <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : r.chenhLechTongPct <= 10 ? '#FFFBEB' : '#FFF5F5'};">
             <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">
               ${r.chenhLechTongPct <= 0
-                ? `🟢 Giá bán thấp hơn thị trường khoảng ${Math.round(Math.abs(r.chenhLechTongTien)*1000)} triệu đồng (${Math.abs(r.chenhLechTongPct).toFixed(1)}%)`
+                ? `🟢 Giá bán thấp hơn thị trường khoảng ${Math.round(Math.abs(r.chenhLechTongTien)*1000)} triệu đồng (${r.chenhLechTongPct !== null ? Math.abs(r.chenhLechTongPct).toFixed(1) : '0'}%)`
                 : r.chenhLechTongPct <= 10
-                ? `🟡 Giá bán cao hơn thị trường ${Math.round(r.chenhLechTongTien*1000)} triệu đồng (${r.chenhLechTongPct.toFixed(1)}%)`
-                : `🔴 Giá bán cao hơn thị trường ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct.toFixed(1)}%)`}
+                ? `🟡 Giá bán cao hơn thị trường ${Math.round(r.chenhLechTongTien*1000)} triệu đồng (${r.chenhLechTongPct !== null ? r.chenhLechTongPct.toFixed(1) : '0'}%)`
+                : `🔴 Giá bán cao hơn thị trường ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct !== null ? r.chenhLechTongPct.toFixed(1) : '0'}%)`}
             </span>
           </div>
           ` : '<div style="font-size:13px;color:#888;padding:8px 0;">Nhập đủ dữ liệu để xem kết quả</div>'}
