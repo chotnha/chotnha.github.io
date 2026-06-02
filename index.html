@@ -28,13 +28,16 @@ body {
 
 /* ===== Hero (home) ===== */
 .hero {
-  background: linear-gradient(160deg, #FF1744 0%, #CC0000 100%);
+  background: linear-gradient(160deg, #FF1744 0%, #B71C1C 100%);
   color: #fff;
-  padding: 52px 20px 24px;
+  padding: 52px 20px 36px;
+  border-radius: 0 0 32px 32px;
+  box-shadow: 0 4px 20px rgba(183,28,28,0.25);
+  position: relative;
 }
 .hero-bg { display: none; }
 .hero-content { width: 100%; }
-.brand { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
 .brand-mark {
   width: 38px; height: 38px;
   background: rgba(255,255,255,0.2);
@@ -44,38 +47,43 @@ body {
 }
 .brand-name { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; color: white; }
 .brand-sub { font-size: 11px; color: rgba(255,255,255,0.6); }
+.hero-setting {
+  position: absolute; top: 52px; right: 20px;
+  background: none; border: none; cursor: pointer; padding: 4px;
+}
 .hero-user {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 14px;
   margin-bottom: 16px;
 }
 .hero-user img {
-  width: 36px; height: 36px; border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.4);
-  object-fit: cover;
+  width: 72px; height: 72px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.5);
+  object-fit: cover; flex-shrink: 0;
 }
 .hero-user-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
+  width: 72px; height: 72px; border-radius: 50%;
   background: rgba(255,255,255,0.25);
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 700; color: white;
-  border: 2px solid rgba(255,255,255,0.4);
+  font-size: 28px; font-weight: 800; color: white;
+  border: 3px solid rgba(255,255,255,0.4);
   flex-shrink: 0;
 }
 .hero-user-info { flex: 1; }
-.hero-user-name { font-size: 15px; font-weight: 700; color: white; }
-.hero-user-logout {
-  background: rgba(255,255,255,0.15); border: none;
-  color: white; font-size: 12px; font-weight: 600;
-  padding: 5px 12px; border-radius: 20px; cursor: pointer;
+.hero-user-name { font-size: 17px; font-weight: 700; color: white; margin-bottom: 8px; }
+.hero-user-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: white; color: #B71C1C;
+  font-size: 12px; font-weight: 700;
+  padding: 4px 12px; border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-.hero-stats {
-  display: flex; gap: 20px;
-}
-.hero-stat { text-align: left; }
-.hero-stat-num { font-size: 22px; font-weight: 800; color: white; line-height: 1; }
-.hero-stat-label { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+.hero-stats { display: none; }
+.hero-stat { display: none; }
+.hero-stat-num { display: none; }
+.hero-stat-label { display: none; }
 .hero-title { display: none; }
 .hero-desc { display: none; }
+.hero-user-logout { display: none; }
 
 /* ===== TopBar ===== */
 .topbar {
@@ -129,35 +137,37 @@ body {
 .tab-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   background: white;
-  border-top: 1px solid #ECECEC;
   display: flex; align-items: center; justify-content: space-around;
-  padding: 10px 0 30px;
+  padding: 0 0 28px;
   z-index: 100;
-  box-shadow: 0 -1px 8px rgba(0,0,0,0.07);
+  height: 80px;
+  box-shadow: 0 -1px 0 rgba(0,0,0,0.08);
 }
 .tab-item {
   display: flex; flex-direction: column; align-items: center;
-  gap: 5px; cursor: pointer; flex: 1;
-  background: none; border: none; padding: 0;
+  gap: 4px; cursor: pointer; flex: 1;
+  background: none; border: none; padding: 12px 0 0;
+  height: 100%;
 }
-.tab-item span { font-size: 11px; font-weight: 600; color: #666; }
-.tab-item.active span { color: #FF1744; }
-.tab-item svg { display: block; }
+.tab-item span { font-size: 11px; font-weight: 600; color: #888; }
+.tab-item.active span { color: #1a1a1a; font-weight: 700; }
+.tab-item.active svg { stroke: #1a1a1a; }
+.tab-item svg { stroke: #888; }
 .tab-add {
-  width: 52px; height: 52px; border-radius: 50%;
-  background: linear-gradient(135deg, #FF1744, #CC0000);
+  width: 62px; height: 62px; border-radius: 50%;
+  background: #E00000;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 14px rgba(255,23,68,0.4);
+  box-shadow: 0 4px 16px rgba(224,0,0,0.4), 0 0 0 6px white;
   cursor: pointer; border: none;
-  transform: translateY(-14px);
+  transform: translateY(-20px);
   flex-shrink: 0;
 }
 .tab-add-wrap {
   display: flex; flex-direction: column; align-items: center;
-  gap: 5px; flex: 1; cursor: pointer; background: none; border: none; padding: 0;
+  flex: 1; cursor: pointer; background: none; border: none;
+  padding: 0; position: relative;
 }
-.tab-add-wrap span { font-size: 11px; font-weight: 600; color: #666; margin-top: 18px; }
-.has-tabbar { padding-bottom: 100px; }
+.has-tabbar { padding-bottom: 90px; }
 .action-card {
   background: #fff;
   border-radius: 14px;
@@ -225,6 +235,13 @@ body {
   background: white; border-radius: 14px; padding: 16px;
   cursor: pointer; border: 1px solid #E8E8E8;
   transition: transform 0.25s ease; position: relative;
+}
+.prop-card .star-btn {
+  position: relative; z-index: 10;
+  pointer-events: auto;
+  background: none; border: none; cursor: pointer;
+  font-size: 18px; padding: 4px; line-height: 1;
+  flex-shrink: 0;
 }
 .prop-card-wrap.swiped .prop-card { transform: translateX(-80px); border-radius: 14px 0 0 14px; }
 .prop-card-delete {
@@ -1332,24 +1349,18 @@ function renderHome() {
           </div>
 
           ${currentUser ? `
+          <button class="hero-setting" onclick="setState({showApiModal:true})">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
           <div class="hero-user">
             ${currentUser.photoURL
               ? `<img src="${esc(currentUser.photoURL)}" onerror="this.outerHTML='<div class=hero-user-avatar>${avatarLetter}</div>'" />`
               : `<div class="hero-user-avatar">${avatarLetter}</div>`}
             <div class="hero-user-info">
               <div class="hero-user-name">${esc(currentUser.displayName||currentUser.email)}</div>
-            </div>
-            <button class="hero-user-logout" onclick="signOut()">Đăng xuất</button>
-          </div>
-          <div class="hero-stats">
-            <div class="hero-stat">
-              <div class="hero-stat-num">${state.properties.length}</div>
-              <div class="hero-stat-label">Hồ sơ</div>
-            </div>
-            <div style="width:1px;background:rgba(255,255,255,0.2);margin:0 4px;"></div>
-            <div class="hero-stat">
-              <div class="hero-stat-num">${state.customers.length}</div>
-              <div class="hero-stat-label">Khách hàng</div>
+              <div class="hero-user-badge">📄 ${state.properties.length} hồ sơ</div>
             </div>
           </div>
           ` : ''}
@@ -1452,7 +1463,7 @@ function renderList() {
       <div class="prop-card" onclick="openProperty('${p.id}')">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
           <div class="prop-addr" style="flex:1;padding-right:8px;">${esc(p.address)||'Chưa có địa chỉ'}</div>
-          <button onclick="toggleStar('${p.id}',event)" style="background:none;border:none;cursor:pointer;font-size:18px;padding:0;flex-shrink:0;line-height:1;">${p.isStarred?'⭐':'☆'}</button>
+          <button class="star-btn" onclick="toggleStar('${p.id}',event)">${p.isStarred?'⭐':'☆'}</button>
         </div>
         <div style="font-size:12px;color:#555;margin-bottom:6px;">
           <span style="font-weight:600;color:#1a1a1a;">${p.area||'—'}m²</span>
@@ -1492,7 +1503,7 @@ function renderList() {
   return `
     <div class="screen">
       <div class="topbar">
-        <div class="topbar-spacer"></div>
+        <button class="topbar-back" onclick="nav('home')">‹</button>
         <div class="topbar-title">Danh sách hồ sơ</div>
         <button onclick="setState({showFilterPanel:!state.showFilterPanel})"
           style="background:none;border:none;cursor:pointer;padding:4px 8px;font-size:13px;font-weight:700;color:${hasFilter?'#FF1744':'#1a1a1a'};">
@@ -1759,20 +1770,6 @@ function renderDetail() {
         <button class="topbar-back" onclick="deleteProperty('${p.id}')" style="color:#FF1744;">🗑️</button>
       </div>
       <div class="content-pad">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-          <button class="action-card primary-card" onclick="openValuation('${p.id}')" style="flex-direction:column;align-items:center;justify-content:center;padding:14px 8px;gap:8px;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF1744" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="20" x2="18" y2="10"></line>
-              <line x1="12" y1="20" x2="12" y2="4"></line>
-              <line x1="6" y1="20" x2="6" y2="14"></line>
-            </svg>
-            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Định giá</span>
-          </button>
-          <button class="action-card primary-card" onclick="openAI('${p.id}')" style="flex-direction:column;align-items:center;justify-content:center;padding:14px 8px;gap:8px;">
-            <span style="font-size:13px;font-weight:900;color:#FF1744;">+AI</span>
-          </button>
-        </div>
-
         <div class="hero-detail">
           <div class="hero-detail-label">BẤT ĐỘNG SẢN</div>
           <div class="hero-detail-addr">${esc(p.address)}</div>
@@ -1826,25 +1823,19 @@ function renderDetail() {
           </div>
         ` : ''}
       </div>
-      <div class="bottom-bar" style="padding:10px 16px 20px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+      <div class="bottom-bar" style="padding:10px 16px 28px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <button onclick="editProperty('${p.id}')"
+            style="padding:11px 8px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:13px;font-weight:600;cursor:pointer;">
+            ✎ Sửa
+          </button>
           <button onclick="openValuation('${p.id}')"
-            style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;border-radius:12px;border:none;background:#FF1744;color:white;font-size:13px;font-weight:700;cursor:pointer;">
+            style="padding:11px 8px;border-radius:12px;border:none;background:#FF1744;color:white;font-size:13px;font-weight:700;cursor:pointer;">
             📊 Định giá
           </button>
           <button onclick="openAI('${p.id}')"
-            style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;border-radius:12px;border:none;background:#1a1a1a;color:white;font-size:13px;font-weight:700;cursor:pointer;">
+            style="padding:11px 8px;border-radius:12px;border:none;background:#1a1a1a;color:white;font-size:13px;font-weight:700;cursor:pointer;">
             +AI
-          </button>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <button onclick="editProperty('${p.id}')"
-            style="display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:12px;font-weight:600;cursor:pointer;">
-            ✎ Sửa
-          </button>
-          <button onclick="openViewHistoryModal('${p.id}')"
-            style="display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#2E7D32;font-size:12px;font-weight:600;cursor:pointer;">
-            👁 Ghi KH
           </button>
         </div>
       </div>
@@ -1939,34 +1930,7 @@ function renderValuation() {
           ` : '<div style="font-size:13px;color:#888;padding:8px 0;">Nhập đủ dữ liệu để xem kết quả</div>'}
         </div>
 
-        <!-- 1b. TÓM TẮT 10 GIÂY — dành cho môi giới & khách -->
-        ${r.chenhLechTongPct !== null ? `
-        <div class="card" style="background:#1a1a1a;color:white;border:none;">
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:14px;opacity:0.7;">Giá bán</span>
-              <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? '🟢 Hợp lý' : r.chenhLechTongPct <= 10 ? '🟡 Hơi cao' : '🔴 Cao'}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:14px;opacity:0.7;">${r.chenhLechTongPct <= 0 ? 'Thấp hơn TT' : 'Cao hơn TT'}</span>
-              <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#4ADE80' : '#FF1744'};">${Math.round(Math.abs(r.chenhLechTongTien)*1000)} triệu</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:14px;opacity:0.7;">Khả năng thương lượng</span>
-              <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Thấp' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Cao'}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:14px;opacity:0.7;">Mức nên mua</span>
-              <span style="font-size:14px;font-weight:700;color:#FF1744;">${fmtTy(r.openingOffer)} – ${fmtTy(r.targetDeal)}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:14px;opacity:0.7;">Phù hợp</span>
-              <span style="font-size:14px;font-weight:700;">Mua ở${r.chenhLechTongPct <= 5 ? ' / Đầu tư' : ''}</span>
-            </div>
-          </div>
-        </div>` : ''}
-
-        <!-- 2+3. PHÂN TÍCH GIÁ — bảng 3 cột -->
+                <!-- 2+3. PHÂN TÍCH GIÁ — bảng 3 cột -->
         <div class="card">
           <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:16px;">📊 PHÂN TÍCH GIÁ</div>
 
@@ -2094,77 +2058,35 @@ function renderValuation() {
         </div>
 
         <!-- 4. CHIẾN LƯỢC ĐÀM PHÁN -->
-        <div class="card" style="background:#1a1a1a;color:white;border:none;">
+        <div class="card" style="background:#F8F8F8;border:1px solid #E8E8E8;">
           <div style="font-size:11px;opacity:0.5;letter-spacing:1.2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
 
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-            <span style="font-size:14px;opacity:0.7;">Đánh giá</span>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+            <span style="font-size:14px;color:#555;">Đánh giá</span>
             <span style="font-size:14px;font-weight:700;">${r.damPhanLabel}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-            <span style="font-size:14px;opacity:0.7;">Khoảng mua hợp lý</span>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+            <span style="font-size:14px;color:#555;">Khoảng mua hợp lý</span>
             <span style="font-size:14px;font-weight:700;">${fmtTy(r.openingOffer)} – ${fmtTy(r.targetDeal)}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-            <span style="font-size:14px;opacity:0.7;">Giá mục tiêu</span>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+            <span style="font-size:14px;color:#555;">Giá mục tiêu</span>
             <span style="font-size:16px;font-weight:800;color:#FF1744;">${fmtTy(r.targetDeal)}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-            <span style="font-size:14px;opacity:0.7;">Mức độ thương lượng</span>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+            <span style="font-size:14px;color:#555;">Mức độ thương lượng</span>
             <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Thấp' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Cao'}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-            <span style="font-size:14px;opacity:0.7;">Khả năng ép giá</span>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+            <span style="font-size:14px;color:#555;">Khả năng ép giá</span>
             <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Khó' : r.chenhLechTongPct <= 10 ? 'Vừa' : 'Cao'}</span>
           </div>
           <div style="display:flex;justify-content:space-between;padding:8px 0;">
-            <span style="font-size:14px;opacity:0.7;">Nguy cơ mất hàng</span>
+            <span style="font-size:14px;color:#555;">Nguy cơ mất hàng</span>
             <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#FF1744' : '#2E7D32'};">${r.chenhLechTongPct <= 0 ? 'Cao' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Thấp'}</span>
           </div>
         </div>
 
-        <!-- 6. KẾT LUẬN CHUYÊN GIA — chỉ khuyến nghị, không lặp số liệu -->
-        <div class="card" style="border:1px solid ${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#E8E8E8'};">
-          <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
-            <span style="font-size:14px;color:#666;">Đối tượng phù hợp</span>
-            <span style="font-size:14px;font-weight:700;">Mua ở${r.chenhLechTongPct <= 5 ? ' / Đầu tư' : ''}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
-            <span style="font-size:14px;color:#666;">Rủi ro</span>
-            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">${r.chenhLechTongPct <= 0 ? 'Thấp' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Cao'}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
-            <span style="font-size:14px;color:#666;">Thanh khoản</span>
-            <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 5 ? 'Tốt' : r.chenhLechTongPct <= 15 ? 'Trung bình' : 'Thấp'}</span>
-          </div>
-
-          <!-- Độ tin cậy định giá -->
-          ${(() => {
-            const hasGiaTT = parseFloat(p.giaTT) > 0;
-            const hasArea = parseFloat(p.area) > 0;
-            const hasFloors = parseFloat(p.floors) > 0;
-            const hasHienTrang = parseFloat(p.hienTrang) > 0;
-            const score = [hasGiaTT, hasArea, hasFloors, hasHienTrang].filter(Boolean).length;
-            const label = score === 4 ? '🟢 Cao' : score >= 3 ? '🟡 Trung bình' : '🔴 Thấp';
-            const missing = [];
-            if (!hasGiaTT) missing.push('Giá đất TT');
-            if (!hasArea) missing.push('Diện tích');
-            if (!hasFloors) missing.push('Số tầng');
-            if (!hasHienTrang) missing.push('Hiện trạng nhà');
-            return `
-            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
-              <span style="font-size:14px;color:#666;">Độ tin cậy định giá</span>
-              <span style="font-size:14px;font-weight:700;">${label}</span>
-            </div>
-            ${missing.length > 0 ? `<div style="font-size:12px;color:#FF1744;padding:4px 0;">Thiếu: ${missing.join(', ')}</div>` : ''}`;
-          })()}
-
-          <div style="margin-top:12px;padding:12px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : '#FFFBEB'};">
-            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#B45309'};">
-              ✓ Khuyến nghị: ${r.chenhLechTongPct <= 0 ? 'Nên tiếp cận và thương lượng sớm.' : r.chenhLechTongPct <= 10 ? 'Có thể đàm phán nhẹ.' : 'Đàm phán kéo về giá thực trước khi quyết định.'}
-            </span>
-          </div>
-        </div>
 
         <div class="disclaimer">
           ⚠️ Kết quả mang tính tham khảo, dựa trên dữ liệu nhập vào và quy chuẩn ngành.
@@ -2708,7 +2630,7 @@ function renderCustomers() {
 
   return `<div class="screen">
     <div class="topbar">
-      <div class="topbar-spacer"></div>
+      <button class="topbar-back" onclick="nav('home')">‹</button>
       <div class="topbar-title">Khách hàng</div>
       <button onclick="newCustomer()" style="background:none;border:none;font-size:24px;color:#FF1744;cursor:pointer;padding:4px 8px;">+</button>
     </div>
