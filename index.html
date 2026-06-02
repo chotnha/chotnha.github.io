@@ -28,25 +28,52 @@ body {
 
 /* ===== Hero (home) ===== */
 .hero {
-  background: #1a1a1a;
+  background: linear-gradient(160deg, #FF1744 0%, #CC0000 100%);
   color: #fff;
-  padding: 20px 20px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding: 52px 20px 24px;
 }
 .hero-bg { display: none; }
-.hero-content { display: flex; align-items: center; gap: 12px; width: 100%; }
-.brand { display: flex; align-items: center; gap: 12px; margin-bottom: 0; flex: 1; }
+.hero-content { width: 100%; }
+.brand { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .brand-mark {
-  width: 36px; height: 36px;
-  background: #FF1744;
-  border-radius: 9px;
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 18px; color: white;
+  font-weight: 900; font-size: 20px; color: white;
 }
-.brand-name { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; color: white; }
-.brand-sub { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.3px; }
+.brand-name { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; color: white; }
+.brand-sub { font-size: 11px; color: rgba(255,255,255,0.6); }
+.hero-user {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+}
+.hero-user img {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  object-fit: cover;
+}
+.hero-user-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: white;
+  border: 2px solid rgba(255,255,255,0.4);
+  flex-shrink: 0;
+}
+.hero-user-info { flex: 1; }
+.hero-user-name { font-size: 15px; font-weight: 700; color: white; }
+.hero-user-logout {
+  background: rgba(255,255,255,0.15); border: none;
+  color: white; font-size: 12px; font-weight: 600;
+  padding: 5px 12px; border-radius: 20px; cursor: pointer;
+}
+.hero-stats {
+  display: flex; gap: 20px;
+}
+.hero-stat { text-align: left; }
+.hero-stat-num { font-size: 22px; font-weight: 800; color: white; line-height: 1; }
+.hero-stat-label { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 2px; }
 .hero-title { display: none; }
 .hero-desc { display: none; }
 
@@ -1277,7 +1304,7 @@ function renderTabBar(active, addCustomer=false) {
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
         </svg>
       </div>
-      <span>Thêm</span>
+      <span style="visibility:hidden;font-size:11px;">·</span>
     </button>
 
     <button class="tab-item ${active==='customers'?'active':''}" onclick="nav('customers')">
@@ -1288,11 +1315,13 @@ function renderTabBar(active, addCustomer=false) {
 }
 
 function renderHome() {
-  const recent = state.properties.slice(0, 3);
+  const recent = state.properties.slice(0, 5);
+  const userName = currentUser ? (currentUser.displayName||currentUser.email||'').split(' ').pop() : '';
+  const avatarLetter = userName ? userName[0].toUpperCase() : 'B';
+
   return `
     <div class="screen has-tabbar">
       <div class="hero">
-        <div class="hero-bg"></div>
         <div class="hero-content">
           <div class="brand">
             <div class="brand-mark">B</div>
@@ -1301,88 +1330,59 @@ function renderHome() {
               <div class="brand-sub">Định giá chuyên sâu</div>
             </div>
           </div>
-          <h1 class="hero-title">Định giá<br/>như chuyên gia</h1>
-          <p class="hero-desc">Phân tích pháp lý · Tính toán định giá · AI tư vấn đàm phán</p>
-        </div>
-      </div>
-      
-      ${currentUser ? `
-        <div class="content-pad" style="padding-bottom:0;">
-          <div class="user-bar">
-            <img src="${esc(currentUser.photoURL||'')}" onerror="this.style.display='none'" />
-            <span class="user-name">${esc(currentUser.displayName||currentUser.email)}</span>
-            <button class="btn-logout" onclick="signOut()">Đăng xuất</button>
-          </div>
-        </div>
-      ` : ''}
-      <div style="padding:16px 16px 12px;">
-        <div class="stats-row">
-          <div class="stat-card"><div class="stat-num">${state.properties.length}</div><div class="stat-label">Hồ sơ</div></div>
-          <div class="stat-card"><div class="stat-num">${state.customers.length}</div><div class="stat-label">Khách hàng</div></div>
 
+          ${currentUser ? `
+          <div class="hero-user">
+            ${currentUser.photoURL
+              ? `<img src="${esc(currentUser.photoURL)}" onerror="this.outerHTML='<div class=hero-user-avatar>${avatarLetter}</div>'" />`
+              : `<div class="hero-user-avatar">${avatarLetter}</div>`}
+            <div class="hero-user-info">
+              <div class="hero-user-name">${esc(currentUser.displayName||currentUser.email)}</div>
+            </div>
+            <button class="hero-user-logout" onclick="signOut()">Đăng xuất</button>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="hero-stat-num">${state.properties.length}</div>
+              <div class="hero-stat-label">Hồ sơ</div>
+            </div>
+            <div style="width:1px;background:rgba(255,255,255,0.2);margin:0 4px;"></div>
+            <div class="hero-stat">
+              <div class="hero-stat-num">${state.customers.length}</div>
+              <div class="hero-stat-label">Khách hàng</div>
+            </div>
+          </div>
+          ` : ''}
         </div>
       </div>
+
       <div class="content-pad">
-        <div class="section-title">Bắt đầu nhanh</div>
-        <button class="action-card" onclick="newProperty()">
-          <div class="action-icon">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19"></line>
-      <line x1="5" y1="12" x2="19" y2="12"></line>
-    </svg>
-  </div>
-          <div class="action-text">
-            <div class="action-title">Thêm hồ sơ mới</div>
-            <div class="action-desc">Khảo sát BĐS vừa đi xem</div>
-          </div>
-          <div class="action-arrow">›</div>
-        </button>
-        <button class="action-card" onclick="nav('list')">
-          <div class="action-icon outlined">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="8" y1="6" x2="21" y2="6"></line>
-      <line x1="8" y1="12" x2="21" y2="12"></line>
-      <line x1="8" y1="18" x2="21" y2="18"></line>
-      <line x1="3" y1="6" x2="3.01" y2="6"></line>
-      <line x1="3" y1="12" x2="3.01" y2="12"></line>
-      <line x1="3" y1="18" x2="3.01" y2="18"></line>
-    </svg>
-  </div>
-          <div class="action-text">
-            <div class="action-title">Danh sách hồ sơ</div>
-            <div class="action-desc">${state.properties.length} BĐS đã lưu</div>
-          </div>
-          <div class="action-arrow">›</div>
-        </button>
-        <button class="action-card" onclick="nav('customers')">
-          <div class="action-icon outlined">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <div class="action-text">
-            <div class="action-title">Khách hàng</div>
-            <div class="action-desc">${state.customers.length} khách đang theo dõi</div>
-          </div>
-          <div class="action-arrow">›</div>
-        </button>
         ${recent.length > 0 ? `
           <div class="section-title">Gần đây</div>
-          ${recent.map(p => `
-            <button class="recent-card" onclick="openProperty('${p.id}')">
+          ${recent.map(p => {
+            const specs = [
+              p.askingPrice ? `<span style="font-weight:700;color:#FF1744;">${fmtTy(parseFloat(p.askingPrice))}</span>` : '',
+              p.area ? p.area+'m²' : '',
+              (p.width && p.length) ? p.width+'×'+p.length+'m' : '',
+              p.alleyType ? alleyLabel(p.alleyType) : '',
+              p.direction || '',
+            ].filter(Boolean);
+            return `
+            <button class="recent-card" onclick="openProperty('${p.id}')" style="padding:14px 16px;">
               <div class="recent-left">
-                <div class="recent-addr">${esc(p.address)||'Chưa có địa chỉ'}</div>
-                <div class="recent-meta">
-                  <span>${esc(p.area)}m²</span><span class="dot">·</span>
-                  <span>${esc(p.floors)} tầng</span>
-                  ${p.askingPrice?`<span class="dot">·</span><span class="price">${esc(p.askingPrice)} tỷ</span>`:''}
-                </div>
+                <div class="recent-addr" style="font-size:14px;font-weight:600;margin-bottom:6px;">${esc(p.address)||'Chưa có địa chỉ'}</div>
+                <div class="recent-meta" style="font-size:12px;color:#555;line-height:1.8;">${specs.join(' · ')}</div>
               </div>
               <div class="recent-arrow">›</div>
-            </button>
-          `).join('')}
-        ` : ''}
+            </button>`;
+          }).join('')}
+        ` : `
+          <div style="text-align:center;padding:60px 20px;color:#888;">
+            <div style="font-size:40px;margin-bottom:12px;">🏠</div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:8px;">Chưa có hồ sơ nào</div>
+            <div style="font-size:13px;">Bấm + để thêm BĐS đầu tiên</div>
+          </div>
+        `}
       </div>
       ${renderTabBar('home')}
     </div>`;
