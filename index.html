@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="theme-color" content="#1a1a1a" />
-<title>Broker OS - Định Giá BĐS</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23FF1744'/><text x='50' y='70' font-size='60' font-weight='900' text-anchor='middle' fill='white' font-family='sans-serif'>B</text></svg>" />
+<meta name="apple-mobile-web-app-title" content="Broker OS" />
+<meta name="theme-color" content="#FF1744" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FF1744'/><text x='50' y='72' font-size='62' font-weight='900' text-anchor='middle' fill='white' font-family='-apple-system,sans-serif'>B</text></svg>" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FF1744'/><text x='50' y='72' font-size='62' font-weight='900' text-anchor='middle' fill='white' font-family='-apple-system,sans-serif'>B</text></svg>" />
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
 
@@ -81,22 +82,59 @@ body {
 
 /* ===== Stats ===== */
 .stats-row {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-  margin: 0 0 0 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  margin: 0 16px;
   position: relative; z-index: 2;
 }
 .stat-card {
   background: #fff;
-  border-radius: 14px;
-  padding: 16px 8px;
+  border-radius: 16px;
+  padding: 12px 8px 10px;
   text-align: center;
-  border: 1px solid #E8E8E8;
+  border: 1px solid #F0F0F0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
-.stat-num { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-.stat-num.accent { color: #FF1744; font-size: 17px; }
-.stat-label { font-size: 13px; color: #000000; margin-top: 2px; font-weight: 500; }
+.stat-num { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: #1a1a1a; }
+.stat-num.accent { color: #FF1744; font-size: 14px; font-weight: 900; letter-spacing: 0.3px; }
+.stat-label { font-size: 11px; color: #888; margin-top: 3px; font-weight: 500; }
 
-/* ===== Action Card ===== */
+/* ===== TAB BAR ===== */
+.tab-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: white;
+  border-top: 1px solid #F0F0F0;
+  display: flex; align-items: flex-end; justify-content: space-around;
+  padding: 8px 0 28px;
+  z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+}
+.tab-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; cursor: pointer; flex: 1;
+  background: none; border: none; padding: 4px 0;
+}
+.tab-item svg { transition: opacity 0.15s; }
+.tab-item span { font-size: 10px; font-weight: 600; color: #aaa; }
+.tab-item.active span { color: #FF1744; }
+.tab-item.active svg { opacity: 1; }
+.tab-item svg { opacity: 0.4; }
+.tab-add {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: linear-gradient(135deg, #FF1744, #CC0000);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 8px; flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(255,23,68,0.45);
+  cursor: pointer; border: none;
+  transform: translateY(-12px);
+}
+.tab-add-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  flex: 1; cursor: pointer; background: none; border: none;
+  padding: 0;
+}
+.tab-add-wrap span { font-size: 10px; font-weight: 600; color: #aaa; margin-top: 2px; }
+/* Padding bottom cho các trang có tab bar */
+.has-tabbar { padding-bottom: 90px; }
 .action-card {
   background: #fff;
   border-radius: 14px;
@@ -1175,20 +1213,31 @@ function render() {
 
   if (state.authLoading) { html = renderLoading(); root.innerHTML = html; return; }
   if (state.screen === 'login') { html = renderLogin(); root.innerHTML = html; return; }
-  if (state.screen === 'home') html = renderHome();
-  else if (state.screen === 'list') html = renderList();
-  else if (state.screen === 'form') html = renderForm();
-  else if (state.screen === 'detail') html = renderDetail();
-  else if (state.screen === 'valuation') html = renderValuation();
-  else if (state.screen === 'ai') html = renderAI();
-  else if (state.screen === 'customers') html = renderCustomers();
-  else if (state.screen === 'customer-form') html = renderCustomerForm();
-  else if (state.screen === 'customer-detail') html = renderCustomerDetail();
-  else if (state.screen === 'customer-match') html = renderCustomerMatch();
 
-  if (state.showApiModal) html += renderApiModal();
+  try {
+    if (state.screen === 'home') html = renderHome();
+    else if (state.screen === 'list') html = renderList();
+    else if (state.screen === 'form') html = renderForm();
+    else if (state.screen === 'detail') html = renderDetail();
+    else if (state.screen === 'valuation') html = renderValuation();
+    else if (state.screen === 'ai') html = renderAI();
+    else if (state.screen === 'customers') html = renderCustomers();
+    else if (state.screen === 'customer-form') html = renderCustomerForm();
+    else if (state.screen === 'customer-detail') html = renderCustomerDetail();
+    else if (state.screen === 'customer-match') html = renderCustomerMatch();
 
-  root.innerHTML = html;
+    if (state.showApiModal) html += renderApiModal();
+    root.innerHTML = html;
+  } catch(e) {
+    console.error('Render error:', e);
+    root.innerHTML = `
+      <div class="screen" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;">
+        <div style="font-size:40px;margin-bottom:16px;">⚠️</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;">Có lỗi xảy ra</div>
+        <div style="font-size:13px;color:#888;margin-bottom:24px;">${e.message||'Lỗi không xác định'}</div>
+        <button onclick="nav('home')" class="btn-primary">Về trang chủ</button>
+      </div>`;
+  }
 }
 
 
@@ -1213,10 +1262,39 @@ function renderLogin() {
     </div>`;
 }
 
+function renderTabBar(active) {
+  const tabs = [
+    { id: 'list', label: 'Hồ sơ', svg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${active==='list'?'#FF1744':'#888'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>` },
+    { id: 'customers', label: 'Khách hàng', svg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${active==='customers'?'#FF1744':'#888'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
+  ];
+
+  return `
+  <div class="tab-bar">
+    <button class="tab-item ${active==='list'?'active':''}" onclick="nav('list')">
+      ${tabs[0].svg}
+      <span>${tabs[0].label}</span>
+    </button>
+
+    <button class="tab-add-wrap" onclick="newProperty()">
+      <div class="tab-add">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </div>
+      <span>Thêm</span>
+    </button>
+
+    <button class="tab-item ${active==='customers'?'active':''}" onclick="nav('customers')">
+      ${tabs[1].svg}
+      <span>${tabs[1].label}</span>
+    </button>
+  </div>`;
+}
+
 function renderHome() {
   const recent = state.properties.slice(0, 3);
   return `
-    <div class="screen">
+    <div class="screen has-tabbar">
       <div class="hero">
         <div class="hero-bg"></div>
         <div class="hero-content">
@@ -1241,10 +1319,15 @@ function renderHome() {
           </div>
         </div>
       ` : ''}
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-num">${state.properties.length}</div><div class="stat-label">Hồ sơ</div></div>
-        <div class="stat-card"><div class="stat-num">${state.properties.filter(p=>p.askingPrice&&p.marketPrice).length}</div><div class="stat-label">Đã định giá</div></div>
-        <div class="stat-card"><div class="stat-num accent">AI</div><div class="stat-label">Gemini</div></div>
+      <div style="padding:16px 16px 12px;">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-num">${state.properties.length}</div><div class="stat-label">Hồ sơ</div></div>
+          <div class="stat-card"><div class="stat-num">${state.customers.length}</div><div class="stat-label">Khách hàng</div></div>
+          <div class="stat-card" onclick="setState({showApiModal:true})" style="cursor:pointer;">
+            <div class="stat-num accent">+AI</div>
+            <div class="stat-label">Gemini</div>
+          </div>
+        </div>
       </div>
       <div class="content-pad">
         <div class="section-title">Bắt đầu nhanh</div>
@@ -1308,6 +1391,7 @@ function renderHome() {
           `).join('')}
         ` : ''}
       </div>
+      ${renderTabBar('home')}
     </div>`;
 }
 
@@ -1414,7 +1498,7 @@ function renderList() {
   return `
     <div class="screen">
       <div class="topbar">
-        <button class="topbar-back" onclick="nav('home')">‹</button>
+        <div class="topbar-spacer"></div>
         <div class="topbar-title">Danh sách hồ sơ</div>
         <button onclick="setState({showFilterPanel:!state.showFilterPanel})"
           style="background:none;border:none;cursor:pointer;padding:4px 8px;font-size:13px;font-weight:700;color:${hasFilter?'#FF1744':'#1a1a1a'};">
@@ -1491,9 +1575,7 @@ function renderList() {
           </div>
         ` : cards + pagination}
       </div>
-      <div class="bottom-bar">
-        <button class="btn-primary btn-full" onclick="newProperty()">＋ Thêm hồ sơ mới</button>
-      </div>
+      ${renderTabBar('list')}
     </div>`;
 }
 
@@ -1623,13 +1705,6 @@ function renderForm() {
           `).join('')}
         </div>` : ''}
 
-        <div class="f-select-wrap" style="margin-top:20px;">
-          <span class="field-label">Quy hoạch</span>
-          <select class="input" onchange="updateForm('planning', this.value)">
-            ${[{v:'clear',l:'Không vướng'},{v:'road',l:'Dính lộ giới (-10%)'},{v:'public',l:'Đất công (-25%)'},{v:'other',l:'Quy hoạch khác (-15%)'}]
-              .map(o=>`<option value="${o.v}" ${(f.planning||'clear')===o.v?'selected':''}>${o.l}</option>`).join('')}
-          </select>
-        </div>
 
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Pháp lý</span>
@@ -1642,15 +1717,16 @@ function renderForm() {
         <div style="height:1px;background:#E8E8E8;margin:24px 0;"></div>
 
         <div style="margin-top:4px;">
-          <label class="field-label">Mô tả chi tiết</label>
-          <textarea class="textarea" style="margin-top:8px;" id="notes-textarea" data-field="notes"
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <label class="field-label" style="margin:0;">Mô tả chi tiết</label>
+            <button type="button" onclick="autoFillFromNotes()" id="autofill-btn"
+              style="padding:4px 10px;border-radius:20px;border:1.5px solid #FF1744;background:white;color:#FF1744;font-size:11px;font-weight:800;cursor:pointer;line-height:1.4;letter-spacing:0.3px;">
+              <span id="autofill-icon">+</span><span id="autofill-text">AI</span>
+            </button>
+          </div>
+          <textarea class="textarea" id="notes-textarea" data-field="notes"
             placeholder="Paste bài đăng hoặc ghi chú thực địa..."
             oninput="updateForm('notes', this.value)">${esc(f.notes||'')}</textarea>
-          <button type="button" onclick="autoFillFromNotes()" id="autofill-btn"
-            style="margin-top:10px;width:100%;padding:13px;border-radius:12px;border:1.5px solid #FF1744;background:white;color:#FF1744;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-            <span id="autofill-icon">✨</span>
-            <span id="autofill-text">Điền tự động từ mô tả</span>
-          </button>
         </div>
 
       </div>
@@ -1699,8 +1775,7 @@ function renderDetail() {
             <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Định giá</span>
           </button>
           <button class="action-card primary-card" onclick="openAI('${p.id}')" style="flex-direction:column;align-items:center;justify-content:center;padding:14px 8px;gap:8px;">
-            <span style="font-size:13px;font-weight:900;color:#FF1744;">✨ AI</span>
-            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">AI Analysis</span>
+            <span style="font-size:13px;font-weight:900;color:#FF1744;">+AI</span>
           </button>
         </div>
 
@@ -1757,11 +1832,26 @@ function renderDetail() {
           </div>
         ` : ''}
       </div>
-      <div class="bottom-bar">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <button class="btn-secondary" onclick="editProperty('${p.id}')">✎ Sửa</button>
-          <button class="btn-secondary" onclick="openViewHistoryModal('${p.id}')" style="border-color:#2E7D32;color:#2E7D32;">👁 Ghi KH</button>
-          <button class="btn-primary" onclick="openValuation('${p.id}')">📊 Định giá</button>
+      <div class="bottom-bar" style="padding:10px 16px 20px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+          <button onclick="openValuation('${p.id}')"
+            style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;border-radius:12px;border:none;background:#FF1744;color:white;font-size:13px;font-weight:700;cursor:pointer;">
+            📊 Định giá
+          </button>
+          <button onclick="openAI('${p.id}')"
+            style="display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;border-radius:12px;border:none;background:#1a1a1a;color:white;font-size:13px;font-weight:700;cursor:pointer;">
+            +AI
+          </button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button onclick="editProperty('${p.id}')"
+            style="display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:12px;font-weight:600;cursor:pointer;">
+            ✎ Sửa
+          </button>
+          <button onclick="openViewHistoryModal('${p.id}')"
+            style="display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#2E7D32;font-size:12px;font-weight:600;cursor:pointer;">
+            👁 Ghi KH
+          </button>
         </div>
       </div>
 
@@ -2089,7 +2179,7 @@ function renderValuation() {
       <div class="bottom-bar">
         <div class="bar-2">
           <button class="btn-secondary" onclick="nav('detail')">Quay lại</button>
-          <button class="btn-primary" onclick="openAI('${p.id}')">✨ Tư vấn AI</button>
+          <button class="btn-primary" onclick="openAI('${p.id}')">+AI</button>
         </div>
       </div>
     </div>`;
@@ -2103,12 +2193,12 @@ function renderAI() {
     <div class="screen">
       <div class="topbar">
         <button class="topbar-back" onclick="nav('detail')">‹</button>
-        <div class="topbar-title">✨ AI Analysis</div>
+        <div class="topbar-title">+AI Analysis</div>
         <div class="topbar-spacer"></div>
       </div>
       <div class="content-pad">
         <div class="ai-hero">
-          <div class="ai-badge">✨ AI ANALYSIS</div>
+          <div class="ai-badge">+AI ANALYSIS</div>
           <div class="ai-title">Chiến lược chuyên sâu</div>
           <div class="ai-desc">${esc(p.address)}</div>
         </div>
@@ -2244,14 +2334,14 @@ function renderAI() {
         ` : `
           <div class="card" style="text-align:center;padding:24px;">
             <div style="font-size:14px;color:#555;margin-bottom:12px;">Kết quả cần cập nhật. Vui lòng phân tích lại.</div>
-            <button class="btn-primary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">✨ Phân tích lại</button>
+            <button class="btn-primary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">+AI Phân tích lại</button>
           </div>
         `) : ''}
       </div>
       ${!state.aiLoading ? `
         <div class="bottom-bar">
           <div class="bar-2">
-            <button class="btn-secondary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">✨ Phân tích lại</button>
+            <button class="btn-secondary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">+AI Phân tích lại</button>
             <button class="btn-primary" onclick="nav('detail')">✓ Hoàn tất</button>
           </div>
         </div>
@@ -2385,7 +2475,7 @@ Trả về JSON với các trường sau (để trống "" nếu không có thô
     alert('Không phân tích được. Vui lòng thử lại.');
     console.error(e);
   } finally {
-    if (btn) { btn.disabled = false; if(icon) icon.textContent = '✨'; if(text) text.textContent = 'Điền tự động từ mô tả'; }
+    if (btn) { btn.disabled = false; if(icon) icon.textContent = '+'; if(text) text.textContent = 'AI'; }
   }
 }
 
@@ -2430,7 +2520,7 @@ async function toggleStar(id, e) {
   const p = state.properties.find(x => x.id === id);
   if (!p) return;
   const newVal = !p.isStarred;
-  await db.collection('users').doc(user.uid).collection('properties').doc(id).update({ isStarred: newVal });
+  await dbFS.collection('users').doc(user.uid).collection('properties').doc(id).update({ isStarred: newVal });
   state.properties = state.properties.map(x => x.id === id ? { ...x, isStarred: newVal } : x);
   render();
 }
@@ -2443,11 +2533,11 @@ async function saveCustomer() {
   const data = { ...f, updatedAt: Date.now() };
   try {
     if (state.currentCustomerId) {
-      await db.collection('users').doc(user.uid).collection('customers').doc(state.currentCustomerId).set(data);
+      await dbFS.collection('users').doc(user.uid).collection('customers').doc(state.currentCustomerId).set(data);
       state.customers = state.customers.map(c => c.id === state.currentCustomerId ? { id: state.currentCustomerId, ...data } : c);
     } else {
       data.createdAt = Date.now();
-      const ref = await db.collection('users').doc(user.uid).collection('customers').add(data);
+      const ref = await dbFS.collection('users').doc(user.uid).collection('customers').add(data);
       state.customers = [{ id: ref.id, ...data }, ...state.customers];
     }
     nav('customers');
@@ -2458,7 +2548,7 @@ async function deleteCustomer(id) {
   if (!confirm('Xóa khách hàng này?')) return;
   const user = firebase.auth().currentUser;
   if (!user) return;
-  await db.collection('users').doc(user.uid).collection('customers').doc(id).delete();
+  await dbFS.collection('users').doc(user.uid).collection('customers').doc(id).delete();
   state.customers = state.customers.filter(c => c.id !== id);
   nav('customers');
 }
@@ -2497,7 +2587,7 @@ async function addViewHistory(customerId, propertyId, feedback, note) {
   const newHistory = [entry, ...(customer.viewHistory || [])];
   const updated = { ...customer, viewHistory: newHistory };
   
-  await db.collection('users').doc(user.uid).collection('customers').doc(customerId).set(updated);
+  await dbFS.collection('users').doc(user.uid).collection('customers').doc(customerId).set(updated);
   state.customers = state.customers.map(c => c.id === customerId ? updated : c);
   render();
 }
@@ -2624,7 +2714,7 @@ function renderCustomers() {
 
   return `<div class="screen">
     <div class="topbar">
-      <button class="topbar-back" onclick="nav('home')">‹</button>
+      <div class="topbar-spacer"></div>
       <div class="topbar-title">Khách hàng</div>
       <button onclick="newCustomer()" style="background:none;border:none;font-size:24px;color:#FF1744;cursor:pointer;padding:4px 8px;">+</button>
     </div>
@@ -2634,14 +2724,11 @@ function renderCustomers() {
         <div style="text-align:center;padding:60px 20px;color:#888;">
           <div style="font-size:40px;margin-bottom:12px;">👥</div>
           <div style="font-size:16px;font-weight:600;margin-bottom:8px;">${fStatus ? 'Không có khách ở trạng thái này' : 'Chưa có khách hàng'}</div>
-          <div style="font-size:14px;margin-bottom:20px;">Thêm khách để AI ghép với nhà phù hợp</div>
-          <button class="btn-primary" onclick="newCustomer()">+ Thêm khách hàng</button>
+          <div style="font-size:14px;">Bấm + để thêm khách hàng mới</div>
         </div>
       ` : cards + pagination}
     </div>
-    <div class="bottom-bar">
-      <button class="btn-primary" onclick="newCustomer()" style="width:100%;">+ Thêm khách hàng</button>
-    </div>
+    ${renderTabBar('customers')}
   </div>`;
 }
 
@@ -2798,7 +2885,7 @@ function renderCustomerDetail() {
     <div class="bottom-bar">
       <div class="bar-2">
         <button class="btn-secondary" onclick="editCustomer('${c.id}')">✏️ Sửa</button>
-        <button class="btn-primary" onclick="matchCustomerAI('${c.id}')">🤖 Tìm nhà phù hợp</button>
+        <button class="btn-primary" onclick="matchCustomerAI('${c.id}')">+AI Tìm nhà phù hợp</button>
       </div>
     </div>
   </div>`;
@@ -2813,7 +2900,7 @@ function renderCustomerMatch() {
   return `<div class="screen">
     <div class="topbar">
       <button class="topbar-back" onclick="nav('customer-detail')">‹</button>
-      <div class="topbar-title">🤖 Tìm nhà phù hợp</div>
+      <div class="topbar-title">+AI Tìm nhà phù hợp</div>
     </div>
     <div class="content-pad" style="padding-top:16px;">
 
@@ -2825,7 +2912,7 @@ function renderCustomerMatch() {
 
       ${loading ? `
         <div style="text-align:center;padding:60px 20px;">
-          <div style="font-size:32px;margin-bottom:16px;">🤖</div>
+          <div style="font-size:20px;font-weight:900;color:#FF1744;margin-bottom:16px;">+AI</div>
           <div style="font-size:16px;font-weight:600;margin-bottom:8px;">AI đang phân tích...</div>
           <div style="font-size:13px;color:#888;">Đang so sánh ${state.properties.length} hồ sơ nhà</div>
         </div>
@@ -2851,12 +2938,12 @@ function renderCustomerMatch() {
       ` : `
         <div style="text-align:center;padding:40px 20px;color:#888;">
           <div style="font-size:14px;">Không có kết quả. Thử lại.</div>
-          <button class="btn-primary" style="margin-top:16px;" onclick="matchCustomerAI('${c.id}')">🤖 Thử lại</button>
+          <button class="btn-primary" style="margin-top:16px;" onclick="matchCustomerAI('${c.id}')">+AI Thử lại</button>
         </div>
       `}
     </div>
     <div class="bottom-bar">
-      <button class="btn-primary" onclick="matchCustomerAI('${c.id}')" style="width:100%;">🤖 Phân tích lại</button>
+      <button class="btn-primary" onclick="matchCustomerAI('${c.id}')" style="width:100%;">+AI Phân tích lại</button>
     </div>
   </div>`;
 }
