@@ -1602,6 +1602,7 @@ const p = state.properties.find(x => x.id === state.currentId);
 if (!p) { setTimeout(()=>nav(‘list’), 0); return ‘’; }
 const r = calculateValuation(p);
 const dateStr = new Date().toLocaleDateString(‘vi-VN’, { day:‘2-digit’, month:‘2-digit’, year:‘numeric’ });
+
 return `
 <div class="screen">
 <div class="topbar">
