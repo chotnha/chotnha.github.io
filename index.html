@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
@@ -13,14 +12,14 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
 
 body {
-font-family: -apple-system, BlinkMacSystemFont, ‘SF Pro Display’, ‘Segoe UI’, Roboto, sans-serif;
-background: #F7F7F7;
-color: #1a1a1a;
-max-width: 480px;
-margin: 0 auto;
-position: relative;
-overflow-x: hidden;
-min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  background: #F7F7F7;
+  color: #1a1a1a;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
 .screen { min-height: 100vh; padding-bottom: 110px; }
@@ -28,22 +27,22 @@ min-height: 100vh;
 
 /* ===== Hero (home) ===== */
 .hero {
-background: #1a1a1a;
-color: #fff;
-padding: 20px 20px 16px;
-display: flex;
-align-items: center;
-justify-content: space-between;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 20px 20px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .hero-bg { display: none; }
 .hero-content { display: flex; align-items: center; gap: 12px; width: 100%; }
 .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 0; flex: 1; }
 .brand-mark {
-width: 36px; height: 36px;
-background: #FF1744;
-border-radius: 9px;
-display: flex; align-items: center; justify-content: center;
-font-weight: 800; font-size: 18px; color: white;
+  width: 36px; height: 36px;
+  background: #FF1744;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 18px; color: white;
 }
 .brand-name { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; color: white; }
 .brand-sub { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.3px; }
@@ -52,21 +51,21 @@ font-weight: 800; font-size: 18px; color: white;
 
 /* ===== TopBar ===== */
 .topbar {
-display: flex; align-items: center; justify-content: space-between;
-padding: 16px;
-background: #F7F7F7;
-position: sticky; top: 0; z-index: 10;
-border-bottom: 1px solid #E8E8E8;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px;
+  background: #F7F7F7;
+  position: sticky; top: 0; z-index: 10;
+  border-bottom: 1px solid #E8E8E8;
 }
 .topbar-back {
-width: 38px; height: 38px;
-border-radius: 11px;
-background: white;
-border: none;
-display: flex; align-items: center; justify-content: center;
-cursor: pointer;
-border: 1px solid #E8E8E8;
-font-size: 18px; color: #000000;
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  background: white;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: 1px solid #E8E8E8;
+  font-size: 18px; color: #000000;
 }
 .topbar-title { font-size: 18px; font-weight: 700; }
 .topbar-spacer { width: 38px; }
@@ -74,24 +73,24 @@ font-size: 18px; color: #000000;
 /* ===== Content ===== */
 .content-pad { padding: 16px; }
 .section-title {
-font-size: 14px; font-weight: 700;
-margin: 22px 4px 12px;
-text-transform: uppercase;
-letter-spacing: 0.5px;
+  font-size: 14px; font-weight: 700;
+  margin: 22px 4px 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* ===== Stats ===== */
 .stats-row {
-display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-margin: 0 0 0 0;
-position: relative; z-index: 2;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  margin: 0 0 0 0;
+  position: relative; z-index: 2;
 }
 .stat-card {
-background: #fff;
-border-radius: 14px;
-padding: 16px 8px;
-text-align: center;
-border: 1px solid #E8E8E8;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 8px;
+  text-align: center;
+  border: 1px solid #E8E8E8;
 }
 .stat-num { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
 .stat-num.accent { color: #FF1744; font-size: 17px; }
@@ -99,30 +98,30 @@ border: 1px solid #E8E8E8;
 
 /* ===== Action Card ===== */
 .action-card {
-background: #fff;
-border-radius: 14px;
-padding: 16px;
-display: flex; align-items: center; gap: 14px;
-border: none; width: 100%; text-align: left;
-cursor: pointer;
-margin-bottom: 10px;
-transition: transform 0.15s ease;
-font-family: inherit;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex; align-items: center; gap: 14px;
+  border: none; width: 100%; text-align: left;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: transform 0.15s ease;
+  font-family: inherit;
 }
 .action-card:active { transform: scale(0.98); }
 .action-card.primary-card {
-background: #fff;
-border: 1.5px solid #FF1744;
+  background: #fff;
+  border: 1.5px solid #FF1744;
 }
 .action-icon {
-width: 44px; height: 44px;
-border-radius: 12px;
-background: transparent;
-color: #1a1a1a;
-display: flex; align-items: center; justify-content: center;
-flex-shrink: 0;
-font-size: 20px;
-border: 1.5px solid #1a1a1a;
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: transparent;
+  color: #1a1a1a;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;
+  border: 1.5px solid #1a1a1a;
 }
 .action-icon.red { background: linear-gradient(135deg, #FF1744, #CC0000); }
 .action-icon.outlined { background: white; color: #1a1a1a; border: 1.5px solid #1a1a1a; }
@@ -133,11 +132,11 @@ border: 1.5px solid #1a1a1a;
 
 /* ===== Recent ===== */
 .recent-card {
-background: white; border-radius: 12px; padding: 14px;
-border: 1px solid #E8E8E8; width: 100%; text-align: left;
-display: flex; align-items: center; gap: 12px;
-margin-bottom: 8px; cursor: pointer;
-font-family: inherit;
+  background: white; border-radius: 12px; padding: 14px;
+  border: 1px solid #E8E8E8; width: 100%; text-align: left;
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 8px; cursor: pointer;
+  font-family: inherit;
 }
 .recent-card:active { transform: scale(0.98); }
 .recent-left { flex: 1; min-width: 0; }
@@ -149,19 +148,19 @@ font-family: inherit;
 
 /* ===== Search ===== */
 .search-box {
-background: #FFFFFF; border-radius: 12px; padding: 10px 14px;
-display: flex; align-items: center; gap: 10px;
-margin-bottom: 14px;
-border: 1.5px solid #1a1a1a;
+  background: #FFFFFF; border-radius: 12px; padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+  border: 1.5px solid #1a1a1a;
 }
 .search-icon { color: #000000; font-size: 14px; }
 .search-input { border: none; outline: none; flex: 1; font-size: 14px; background: transparent; font-family: inherit; }
 
 /* ===== Prop Card ===== */
 .prop-card {
-background: white; border-radius: 14px; padding: 16px;
-margin-bottom: 10px; cursor: pointer;
-border: 1px solid #E8E8E8;
+  background: white; border-radius: 14px; padding: 16px;
+  margin-bottom: 10px; cursor: pointer;
+  border: 1px solid #E8E8E8;
 }
 .prop-card:active { transform: scale(0.98); }
 .prop-head { display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px; }
@@ -169,8 +168,8 @@ border: 1px solid #E8E8E8;
 .badge-valued { font-size: 16px; margin-left: 8px; }
 .prop-specs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 .spec {
-font-size: 13px; color: #000000;
-background: #FFFFFF; border: 1px solid #e0e0e0; padding: 4px 10px; border-radius: 6px;
+  font-size: 13px; color: #000000;
+  background: #FFFFFF; border: 1px solid #e0e0e0; padding: 4px 10px; border-radius: 6px;
 }
 .prop-prices { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px dashed #eee; }
 .prop-price { font-size: 14px; color: #000000; }
@@ -188,11 +187,11 @@ background: #FFFFFF; border: 1px solid #e0e0e0; padding: 4px 10px; border-radius
 
 /* ===== Card ===== */
 .card {
-background: #fff;
-border-radius: 14px;
-padding: 20px;
-margin-bottom: 12px;
-border: 1px solid #E8E8E8;
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 12px;
+  border: 1px solid #E8E8E8;
 }
 .card-header { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
 
@@ -201,88 +200,88 @@ border: 1px solid #E8E8E8;
 .field-label { font-size: 14px; color: #000000; font-weight: 600; margin-bottom: 6px; }
 .field-hint { font-size: 13px; color: #000000; margin-top: 4px; line-height: 1.5; }
 .input {
-width: 100%; padding: 12px 14px;
-border: 0.6px solid #1a1a1a; border-radius: 10px;
-font-size: 17px; background: #FFFFFF;
-outline: none; font-family: inherit;
-transition: border-color 0.15s;
+  width: 100%; padding: 12px 14px;
+  border: 0.6px solid #1a1a1a; border-radius: 10px;
+  font-size: 17px; background: #FFFFFF;
+  outline: none; font-family: inherit;
+  transition: border-color 0.15s;
 }
 .input:focus { border-color: #FF1744; background: #FFFFFF; }
 .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .textarea {
-width: 100%; padding: 12px 14px;
-border: 0.6px solid #1a1a1a; border-radius: 10px;
-font-size: 16px; background: #FFFFFF;
-outline: none; font-family: inherit;
-min-height: 178px; resize: vertical;
+  width: 100%; padding: 12px 14px;
+  border: 0.6px solid #1a1a1a; border-radius: 10px;
+  font-size: 16px; background: #FFFFFF;
+  outline: none; font-family: inherit;
+  min-height: 178px; resize: vertical;
 }
 .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .chip {
-padding: 8px 14px;
-border-radius: 999px;
-background: #FFFFFF;
-border: 1.5px solid #1a1a1a;
-font-size: 15px; font-weight: 500;
-cursor: pointer; transition: all 0.15s;
-color: #000000; font-family: inherit;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #FFFFFF;
+  border: 1.5px solid #1a1a1a;
+  font-size: 15px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+  color: #000000; font-family: inherit;
 }
 .chip.on { background: #fff; border-color: #FF1744; color: #FF1744; font-weight: 700; }
 .chip.on.warn { background: #FEF5F5; }
 
 /* ===== Buttons ===== */
 .btn-primary, .btn-secondary {
-padding: 13px 20px;
-border-radius: 11px;
-font-size: 16px; font-weight: 700;
-cursor: pointer;
-display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-font-family: inherit;
-transition: transform 0.1s;
-border: 1px solid;
+  padding: 13px 20px;
+  border-radius: 11px;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font-family: inherit;
+  transition: transform 0.1s;
+  border: 1px solid;
 }
 .btn-primary {
-background: #FF1744; color: white; border-color: #FF1744;
-
+  background: #FF1744; color: white; border-color: #FF1744;
+  
 }
 .btn-primary:active { transform: scale(0.97); }
 .btn-primary:disabled { background: #ccc; border-color: #000000; box-shadow: none; cursor: not-allowed; }
 .btn-secondary {
-background: white; color: #FF1744; border-color: #FF1744;
+  background: white; color: #FF1744; border-color: #FF1744;
 }
 .btn-full { width: 100%; }
 
 /* ===== Bottom Bar ===== */
 .bottom-bar {
-width: 100%;
-max-width: 480px;
-background-color: #FFFFFF;
-padding: 12px 16px 20px;
-position: fixed;
-bottom: 0;
-left: 50%;
-transform: translateX(-50%);
-border-top: 0.6px solid #E8E8E8;
-z-index: 50;
+  width: 100%;
+  max-width: 480px;
+  background-color: #FFFFFF;
+  padding: 12px 16px 20px;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top: 0.6px solid #E8E8E8;
+  z-index: 50;
 }
 .bar-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 /* ===== Detail Hero ===== */
 .hero-detail {
-background: linear-gradient(135deg, #1a0a0a 0%, #2d1010 50%, #1a0505 100%);
-color: white;
-border-radius: 16px;
-padding: 22px 20px;
-margin-bottom: 18px;
-box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #1a0a0a 0%, #2d1010 50%, #1a0505 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 22px 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 .hero-detail-label { font-size: 10px; opacity: 0.6; letter-spacing: 1.5px; }
 .hero-detail-addr { font-size: 20px; font-weight: 800; margin: 6px 0; letter-spacing: -0.5px; }
 .hero-detail-meta { font-size: 12px; opacity: 0.75; display: flex; gap: 8px; flex-wrap: wrap; }
 .hero-prices {
-display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr;
-margin-top: 18px; padding-top: 18px;
-border-top: 1px solid rgba(255,255,255,0.1);
-align-items: center; gap: 4px;
+  display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr;
+  margin-top: 18px; padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  align-items: center; gap: 4px;
 }
 .hero-price-item { text-align: center; }
 .hero-price-lbl { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -292,11 +291,11 @@ align-items: center; gap: 4px;
 .hero-price-divider { height: 30px; background: rgba(255,255,255,0.15); }
 
 .info-row {
-display: flex; justify-content: space-between; align-items: center;
-padding: 11px 0;
-border-bottom: 1px solid #E8E8E8;
-font-size: 15px;
-gap: 10px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid #E8E8E8;
+  font-size: 15px;
+  gap: 10px;
 }
 .info-row:last-child { border-bottom: none; }
 .info-lbl { color: #000000; flex-shrink: 0; }
@@ -305,12 +304,12 @@ gap: 10px;
 
 /* ===== Valuation Report ===== */
 .report-hero {
-background: #FFFFFF;
-border-radius: 16px;
-padding: 22px;
-margin-bottom: 14px;
-border: 1px solid #eee;
-border-left: 4px solid #FF1744;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 14px;
+  border: 1px solid #eee;
+  border-left: 4px solid #FF1744;
 }
 .report-stamp { font-size: 10px; font-weight: 800; color: #FF1744; letter-spacing: 2px; margin-bottom: 8px; }
 .report-addr { font-size: 17px; font-weight: 800; line-height: 1.3; margin-bottom: 6px; }
@@ -319,16 +318,16 @@ border-left: 4px solid #FF1744;
 .result-card { background: linear-gradient(165deg, #fff 0%, #FFF8F8 100%); border: 1.5px solid #FBD7D7; }
 .result-label { font-size: 11px; color: #FF1744; font-weight: 700; letter-spacing: 1.5px; }
 .result-main {
-font-size: 42px; font-weight: 800;
-margin: 8px 0; letter-spacing: -2px; line-height: 1;
+  font-size: 42px; font-weight: 800;
+  margin: 8px 0; letter-spacing: -2px; line-height: 1;
 }
 .result-main .unit { font-size: 20px; color: #000000; font-weight: 600; letter-spacing: 0; }
 .result-range { font-size: 13px; color: #000000; margin-bottom: 24px; }
 
 .verdict {
-padding: 14px 16px; border-radius: 12px;
-font-size: 13px; font-weight: 700;
-margin-top: 8px;
+  padding: 14px 16px; border-radius: 12px;
+  font-size: 13px; font-weight: 700;
+  margin-top: 8px;
 }
 .verdict.good { background: #E8F5E9; color: #2E7D32; }
 .verdict.mid { background: #FFF8E1; color: #E65100; }
@@ -353,56 +352,56 @@ margin-top: 8px;
 .compare-row .red { color: #FF1744; }
 
 .negotiation-box {
-background: linear-gradient(135deg, #1a1a1a, #2a1010);
-color: white; border-radius: 12px;
-padding: 16px; margin-top: 14px;
+  background: linear-gradient(135deg, #1a1a1a, #2a1010);
+  color: white; border-radius: 12px;
+  padding: 16px; margin-top: 14px;
 }
 .neg-title { font-size: 11px; opacity: 0.7; letter-spacing: 1px; }
 .neg-price { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin: 4px 0 8px; }
-.neg-price::after { content: ’ tỷ’; font-size: 16px; opacity: 0.7; font-weight: 500; }
+.neg-price::after { content: ' tỷ'; font-size: 16px; opacity: 0.7; font-weight: 500; }
 .neg-desc { font-size: 12px; opacity: 0.85; line-height: 1.5; }
 
 .point-row {
-display: flex; gap: 10px; align-items: start;
-padding: 8px 0; font-size: 13px; line-height: 1.4;
+  display: flex; gap: 10px; align-items: start;
+  padding: 8px 0; font-size: 13px; line-height: 1.4;
 }
 .point-icon { flex-shrink: 0; margin-top: 2px; font-size: 14px; }
 .point-row.strength .point-icon { color: #2E7D32; }
 .point-row.weakness .point-icon { color: #E65100; }
 
 .disclaimer {
-font-size: 11px; color: #000000;
-background: #FFF8E1;
-padding: 12px 14px;
-border-radius: 10px;
-line-height: 1.5;
-margin-top: 14px;
+  font-size: 11px; color: #000000;
+  background: #FFF8E1;
+  padding: 12px 14px;
+  border-radius: 10px;
+  line-height: 1.5;
+  margin-top: 14px;
 }
 
 /* ===== AI ===== */
 .ai-hero {
-background: linear-gradient(135deg, #1a1a1a 0%, #4a1515 100%);
-color: white; border-radius: 16px;
-padding: 22px 20px; margin-bottom: 14px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #4a1515 100%);
+  color: white; border-radius: 16px;
+  padding: 22px 20px; margin-bottom: 14px;
 }
 .ai-badge {
-display: inline-flex; align-items: center; gap: 6px;
-background: rgba(255,255,255,0.12);
-backdrop-filter: blur(10px);
-padding: 5px 11px; border-radius: 999px;
-font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  padding: 5px 11px; border-radius: 999px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
 }
 .ai-title { font-size: 22px; font-weight: 800; margin: 10px 0 4px; letter-spacing: -0.5px; }
 .ai-desc { font-size: 13px; opacity: 0.7; }
 
 .ai-loading { text-align: center; padding: 40px 20px; }
 .spinner {
-width: 36px; height: 36px;
-border: 3px solid #f0f0f0;
-border-top-color: #FF1744;
-border-radius: 50%;
-animation: spin 0.8s linear infinite;
-margin: 0 auto 14px;
+  width: 36px; height: 36px;
+  border: 3px solid #f0f0f0;
+  border-top-color: #FF1744;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 14px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
@@ -414,43 +413,43 @@ margin: 0 auto 14px;
 
 .ai-text { font-size: 15px; line-height: 1.65; color: #333; }
 .ai-script {
-font-size: 13px; line-height: 1.7;
-color: #000000; font-style: italic;
-background: #FFFFFF;
-padding: 14px 16px; border-radius: 10px;
-border-left: 3px solid #FF1744;
-border: 1px solid #E8E8E8;
-border-left: 3px solid #FF1744;
+  font-size: 13px; line-height: 1.7;
+  color: #000000; font-style: italic;
+  background: #FFFFFF;
+  padding: 14px 16px; border-radius: 10px;
+  border-left: 3px solid #FF1744;
+  border: 1px solid #E8E8E8;
+  border-left: 3px solid #FF1744;
 }
 .ai-special { background: linear-gradient(135deg, #fff 0%, #FFF8F0 100%); }
 
 .step-row {
-display: flex; gap: 12px; align-items: start;
-padding: 10px 0;
-border-bottom: 1px dashed #eee;
+  display: flex; gap: 12px; align-items: start;
+  padding: 10px 0;
+  border-bottom: 1px dashed #eee;
 }
 .step-row:last-child { border-bottom: none; }
 .step-num {
-width: 24px; height: 24px;
-background: #FF1744; color: white;
-border-radius: 7px;
-font-size: 11px; font-weight: 800;
-display: flex; align-items: center; justify-content: center;
-flex-shrink: 0;
+  width: 24px; height: 24px;
+  background: #FF1744; color: white;
+  border-radius: 7px;
+  font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 .step-text { font-size: 15px; line-height: 1.5; color: #333; padding-top: 3px; }
 
 /* API Key Modal */
 .modal-overlay {
-position: fixed; inset: 0;
-background: rgba(0,0,0,0.5);
-z-index: 100;
-display: flex; align-items: center; justify-content: center;
-padding: 16px;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
 }
 .modal {
-background: white; border-radius: 16px;
-padding: 24px; max-width: 400px; width: 100%;
+  background: white; border-radius: 16px;
+  padding: 24px; max-width: 400px; width: 100%;
 }
 .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
 .modal-desc { font-size: 13px; color: #000000; line-height: 1.6; margin-bottom: 16px; }
@@ -458,112 +457,114 @@ padding: 24px; max-width: 400px; width: 100%;
 
 /* Login Screen */
 .login-screen {
-min-height: 100vh;
-display: flex; flex-direction: column;
-align-items: center; justify-content: center;
-padding: 32px;
-background: linear-gradient(135deg, #1a1a1a 0%, #2a1010 60%, #4a1515 100%);
-position: relative; overflow: hidden;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a1010 60%, #4a1515 100%);
+  position: relative; overflow: hidden;
 }
 .login-bg {
-position: absolute; inset: 0;
-background-image:
-radial-gradient(circle at 80% 20%, rgba(255,23,68,0.35) 0%, transparent 50%),
-radial-gradient(circle at 10% 80%, rgba(255,23,68,0.15) 0%, transparent 40%);
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 80% 20%, rgba(255,23,68,0.35) 0%, transparent 50%),
+    radial-gradient(circle at 10% 80%, rgba(255,23,68,0.15) 0%, transparent 40%);
 }
 .login-content { position: relative; z-index: 1; text-align: center; width: 100%; max-width: 320px; }
 .login-mark {
-width: 64px; height: 64px;
-background: linear-gradient(135deg, #FF1744, #CC0000);
-border-radius: 18px;
-display: flex; align-items: center; justify-content: center;
-font-weight: 800; font-size: 32px; color: white;
-box-shadow: 0 8px 24px rgba(255,23,68,0.4);
-margin: 0 auto 20px;
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, #FF1744, #CC0000);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 32px; color: white;
+  box-shadow: 0 8px 24px rgba(255,23,68,0.4);
+  margin: 0 auto 20px;
 }
 .login-title { font-size: 28px; font-weight: 800; color: white; letter-spacing: -1px; margin-bottom: 8px; }
 .login-sub { font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 36px; line-height: 1.5; }
 .btn-google {
-width: 100%; padding: 14px 20px;
-background: white; color: #1a1a1a;
-border: none; border-radius: 12px;
-font-size: 15px; font-weight: 700;
-cursor: pointer; font-family: inherit;
-display: flex; align-items: center; justify-content: center; gap: 10px;
-box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-transition: transform 0.1s;
+  width: 100%; padding: 14px 20px;
+  background: white; color: #1a1a1a;
+  border: none; border-radius: 12px;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  transition: transform 0.1s;
 }
 .btn-google:active { transform: scale(0.97); }
 .btn-google img { width: 20px; height: 20px; }
 .login-footer { margin-top: 24px; font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.5; }
 .user-bar {
-display: flex; align-items: center; gap: 10px;
-padding: 8px 12px; margin: -8px -4px 12px;
-background: #FFFFFF; border-radius: 10px; border: 1px solid #E8E8E8;
-font-size: 12px; color: #000000;
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; margin: -8px -4px 12px;
+  background: #FFFFFF; border-radius: 10px; border: 1px solid #E8E8E8;
+  font-size: 12px; color: #000000;
 }
 .user-bar img { width: 24px; height: 24px; border-radius: 50%; }
 .user-bar .user-name { flex: 1; font-weight: 600; color: #1a1a1a; }
 .btn-logout { background: none; border: none; color: #FF1744; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
 .loading-screen {
-min-height: 100vh;
-display: flex; flex-direction: column;
-align-items: center; justify-content: center;
-background: #F9F9F9;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: #F9F9F9;
 }
 .loading-screen .spinner { width: 36px; height: 36px; border: 3px solid #f0f0f0; border-top-color: #FF1744; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
+
 
 /* ===== Form Flat (không card wrapper) ===== */
 .form-flat { padding: 16px 16px 16px; }
 .form-section-label {
-font-size: 11px;
-font-weight: 700;
-color: #000000;
-letter-spacing: 1.5px;
-text-transform: uppercase;
-margin-bottom: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
 }
 .form-flat .field { margin-bottom: 14px; }
 .form-flat .input {
-padding: 14px 16px;
-border-radius: 12px;
-border-width: 0.6px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border-width: 0.6px;
 }
 .form-flat .textarea {
-padding: 14px 16px;
-border-radius: 12px;
-min-height: 178px;
-resize: vertical;
+  padding: 14px 16px;
+  border-radius: 12px;
+  min-height: 178px;
+  resize: vertical;
 }
+
 
 /* Select dropdown */
 .input::placeholder { color: #aaa; }
 .f-select-wrap { position: relative; margin-bottom: 14px; }
 .f-select-wrap .field-label { font-size: 14px; font-weight: 600; color: #000000; margin-bottom: 6px; display: block; }
 select.input {
-width: 100%; appearance: none; -webkit-appearance: none;
-background-image: url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ width=‘16’ height=‘16’ viewBox=‘0 0 24 24’ fill=‘none’ stroke=’%231a1a1a’ stroke-width=‘2’%3E%3Cpolyline points=‘6 9 12 15 18 9’/%3E%3C/svg%3E”);
-background-repeat: no-repeat;
-background-position: right 14px center;
-padding-right: 40px;
-cursor: pointer;
-color: #1a1a1a;
+  width: 100%; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  cursor: pointer;
+  color: #1a1a1a;
 }
-select.input:invalid, select.input option[value=””] {
-color: #aaa;
+select.input:invalid, select.input option[value=""] {
+  color: #aaa;
 }
 /* Issue tags (yếu tố đã chọn hiển thị dưới dropdown) */
 .issue-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .issue-tag {
-display: inline-flex; align-items: center; gap: 6px;
-background: #FFF0F0; border: 1px solid #FF1744;
-border-radius: 999px; padding: 4px 10px 4px 12px;
-font-size: 13px; font-weight: 500; color: #FF1744;
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #FFF0F0; border: 1px solid #FF1744;
+  border-radius: 999px; padding: 4px 10px 4px 12px;
+  font-size: 13px; font-weight: 500; color: #FF1744;
 }
 .issue-tag button {
-background: none; border: none; cursor: pointer;
-color: #FF1744; font-size: 14px; padding: 0; line-height: 1;
-font-family: inherit;
+  background: none; border: none; cursor: pointer;
+  color: #FF1744; font-size: 14px; padding: 0; line-height: 1;
+  font-family: inherit;
 }
 
 </style>
@@ -572,12 +573,10 @@ font-family: inherit;
 
 <div id="app"></div>
 
+
 <!-- Firebase SDK -->
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
@@ -1469,1045 +1468,1079 @@ function renderForm() {
           <textarea class="textarea" style="margin-top:8px;" id="notes-textarea" data-field="notes"
             placeholder="Paste bài đăng hoặc ghi chú thực địa..."
             oninput="updateForm('notes', this.value)">${esc(f.notes||'')}</textarea>
+          <button type="button" onclick="autoFillFromNotes()" id="autofill-btn"
+            style="margin-top:10px;width:100%;padding:13px;border-radius:12px;border:1.5px solid #FF1744;background:white;color:#FF1744;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span id="autofill-icon">✨</span>
+            <span id="autofill-text">Điền tự động từ mô tả</span>
+          </button>
+        </div>
 
-```
-      <button type="button" onclick="autoFillFromNotes()" id="autofill-btn"
-        style="margin-top:10px;width:100%;padding:13px;border-radius:12px;border:1.5px solid #FF1744;background:white;color:#FF1744;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-        <span id="autofill-icon">✨</span>
-        <span id="autofill-text">Điền tự động từ mô tả</span>
-      </button>
-    </div>
-
-  </div>
-  <div class="bottom-bar">
-    <div class="bar-2">
-      <button class="btn-secondary" onclick="nav('${isEdit?'detail':'list'}')">Hủy</button>
-      <button class="btn-primary" id="save-btn" onclick="saveProperty()" ${!f.address?'disabled':''}>✓ Lưu hồ sơ</button>
-    </div>
-  </div>
-</div>`;
-```
-
+      </div>
+      <div class="bottom-bar">
+        <div class="bar-2">
+          <button class="btn-secondary" onclick="nav('${isEdit?'detail':'list'}')">Hủy</button>
+          <button class="btn-primary" id="save-btn" onclick="saveProperty()" ${!f.address?'disabled':''}>✓ Lưu hồ sơ</button>
+        </div>
+      </div>
+    </div>`;
 }
 
 function field(label, key, value, type, placeholder) {
-return ` <div class="field"> <div class="field-label">${label}</div> <input class="input" type="${type}" value="${esc(value)}" placeholder="${placeholder}"  data-field="${key}" oninput="updateForm('${key}', this.value)" /> </div>`;
+  return `
+    <div class="field">
+      <div class="field-label">${label}</div>
+      <input class="input" type="${type}" value="${esc(value)}" placeholder="${placeholder}" 
+        data-field="${key}" oninput="updateForm('${key}', this.value)" />
+    </div>`;
 }
 
 function chipRow(label, key, options, current) {
-return `<div class="field-label">${label}</div> <div class="chip-row"> ${options.map(o =>`
-<button class="chip ${current===o.v?'on':''}" onclick="updateFormRender('${key}','${o.v}')">${o.l}</button>
-`).join('')} </div>`;
+  return `
+    <div class="field-label">${label}</div>
+    <div class="chip-row">
+      ${options.map(o => `
+        <button class="chip ${current===o.v?'on':''}" onclick="updateFormRender('${key}','${o.v}')">${o.l}</button>
+      `).join('')}
+    </div>`;
 }
 
 function renderDetail() {
-const p = state.properties.find(x => x.id === state.currentId);
-if (!p) { setTimeout(()=>nav(‘list’), 0); return ‘’; }
-
-const r = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
-const estimatedVal = r ? r.estimatedValue : null;
-const valued = p.askingPrice && estimatedVal;
-const diff = valued ? ((parseFloat(p.askingPrice) - estimatedVal) / estimatedVal * 100) : null;
-
-return `<div class="screen"> <div class="topbar"> <button class="topbar-back" onclick="nav('list')">‹</button> <div class="topbar-title">Chi tiết hồ sơ</div> <button class="topbar-back" onclick="deleteProperty('${p.id}')" style="color:#FF1744;">🗑️</button> </div> <div class="content-pad"> <div class="hero-detail"> <div class="hero-detail-label">BẤT ĐỘNG SẢN</div> <div class="hero-detail-addr">${esc(p.address)}</div> <div class="hero-detail-meta"> <span>${esc(p.area)}m²</span><span>·</span> <span>${esc(p.width)}×${esc(p.length)}m</span><span>·</span> <span>${esc(p.floors)} tầng</span> </div> ${valued ?`
-<div class="hero-prices">
-<div class="hero-price-item">
-<div class="hero-price-lbl">Chủ chào</div>
-<div class="hero-price-val">${fmtTy(parseFloat(p.askingPrice))}</div>
-</div>
-<div class="hero-price-divider"></div>
-<div class="hero-price-item">
-<div class="hero-price-lbl">Thị trường</div>
-<div class="hero-price-val">${fmtTy(estimatedVal)}</div>
-</div>
-<div class="hero-price-divider"></div>
-<div class="hero-price-item">
-<div class="hero-price-lbl">Chênh lệch</div>
-<div class="hero-price-val ${diff>5?'red':diff<-5?'green':''}">${diff>0?’+’:’’}${diff.toFixed(1)}%</div>
-</div>
-</div>
-` : ‘’}
-</div>
-
-```
-    <div class="section-title">Phân tích & Báo cáo</div>
-    <button class="action-card primary-card" onclick="openValuation('${p.id}')">
-      <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF1744" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="20" x2="18" y2="10"></line>
-          <line x1="12" y1="20" x2="12" y2="4"></line>
-          <line x1="6" y1="20" x2="6" y2="14"></line>
-        </svg>
+  const p = state.properties.find(x => x.id === state.currentId);
+  if (!p) { setTimeout(()=>nav('list'), 0); return ''; }
+  
+  const r = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
+  const estimatedVal = r ? r.estimatedValue : null;
+  const valued = p.askingPrice && estimatedVal;
+  const diff = valued ? ((parseFloat(p.askingPrice) - estimatedVal) / estimatedVal * 100) : null;
+  
+  return `
+    <div class="screen">
+      <div class="topbar">
+        <button class="topbar-back" onclick="nav('list')">‹</button>
+        <div class="topbar-title">Chi tiết hồ sơ</div>
+        <button class="topbar-back" onclick="deleteProperty('${p.id}')" style="color:#FF1744;">🗑️</button>
       </div>
-      <div class="action-text">
-        <div class="action-title">Phân tích định giá</div>
-        <div class="action-desc">Tính giá trị thực dựa trên 5 yếu tố</div>
+      <div class="content-pad">
+        <div class="hero-detail">
+          <div class="hero-detail-label">BẤT ĐỘNG SẢN</div>
+          <div class="hero-detail-addr">${esc(p.address)}</div>
+          <div class="hero-detail-meta">
+            <span>${esc(p.area)}m²</span><span>·</span>
+            <span>${esc(p.width)}×${esc(p.length)}m</span><span>·</span>
+            <span>${esc(p.floors)} tầng</span>
+          </div>
+          ${valued ? `
+            <div class="hero-prices">
+              <div class="hero-price-item">
+                <div class="hero-price-lbl">Chủ chào</div>
+                <div class="hero-price-val">${fmtTy(parseFloat(p.askingPrice))}</div>
+              </div>
+              <div class="hero-price-divider"></div>
+              <div class="hero-price-item">
+                <div class="hero-price-lbl">Thị trường</div>
+                <div class="hero-price-val">${fmtTy(estimatedVal)}</div>
+              </div>
+              <div class="hero-price-divider"></div>
+              <div class="hero-price-item">
+                <div class="hero-price-lbl">Chênh lệch</div>
+                <div class="hero-price-val ${diff>5?'red':diff<-5?'green':''}">${diff>0?'+':''}${diff.toFixed(1)}%</div>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+        
+        <div class="section-title">Phân tích & Báo cáo</div>
+        <button class="action-card primary-card" onclick="openValuation('${p.id}')">
+          <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF1744" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+          </div>
+          <div class="action-text">
+            <div class="action-title">Phân tích định giá</div>
+            <div class="action-desc">Tính giá trị thực dựa trên 5 yếu tố</div>
+          </div>
+          <div class="action-arrow">›</div>
+        </button>
+        <button class="action-card primary-card" onclick="openAI('${p.id}')">
+          <div style="width:44px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;">
+            <span style="font-size:11px;font-weight:900;color:#FF1744;letter-spacing:0.5px;">+</span>
+            <span style="font-size:13px;font-weight:900;color:#FF1744;letter-spacing:1px;line-height:1;">AI</span>
+          </div>
+          <div class="action-text">
+            <div class="action-title">✨ AI Analysis</div>
+            <div class="action-desc">Chiến lược đàm phán & marketing</div>
+          </div>
+          <div class="action-arrow">›</div>
+        </button>
+        
+        <div class="section-title">Thông tin chi tiết</div>
+        <div class="card">
+          ${infoRow('Diện tích CN', esc(p.area)+' m²')}
+          ${p.dtThucTe ? infoRow('DT thực tế', esc(p.dtThucTe)+' m²') : ''}
+          ${infoRow('Mặt tiền × Dài', esc(p.width)+' × '+esc(p.length)+' m')}
+          ${p.loGioiArea ? infoRow('Ranh lộ giới', esc(p.loGioiArea)+'m² (hệ số '+esc(p.loGioiRate||'80')+'%)') : ''}
+          ${p.extraArea ? infoRow('Đất không CN', esc(p.extraArea)+'m² (hệ số '+esc(p.extraRate||'40')+'%)') : ''}
+          ${infoRow('Số tầng', esc(p.floors))}
+          ${infoRow('Hiện trạng', hienTrangLabel(p.hienTrang||'80'))}
+          ${p.furniture && p.furniture !== 'none' ? infoRow('Nội thất', furnitureLabel(p.furniture)) : ''}
+          ${infoRow('Hướng', esc(p.direction)||'—')}
+          ${infoRow('Vị trí', alleyLabel(p.alleyType))}
+          ${infoRow('Hình dạng', shapeLabel(p.shape))}
+          ${p.planning && p.planning !== 'clear' ? infoRow('Quy hoạch', planningLabel(p.planning)) : ''}
+          ${infoRow('Pháp lý', legalLabel(p.legal))}
+          ${p.issues&&p.issues.length>0 ? infoRow('Yếu tố ngoại vi', p.issues.map(i=>issueLabel(i)).join(', ')) : ''}
+        </div>
+        
+        ${p.notes ? `
+          <div class="card">
+            <div class="card-header">📝 Mô tả chi tiết</div>
+            <div class="notes-text">${esc(p.notes)}</div>
+          </div>
+        ` : ''}
       </div>
-      <div class="action-arrow">›</div>
-    </button>
-    <button class="action-card primary-card" onclick="openAI('${p.id}')">
-      <div style="width:44px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;">
-        <span style="font-size:11px;font-weight:900;color:#FF1744;letter-spacing:0.5px;">+</span>
-        <span style="font-size:13px;font-weight:900;color:#FF1744;letter-spacing:1px;line-height:1;">AI</span>
+      <div class="bottom-bar">
+        <div class="bar-2">
+          <button class="btn-secondary" onclick="editProperty('${p.id}')">✎ Sửa</button>
+          <button class="btn-primary" onclick="openValuation('${p.id}')">📊 Định giá</button>
+        </div>
       </div>
-      <div class="action-text">
-        <div class="action-title">✨ AI Analysis</div>
-        <div class="action-desc">Chiến lược đàm phán & marketing</div>
-      </div>
-      <div class="action-arrow">›</div>
-    </button>
-    
-    <div class="section-title">Thông tin chi tiết</div>
-    <div class="card">
-      ${infoRow('Diện tích CN', esc(p.area)+' m²')}
-      ${p.dtThucTe ? infoRow('DT thực tế', esc(p.dtThucTe)+' m²') : ''}
-      ${infoRow('Mặt tiền × Dài', esc(p.width)+' × '+esc(p.length)+' m')}
-      ${p.loGioiArea ? infoRow('Ranh lộ giới', esc(p.loGioiArea)+'m² (hệ số '+esc(p.loGioiRate||'80')+'%)') : ''}
-      ${p.extraArea ? infoRow('Đất không CN', esc(p.extraArea)+'m² (hệ số '+esc(p.extraRate||'40')+'%)') : ''}
-      ${infoRow('Số tầng', esc(p.floors))}
-      ${infoRow('Hiện trạng', hienTrangLabel(p.hienTrang||'80'))}
-      ${p.furniture && p.furniture !== 'none' ? infoRow('Nội thất', furnitureLabel(p.furniture)) : ''}
-      ${infoRow('Hướng', esc(p.direction)||'—')}
-      ${infoRow('Vị trí', alleyLabel(p.alleyType))}
-      ${infoRow('Hình dạng', shapeLabel(p.shape))}
-      ${p.planning && p.planning !== 'clear' ? infoRow('Quy hoạch', planningLabel(p.planning)) : ''}
-      ${infoRow('Pháp lý', legalLabel(p.legal))}
-      ${p.issues&&p.issues.length>0 ? infoRow('Yếu tố ngoại vi', p.issues.map(i=>issueLabel(i)).join(', ')) : ''}
-    </div>
-    
-    ${p.notes ? `
-      <div class="card">
-        <div class="card-header">📝 Mô tả chi tiết</div>
-        <div class="notes-text">${esc(p.notes)}</div>
-      </div>
-    ` : ''}
-  </div>
-  <div class="bottom-bar">
-    <div class="bar-2">
-      <button class="btn-secondary" onclick="editProperty('${p.id}')">✎ Sửa</button>
-      <button class="btn-primary" onclick="openValuation('${p.id}')">📊 Định giá</button>
-    </div>
-  </div>
-</div>`;
-```
-
+    </div>`;
 }
 
 function infoRow(label, value) {
-return `<div class="info-row"><span class="info-lbl">${label}</span><span class="info-val">${value}</span></div>`;
+  return `<div class="info-row"><span class="info-lbl">${label}</span><span class="info-val">${value}</span></div>`;
 }
 
 function renderValuation() {
-const p = state.properties.find(x => x.id === state.currentId);
-if (!p) { setTimeout(()=>nav(‘list’), 0); return ‘’; }
-const r = calculateValuation(p);
-const dateStr = new Date().toLocaleDateString(‘vi-VN’, { day:‘2-digit’, month:‘2-digit’, year:‘numeric’ });
-
-return `
-<div class="screen">
-<div class="topbar">
-<button class="topbar-back" onclick="nav('detail')">‹</button>
-<div class="topbar-title">Phân tích định giá</div>
-<div class="topbar-spacer"></div>
-</div>
-<div class="content-pad">
-<div class="report-hero">
-<div class="report-stamp">BÁO CÁO ĐỊNH GIÁ</div>
-<div class="report-addr">${esc(p.address)}</div>
-<div class="report-date">${dateStr}</div>
-</div>
-
-```
-    <!-- 1. KẾT QUẢ ĐỊNH GIÁ — ĐỌC TRONG 5 GIÂY -->
-    <div class="card" style="border:1.5px solid ${r.chenhLechTongPct !== null && r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct !== null && r.chenhLechTongPct > 20 ? '#FF1744' : '#E8E8E8'};">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <span style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;">📊 KẾT QUẢ ĐỊNH GIÁ</span>
-        <span style="font-size:11px;color:#888;">${dateStr}</span>
+  const p = state.properties.find(x => x.id === state.currentId);
+  if (!p) { setTimeout(()=>nav('list'), 0); return ''; }
+  const r = calculateValuation(p);
+  const dateStr = new Date().toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' });
+  
+  return `
+    <div class="screen">
+      <div class="topbar">
+        <button class="topbar-back" onclick="nav('detail')">‹</button>
+        <div class="topbar-title">Phân tích định giá</div>
+        <div class="topbar-spacer"></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-        <span style="font-size:14px;">Giá chủ chào</span>
-        <span style="font-size:18px;font-weight:800;">${fmtTy(parseFloat(p.askingPrice))}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-        <span style="font-size:14px;">Giá trị thị trường</span>
-        <span style="font-size:18px;font-weight:800;color:#2E7D32;">${fmtTy(r.estimatedValue)}</span>
-      </div>
-      ${r.chenhLechTongPct !== null ? `
-      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-        <span style="font-size:14px;">Chênh lệch</span>
-        <span style="font-size:15px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#FF1744'};">
-          ${r.chenhLechTongPct <= 0 ? '−' : '+'}${fmtTy(Math.abs(r.chenhLechTongTien))}
-        </span>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;">
-        <span style="font-size:14px;">Tỷ lệ</span>
-        <span style="font-size:15px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#FF1744'};">
-          ${r.chenhLechTongPct <= 0 ? '−' : '+'}${Math.abs(r.chenhLechTongPct).toFixed(1)}%
-        </span>
-      </div>
-      <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : r.chenhLechTongPct <= 10 ? '#FFFBEB' : '#FFF5F5'};">
-        <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">
-          ${r.chenhLechTongPct <= 0
-            ? `🟢 Giá bán thấp hơn thị trường khoảng ${Math.round(Math.abs(r.chenhLechTongTien)*1000)} triệu đồng (${r.chenhLechTongPct !== null ? Math.abs(r.chenhLechTongPct).toFixed(1) : '0'}%)`
-            : r.chenhLechTongPct <= 10
-            ? `🟡 Giá bán cao hơn thị trường ${Math.round(r.chenhLechTongTien*1000)} triệu đồng (${r.chenhLechTongPct !== null ? r.chenhLechTongPct.toFixed(1) : '0'}%)`
-            : `🔴 Giá bán cao hơn thị trường ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct !== null ? r.chenhLechTongPct.toFixed(1) : '0'}%)`}
-        </span>
-      </div>
-      ` : '<div style="font-size:13px;color:#888;padding:8px 0;">Nhập đủ dữ liệu để xem kết quả</div>'}
-    </div>
-
-    <!-- 1b. TÓM TẮT 10 GIÂY — dành cho môi giới & khách -->
-    ${r.chenhLechTongPct !== null ? `
-    <div class="card" style="background:#1a1a1a;color:white;border:none;">
-      <div style="font-size:11px;opacity:0.5;letter-spacing:1.2px;margin-bottom:12px;">TÓM TẮT 10 GIÂY</div>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;opacity:0.7;">Giá bán</span>
-          <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? '🟢 Hợp lý' : r.chenhLechTongPct <= 10 ? '🟡 Hơi cao' : '🔴 Cao'}</span>
+      <div class="content-pad">
+        <div class="report-hero">
+          <div class="report-stamp">BÁO CÁO ĐỊNH GIÁ</div>
+          <div class="report-addr">${esc(p.address)}</div>
+          <div class="report-date">${dateStr}</div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;opacity:0.7;">${r.chenhLechTongPct <= 0 ? 'Thấp hơn TT' : 'Cao hơn TT'}</span>
-          <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#4ADE80' : '#FF1744'};">${Math.round(Math.abs(r.chenhLechTongTien)*1000)} triệu</span>
+        
+        <!-- 1. KẾT QUẢ ĐỊNH GIÁ — ĐỌC TRONG 5 GIÂY -->
+        <div class="card" style="border:1.5px solid ${r.chenhLechTongPct !== null && r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct !== null && r.chenhLechTongPct > 20 ? '#FF1744' : '#E8E8E8'};">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <span style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;">📊 KẾT QUẢ ĐỊNH GIÁ</span>
+            <span style="font-size:11px;color:#888;">${dateStr}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="font-size:14px;">Giá chủ chào</span>
+            <span style="font-size:18px;font-weight:800;">${fmtTy(parseFloat(p.askingPrice))}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="font-size:14px;">Giá trị thị trường</span>
+            <span style="font-size:18px;font-weight:800;color:#2E7D32;">${fmtTy(r.estimatedValue)}</span>
+          </div>
+          ${r.chenhLechTongPct !== null ? `
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="font-size:14px;">Chênh lệch</span>
+            <span style="font-size:15px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#FF1744'};">
+              ${r.chenhLechTongPct <= 0 ? '−' : '+'}${fmtTy(Math.abs(r.chenhLechTongTien))}
+            </span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;">
+            <span style="font-size:14px;">Tỷ lệ</span>
+            <span style="font-size:15px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#FF1744'};">
+              ${r.chenhLechTongPct <= 0 ? '−' : '+'}${Math.abs(r.chenhLechTongPct).toFixed(1)}%
+            </span>
+          </div>
+          <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : r.chenhLechTongPct <= 10 ? '#FFFBEB' : '#FFF5F5'};">
+            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">
+              ${r.chenhLechTongPct <= 0
+                ? `🟢 Giá bán thấp hơn thị trường khoảng ${Math.round(Math.abs(r.chenhLechTongTien)*1000)} triệu đồng (${r.chenhLechTongPct !== null ? Math.abs(r.chenhLechTongPct).toFixed(1) : '0'}%)`
+                : r.chenhLechTongPct <= 10
+                ? `🟡 Giá bán cao hơn thị trường ${Math.round(r.chenhLechTongTien*1000)} triệu đồng (${r.chenhLechTongPct !== null ? r.chenhLechTongPct.toFixed(1) : '0'}%)`
+                : `🔴 Giá bán cao hơn thị trường ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct !== null ? r.chenhLechTongPct.toFixed(1) : '0'}%)`}
+            </span>
+          </div>
+          ` : '<div style="font-size:13px;color:#888;padding:8px 0;">Nhập đủ dữ liệu để xem kết quả</div>'}
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;opacity:0.7;">Khả năng thương lượng</span>
-          <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Thấp' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Cao'}</span>
+
+        <!-- 1b. TÓM TẮT 10 GIÂY — dành cho môi giới & khách -->
+        ${r.chenhLechTongPct !== null ? `
+        <div class="card" style="background:#1a1a1a;color:white;border:none;">
+          <div style="font-size:11px;opacity:0.5;letter-spacing:1.2px;margin-bottom:12px;">TÓM TẮT 10 GIÂY</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:14px;opacity:0.7;">Giá bán</span>
+              <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? '🟢 Hợp lý' : r.chenhLechTongPct <= 10 ? '🟡 Hơi cao' : '🔴 Cao'}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:14px;opacity:0.7;">${r.chenhLechTongPct <= 0 ? 'Thấp hơn TT' : 'Cao hơn TT'}</span>
+              <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#4ADE80' : '#FF1744'};">${Math.round(Math.abs(r.chenhLechTongTien)*1000)} triệu</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:14px;opacity:0.7;">Khả năng thương lượng</span>
+              <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Thấp' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Cao'}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:14px;opacity:0.7;">Mức nên mua</span>
+              <span style="font-size:14px;font-weight:700;color:#FF1744;">${fmtTy(r.openingOffer)} – ${fmtTy(r.targetDeal)}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:14px;opacity:0.7;">Phù hợp</span>
+              <span style="font-size:14px;font-weight:700;">Mua ở${r.chenhLechTongPct <= 5 ? ' / Đầu tư' : ''}</span>
+            </div>
+          </div>
+        </div>` : ''}
+
+        <!-- 2+3. PHÂN TÍCH GIÁ — bảng 3 cột -->
+        <div class="card">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:16px;">📊 PHÂN TÍCH GIÁ</div>
+
+          <!-- Header 3 cột -->
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:2px solid #1a1a1a;margin-bottom:2px;">
+            <span style="font-size:11px;font-weight:700;color:#888;"></span>
+            <span style="font-size:11px;font-weight:700;color:#1a1a1a;text-align:right;min-width:80px;">Giá bán</span>
+            <span style="font-size:11px;font-weight:700;color:#2E7D32;text-align:right;min-width:80px;">Thị trường</span>
+          </div>
+
+          <!-- Section: ĐẤT -->
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.8px;color:#aaa;padding:8px 0 4px;">ĐẤT</div>
+
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">DT đất</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${p.area} m²</span>
+            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${p.area} m²</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">Đơn giá đất</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.donGiaRao > 0 ? r.donGiaRao.toFixed(0)+' tr/m²' : '—'}</span>
+            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${r.giaTT} tr/m²</span>
+          </div>
+          ${r.issueDetails && r.issueDetails.length > 0 ? `
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#FF1744;">Trừ lỗi</span>
+            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">—</span>
+            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">${fmtTy(r.giaTriDatSauLoi - r.giaTriDatTT)}</span>
+          </div>` : ''}
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
+            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị đất</span>
+            <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(parseFloat(p.askingPrice) - r.giaTriNha)}</span>
+            <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.giaTriDatSauLoi)}</span>
+          </div>
+
+          <!-- Section: NHÀ -->
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.8px;color:#aaa;padding:8px 0 4px;">NHÀ</div>
+
+          ${p.floors > 1 ? `
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">DT sàn</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.sanXD} m²</span>
+            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${r.sanXD} m²</span>
+          </div>` : ''}
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">Đơn giá XD</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.donGiaXD} tr/m²</span>
+            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${r.donGiaXD} tr/m²</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">Hiện trạng</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${hienTrangLabel(r.hienTrang)}</span>
+            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${hienTrangLabel(r.hienTrang)}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
+            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị nhà</span>
+            <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(r.giaTriNha)}</span>
+            <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.giaTriNha)}</span>
+          </div>
+
+          <!-- TỔNG -->
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px 0;border-bottom:1px solid #E8E8E8;">
+            <span style="font-size:14px;font-weight:800;color:#1a1a1a;">TỔNG</span>
+            <span style="font-size:16px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(parseFloat(p.askingPrice))}</span>
+            <span style="font-size:16px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.estimatedValue)}</span>
+          </div>
+
+          <!-- KẾT LUẬN -->
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:8px 0;">
+            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Chênh lệch</span>
+            <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;color:${r.chenhLechTongPct > 5 ? '#FF1744' : r.chenhLechTongPct < -5 ? '#2E7D32' : '#B45309'};">
+              ${r.chenhLechTongPct !== null ? (r.chenhLechTongPct > 0 ? '+' : '') + r.chenhLechTongPct.toFixed(1) + '%' : '—'}
+            </span>
+            <span style="font-size:13px;text-align:right;min-width:80px;color:#888;">chuẩn</span>
+          </div>
+
+          ${r.chenhLechTongPct !== null ? `
+          <div style="padding:10px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : r.chenhLechTongPct <= 5 ? '#FFFBEB' : '#FFF5F5'};margin-top:4px;">
+            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">
+              ${r.chenhLechTongPct <= 0
+                ? `🟢 Giá bán thấp hơn TT ${fmtTy(Math.abs(r.chenhLechTongTien))}`
+                : `🟠 Giá bán cao hơn TT ${fmtTy(r.chenhLechTongTien)}`}
+              (${Math.abs(r.chenhLechTongPct).toFixed(1)}%)
+            </span>
+          </div>` : ''}
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;opacity:0.7;">Mức nên mua</span>
-          <span style="font-size:14px;font-weight:700;color:#FF1744;">${fmtTy(r.openingOffer)} – ${fmtTy(r.targetDeal)}</span>
+
+
+
+        <!-- 4. CHIẾN LƯỢC ĐÀM PHÁN -->
+        <div class="card" style="background:#1a1a1a;color:white;border:none;">
+          <div style="font-size:11px;opacity:0.5;letter-spacing:1.2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
+
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+            <span style="font-size:14px;opacity:0.7;">Đánh giá</span>
+            <span style="font-size:14px;font-weight:700;">${r.damPhanLabel}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+            <span style="font-size:14px;opacity:0.7;">Khoảng mua hợp lý</span>
+            <span style="font-size:14px;font-weight:700;">${fmtTy(r.openingOffer)} – ${fmtTy(r.targetDeal)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+            <span style="font-size:14px;opacity:0.7;">Giá mục tiêu</span>
+            <span style="font-size:16px;font-weight:800;color:#FF1744;">${fmtTy(r.targetDeal)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+            <span style="font-size:14px;opacity:0.7;">Mức độ thương lượng</span>
+            <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Thấp' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Cao'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+            <span style="font-size:14px;opacity:0.7;">Khả năng ép giá</span>
+            <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Khó' : r.chenhLechTongPct <= 10 ? 'Vừa' : 'Cao'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;">
+            <span style="font-size:14px;opacity:0.7;">Nguy cơ mất hàng</span>
+            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#FF1744' : '#2E7D32'};">${r.chenhLechTongPct <= 0 ? 'Cao' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Thấp'}</span>
+          </div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;opacity:0.7;">Phù hợp</span>
-          <span style="font-size:14px;font-weight:700;">Mua ở${r.chenhLechTongPct <= 5 ? ' / Đầu tư' : ''}</span>
+
+        <!-- 5. ĐIỂM MẠNH / YẾU — 2 CỘT -->
+        <div class="card">
+          <div class="card-header">💎 Điểm mạnh & ⚠️ Điểm yếu</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:4px;">
+            <div style="padding-right:12px;border-right:1px solid #E8E8E8;">
+              ${r.strengths.map(s => `<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f8f8f8;"><span style="color:#2E7D32;flex-shrink:0;">✓</span><span>${esc(s)}</span></div>`).join('')}
+            </div>
+            <div style="padding-left:12px;">
+              ${r.weaknesses.map(w => `<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f8f8f8;"><span style="color:#FF1744;flex-shrink:0;">!</span><span>${esc(w)}</span></div>`).join('')}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>` : ''}
 
-    <!-- 2+3. PHÂN TÍCH GIÁ — bảng 3 cột -->
-    <div class="card">
-      <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:16px;">📊 PHÂN TÍCH GIÁ</div>
+        <!-- 6. KẾT LUẬN CHUYÊN GIA — chỉ khuyến nghị, không lặp số liệu -->
+        <div class="card" style="border:1px solid ${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#E8E8E8'};">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:12px;">KẾT LUẬN CHUYÊN GIA</div>
 
-      <!-- Header 3 cột -->
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:2px solid #1a1a1a;margin-bottom:2px;">
-        <span style="font-size:11px;font-weight:700;color:#888;"></span>
-        <span style="font-size:11px;font-weight:700;color:#1a1a1a;text-align:right;min-width:80px;">Giá bán</span>
-        <span style="font-size:11px;font-weight:700;color:#2E7D32;text-align:right;min-width:80px;">Thị trường</span>
-      </div>
+          <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="font-size:14px;color:#666;">Đối tượng phù hợp</span>
+            <span style="font-size:14px;font-weight:700;">Mua ở${r.chenhLechTongPct <= 5 ? ' / Đầu tư' : ''}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="font-size:14px;color:#666;">Rủi ro</span>
+            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">${r.chenhLechTongPct <= 0 ? 'Thấp' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Cao'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="font-size:14px;color:#666;">Thanh khoản</span>
+            <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 5 ? 'Tốt' : r.chenhLechTongPct <= 15 ? 'Trung bình' : 'Thấp'}</span>
+          </div>
 
-      <!-- Section: ĐẤT -->
-      <div style="font-size:10px;font-weight:700;letter-spacing:0.8px;color:#aaa;padding:8px 0 4px;">ĐẤT</div>
+          <!-- Độ tin cậy định giá -->
+          ${(() => {
+            const hasGiaTT = parseFloat(p.giaTT) > 0;
+            const hasArea = parseFloat(p.area) > 0;
+            const hasFloors = parseFloat(p.floors) > 0;
+            const hasHienTrang = parseFloat(p.hienTrang) > 0;
+            const score = [hasGiaTT, hasArea, hasFloors, hasHienTrang].filter(Boolean).length;
+            const label = score === 4 ? '🟢 Cao' : score >= 3 ? '🟡 Trung bình' : '🔴 Thấp';
+            const missing = [];
+            if (!hasGiaTT) missing.push('Giá đất TT');
+            if (!hasArea) missing.push('Diện tích');
+            if (!hasFloors) missing.push('Số tầng');
+            if (!hasHienTrang) missing.push('Hiện trạng nhà');
+            return `
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
+              <span style="font-size:14px;color:#666;">Độ tin cậy định giá</span>
+              <span style="font-size:14px;font-weight:700;">${label}</span>
+            </div>
+            ${missing.length > 0 ? `<div style="font-size:12px;color:#FF1744;padding:4px 0;">Thiếu: ${missing.join(', ')}</div>` : ''}`;
+          })()}
 
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-        <span style="font-size:13px;color:#1a1a1a;">DT đất</span>
-        <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${p.area} m²</span>
-        <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${p.area} m²</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-        <span style="font-size:13px;color:#1a1a1a;">Đơn giá đất</span>
-        <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.donGiaRao > 0 ? r.donGiaRao.toFixed(0)+' tr/m²' : '—'}</span>
-        <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${r.giaTT} tr/m²</span>
-      </div>
-      ${r.issueDetails && r.issueDetails.length > 0 ? `
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-        <span style="font-size:13px;color:#FF1744;">Trừ lỗi</span>
-        <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">—</span>
-        <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">${fmtTy(r.giaTriDatSauLoi - r.giaTriDatTT)}</span>
-      </div>` : ''}
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
-        <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị đất</span>
-        <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(parseFloat(p.askingPrice) - r.giaTriNha)}</span>
-        <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.giaTriDatSauLoi)}</span>
-      </div>
-
-      <!-- Section: NHÀ -->
-      <div style="font-size:10px;font-weight:700;letter-spacing:0.8px;color:#aaa;padding:8px 0 4px;">NHÀ</div>
-
-      ${p.floors > 1 ? `
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-        <span style="font-size:13px;color:#1a1a1a;">DT sàn</span>
-        <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.sanXD} m²</span>
-        <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${r.sanXD} m²</span>
-      </div>` : ''}
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-        <span style="font-size:13px;color:#1a1a1a;">Đơn giá XD</span>
-        <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.donGiaXD} tr/m²</span>
-        <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${r.donGiaXD} tr/m²</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-        <span style="font-size:13px;color:#1a1a1a;">Hiện trạng</span>
-        <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${hienTrangLabel(r.hienTrang)}</span>
-        <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${hienTrangLabel(r.hienTrang)}</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
-        <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị nhà</span>
-        <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(r.giaTriNha)}</span>
-        <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.giaTriNha)}</span>
-      </div>
-
-      <!-- TỔNG -->
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px 0;border-bottom:1px solid #E8E8E8;">
-        <span style="font-size:14px;font-weight:800;color:#1a1a1a;">TỔNG</span>
-        <span style="font-size:16px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(parseFloat(p.askingPrice))}</span>
-        <span style="font-size:16px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.estimatedValue)}</span>
-      </div>
-
-      <!-- KẾT LUẬN -->
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:8px 0;">
-        <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Chênh lệch</span>
-        <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;color:${r.chenhLechTongPct > 5 ? '#FF1744' : r.chenhLechTongPct < -5 ? '#2E7D32' : '#B45309'};">
-          ${r.chenhLechTongPct !== null ? (r.chenhLechTongPct > 0 ? '+' : '') + r.chenhLechTongPct.toFixed(1) + '%' : '—'}
-        </span>
-        <span style="font-size:13px;text-align:right;min-width:80px;color:#888;">chuẩn</span>
-      </div>
-
-      ${r.chenhLechTongPct !== null ? `
-      <div style="padding:10px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : r.chenhLechTongPct <= 5 ? '#FFFBEB' : '#FFF5F5'};margin-top:4px;">
-        <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">
-          ${r.chenhLechTongPct <= 0
-            ? `🟢 Giá bán thấp hơn TT ${fmtTy(Math.abs(r.chenhLechTongTien))}`
-            : `🟠 Giá bán cao hơn TT ${fmtTy(r.chenhLechTongTien)}`}
-          (${Math.abs(r.chenhLechTongPct).toFixed(1)}%)
-        </span>
-      </div>` : ''}
-    </div>
-
-
-
-    <!-- 4. CHIẾN LƯỢC ĐÀM PHÁN -->
-    <div class="card" style="background:#1a1a1a;color:white;border:none;">
-      <div style="font-size:11px;opacity:0.5;letter-spacing:1.2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
-
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-        <span style="font-size:14px;opacity:0.7;">Đánh giá</span>
-        <span style="font-size:14px;font-weight:700;">${r.damPhanLabel}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-        <span style="font-size:14px;opacity:0.7;">Khoảng mua hợp lý</span>
-        <span style="font-size:14px;font-weight:700;">${fmtTy(r.openingOffer)} – ${fmtTy(r.targetDeal)}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-        <span style="font-size:14px;opacity:0.7;">Giá mục tiêu</span>
-        <span style="font-size:16px;font-weight:800;color:#FF1744;">${fmtTy(r.targetDeal)}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-        <span style="font-size:14px;opacity:0.7;">Mức độ thương lượng</span>
-        <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Thấp' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Cao'}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-        <span style="font-size:14px;opacity:0.7;">Khả năng ép giá</span>
-        <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Khó' : r.chenhLechTongPct <= 10 ? 'Vừa' : 'Cao'}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;">
-        <span style="font-size:14px;opacity:0.7;">Nguy cơ mất hàng</span>
-        <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#FF1744' : '#2E7D32'};">${r.chenhLechTongPct <= 0 ? 'Cao' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Thấp'}</span>
-      </div>
-    </div>
-
-    <!-- 5. ĐIỂM MẠNH / YẾU — 2 CỘT -->
-    <div class="card">
-      <div class="card-header">💎 Điểm mạnh & ⚠️ Điểm yếu</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:4px;">
-        <div style="padding-right:12px;border-right:1px solid #E8E8E8;">
-          ${r.strengths.map(s => `<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f8f8f8;"><span style="color:#2E7D32;flex-shrink:0;">✓</span><span>${esc(s)}</span></div>`).join('')}
+          <div style="margin-top:12px;padding:12px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : '#FFFBEB'};">
+            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#B45309'};">
+              ✓ Khuyến nghị: ${r.chenhLechTongPct <= 0 ? 'Nên tiếp cận và thương lượng sớm.' : r.chenhLechTongPct <= 10 ? 'Có thể đàm phán nhẹ.' : 'Đàm phán kéo về giá thực trước khi quyết định.'}
+            </span>
+          </div>
         </div>
-        <div style="padding-left:12px;">
-          ${r.weaknesses.map(w => `<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f8f8f8;"><span style="color:#FF1744;flex-shrink:0;">!</span><span>${esc(w)}</span></div>`).join('')}
+
+        <div class="disclaimer">
+          ⚠️ Kết quả mang tính tham khảo, dựa trên dữ liệu nhập vào và quy chuẩn ngành.
         </div>
       </div>
-    </div>
-
-    <!-- 6. KẾT LUẬN CHUYÊN GIA — chỉ khuyến nghị, không lặp số liệu -->
-    <div class="card" style="border:1px solid ${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#E8E8E8'};">
-      <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:12px;">KẾT LUẬN CHUYÊN GIA</div>
-
-      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
-        <span style="font-size:14px;color:#666;">Đối tượng phù hợp</span>
-        <span style="font-size:14px;font-weight:700;">Mua ở${r.chenhLechTongPct <= 5 ? ' / Đầu tư' : ''}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
-        <span style="font-size:14px;color:#666;">Rủi ro</span>
-        <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">${r.chenhLechTongPct <= 0 ? 'Thấp' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Cao'}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
-        <span style="font-size:14px;color:#666;">Thanh khoản</span>
-        <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 5 ? 'Tốt' : r.chenhLechTongPct <= 15 ? 'Trung bình' : 'Thấp'}</span>
-      </div>
-
-      <!-- Độ tin cậy định giá -->
-      ${(() => {
-        const hasGiaTT = parseFloat(p.giaTT) > 0;
-        const hasArea = parseFloat(p.area) > 0;
-        const hasFloors = parseFloat(p.floors) > 0;
-        const hasHienTrang = parseFloat(p.hienTrang) > 0;
-        const score = [hasGiaTT, hasArea, hasFloors, hasHienTrang].filter(Boolean).length;
-        const label = score === 4 ? '🟢 Cao' : score >= 3 ? '🟡 Trung bình' : '🔴 Thấp';
-        const missing = [];
-        if (!hasGiaTT) missing.push('Giá đất TT');
-        if (!hasArea) missing.push('Diện tích');
-        if (!hasFloors) missing.push('Số tầng');
-        if (!hasHienTrang) missing.push('Hiện trạng nhà');
-        return `
-        <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;">
-          <span style="font-size:14px;color:#666;">Độ tin cậy định giá</span>
-          <span style="font-size:14px;font-weight:700;">${label}</span>
+      <div class="bottom-bar">
+        <div class="bar-2">
+          <button class="btn-secondary" onclick="nav('detail')">Quay lại</button>
+          <button class="btn-primary" onclick="openAI('${p.id}')">✨ Tư vấn AI</button>
         </div>
-        ${missing.length > 0 ? `<div style="font-size:12px;color:#FF1744;padding:4px 0;">Thiếu: ${missing.join(', ')}</div>` : ''}`;
-      })()}
-
-      <div style="margin-top:12px;padding:12px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : '#FFFBEB'};">
-        <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#B45309'};">
-          ✓ Khuyến nghị: ${r.chenhLechTongPct <= 0 ? 'Nên tiếp cận và thương lượng sớm.' : r.chenhLechTongPct <= 10 ? 'Có thể đàm phán nhẹ.' : 'Đàm phán kéo về giá thực trước khi quyết định.'}
-        </span>
       </div>
-    </div>
-
-    <div class="disclaimer">
-      ⚠️ Kết quả mang tính tham khảo, dựa trên dữ liệu nhập vào và quy chuẩn ngành.
-    </div>
-  </div>
-  <div class="bottom-bar">
-    <div class="bar-2">
-      <button class="btn-secondary" onclick="nav('detail')">Quay lại</button>
-      <button class="btn-primary" onclick="openAI('${p.id}')">✨ Tư vấn AI</button>
-    </div>
-  </div>
-</div>`;
-```
-
+    </div>`;
 }
 
 function renderAI() {
-const p = state.properties.find(x => x.id === state.currentId);
-if (!p) { setTimeout(()=>nav(‘list’), 0); return ‘’; }
-
-return `
-<div class="screen">
-<div class="topbar">
-<button class="topbar-back" onclick="nav('detail')">‹</button>
-<div class="topbar-title">✨ AI Analysis</div>
-<div class="topbar-spacer"></div>
-</div>
-<div class="content-pad">
-<div class="ai-hero">
-<div class="ai-badge">✨ AI ANALYSIS</div>
-<div class="ai-title">Chiến lược chuyên sâu</div>
-<div class="ai-desc">${esc(p.address)}</div>
-</div>
-
-```
-    ${state.aiLoading ? `
-      <div class="card ai-loading">
-        <div class="spinner"></div>
-        <div class="loading-title">AI đang phân tích...</div>
-        <div class="loading-desc">Đối chiếu dữ liệu · Sinh chiến lược đàm phán<br/>Khoảng 5-15 giây</div>
+  const p = state.properties.find(x => x.id === state.currentId);
+  if (!p) { setTimeout(()=>nav('list'), 0); return ''; }
+  
+  return `
+    <div class="screen">
+      <div class="topbar">
+        <button class="topbar-back" onclick="nav('detail')">‹</button>
+        <div class="topbar-title">✨ AI Analysis</div>
+        <div class="topbar-spacer"></div>
       </div>
-    ` : ''}
-    
-    ${state.aiError ? `
-      <div class="card error-card">
-        <div class="error-icon">⚠️</div>
-        <div class="error-text">${esc(state.aiError)}</div>
-        <button class="btn-primary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">Thử lại</button>
-        <button class="btn-secondary" style="margin-top:8px;" onclick="setState({showApiModal:true})">Đổi API Key</button>
-      </div>
-    ` : ''}
-    
-    ${state.aiResult ? (state.aiResult.summary ? `
-
-      <!-- 1. THẨM ĐỊNH TỔNG QUAN -->
-      <div class="card" style="background:linear-gradient(165deg,#fff 0%,#FFF8F8 100%);border:1.5px solid #FBD7D7;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <div style="font-size:11px;color:#FF1744;font-weight:700;letter-spacing:1.5px;">THẨM ĐỊNH GIÁ</div>
-          <div style="font-size:11px;color:#888;">${new Date().toLocaleDateString('vi-VN')}</div>
+      <div class="content-pad">
+        <div class="ai-hero">
+          <div class="ai-badge">✨ AI ANALYSIS</div>
+          <div class="ai-title">Chiến lược chuyên sâu</div>
+          <div class="ai-desc">${esc(p.address)}</div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-          <span style="font-size:14px;color:#1a1a1a;">Giá chủ chào</span>
-          <span style="font-size:18px;font-weight:800;color:#1a1a1a;">${esc(p.askingPrice)} tỷ</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-          <span style="font-size:14px;color:#1a1a1a;">Giá thẩm định</span>
-          <span style="font-size:18px;font-weight:800;color:#2E7D32;">${esc(state.aiResult.summary.valuationRange||'')}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-          <span style="font-size:14px;color:#1a1a1a;">Thanh khoản</span>
-          <span style="font-size:14px;font-weight:700;color:#1a1a1a;">${esc(state.aiResult.summary.liquidity||'')}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;">
-          <span style="font-size:14px;color:#1a1a1a;">Khuyến nghị</span>
-          <span style="font-size:14px;font-weight:800;color:${(state.aiResult.summary.verdict||'').includes('Nên')?'#2E7D32':(state.aiResult.summary.verdict||'').includes('Không')?'#FF1744':'#B45309'};">${esc(state.aiResult.summary.verdict||'')}</span>
-        </div>
-        <div style="font-size:14px;color:#1a1a1a;line-height:1.6;padding-top:12px;border-top:1px solid #f0f0f0;margin-top:4px;">${esc(state.aiResult.summary.quickNote||'')}</div>
-      </div>
-
-      <!-- 2. CHIẾN LƯỢC ĐÀM PHÁN -->
-      ${state.aiResult.negotiation ? `
-      <div class="card" style="background:#1a1a1a;color:white;border:none;">
-        <div style="font-size:11px;opacity:0.5;letter-spacing:1.2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
-        <div style="font-size:14px;color:rgba(255,255,255,0.85);line-height:1.6;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.1);">${esc(state.aiResult.negotiation.strategy||'')}</div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-          <span style="font-size:14px;opacity:0.7;">Mở đàm phán</span>
-          <span style="font-size:16px;font-weight:800;color:#FF1744;">${esc(state.aiResult.negotiation.openingOffer||'')}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-          <span style="font-size:14px;opacity:0.7;">Giá mục tiêu</span>
-          <span style="font-size:16px;font-weight:800;">${esc(state.aiResult.negotiation.targetPrice||'')}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-          <span style="font-size:14px;opacity:0.7;">Không mua cao hơn</span>
-          <span style="font-size:14px;font-weight:700;color:#FF1744;">${esc(state.aiResult.negotiation.redLine||'')}</span>
-        </div>
-        <div style="padding:10px 0 4px;">
-          <div style="font-size:12px;opacity:0.5;margin-bottom:6px;">TÂM LÝ CHỦ NHÀ</div>
-          <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:1.6;">${esc(state.aiResult.negotiation.sellerPsychology||'')}</div>
-        </div>
-      </div>
-      ` : ''}
-
-      <!-- 3. BỐI CẢNH THỊ TRƯỜNG -->
-      ${state.aiResult.marketContext ? `
-      <div class="card">
-        <div class="card-header">📊 Bối cảnh thị trường</div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-          <span style="font-size:14px;color:#1a1a1a;">Khoảng giá khu vực</span>
-          <span style="font-size:14px;font-weight:700;color:#1a1a1a;">${esc(state.aiResult.marketContext.priceRange||'')}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-          <span style="font-size:14px;color:#1a1a1a;">Xu hướng</span>
-          <span style="font-size:14px;font-weight:700;color:${(state.aiResult.marketContext.trend||'').includes('Tăng')?'#2E7D32':(state.aiResult.marketContext.trend||'').includes('Giảm')?'#FF1744':'#1a1a1a'};">${esc(state.aiResult.marketContext.trend||'')}</span>
-        </div>
-        ${state.aiResult.marketContext.comparables ? `
-        <div style="padding:8px 0;">
-          <div style="font-size:12px;color:#888;margin-bottom:6px;">CĂN TƯƠNG ĐƯƠNG</div>
-          <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(state.aiResult.marketContext.comparables)}</div>
-        </div>` : ''}
-      </div>
-      ` : ''}
-
-      <!-- 4. RỦI RO & ĐIỂM BÁN -->
-      ${(state.aiResult.risks && state.aiResult.risks.length > 0) || (state.aiResult.sellingPoints && state.aiResult.sellingPoints.length > 0) ? `
-      <div class="card">
-        <div class="card-header">💎 Điểm mạnh & ⚠️ Rủi ro</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
-          <div style="padding-right:12px;border-right:1px solid #E8E8E8;">
-            ${(state.aiResult.sellingPoints||[]).map(function(s){ return `<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f8f8f8;"><span style="color:#2E7D32;flex-shrink:0;">✓</span><span style="color:#1a1a1a;">${esc(s)}</span></div>`; }).join('')}
+        
+        ${state.aiLoading ? `
+          <div class="card ai-loading">
+            <div class="spinner"></div>
+            <div class="loading-title">AI đang phân tích...</div>
+            <div class="loading-desc">Đối chiếu dữ liệu · Sinh chiến lược đàm phán<br/>Khoảng 5-15 giây</div>
           </div>
-          <div style="padding-left:12px;">
-            ${(state.aiResult.risks||[]).map(function(r){ return `<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f8f8f8;"><span style="color:#FF1744;flex-shrink:0;">!</span><span style="color:#1a1a1a;">${esc(r)}</span></div>`; }).join('')}
+        ` : ''}
+        
+        ${state.aiError ? `
+          <div class="card error-card">
+            <div class="error-icon">⚠️</div>
+            <div class="error-text">${esc(state.aiError)}</div>
+            <button class="btn-primary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">Thử lại</button>
+            <button class="btn-secondary" style="margin-top:8px;" onclick="setState({showApiModal:true})">Đổi API Key</button>
+          </div>
+        ` : ''}
+        
+        ${state.aiResult ? (state.aiResult.summary ? `
+
+          <!-- 1. THẨM ĐỊNH TỔNG QUAN -->
+          <div class="card" style="background:linear-gradient(165deg,#fff 0%,#FFF8F8 100%);border:1.5px solid #FBD7D7;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <div style="font-size:11px;color:#FF1744;font-weight:700;letter-spacing:1.5px;">THẨM ĐỊNH GIÁ</div>
+              <div style="font-size:11px;color:#888;">${new Date().toLocaleDateString('vi-VN')}</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+              <span style="font-size:14px;color:#1a1a1a;">Giá chủ chào</span>
+              <span style="font-size:18px;font-weight:800;color:#1a1a1a;">${esc(p.askingPrice)} tỷ</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+              <span style="font-size:14px;color:#1a1a1a;">Giá thẩm định</span>
+              <span style="font-size:18px;font-weight:800;color:#2E7D32;">${esc(state.aiResult.summary.valuationRange||'')}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+              <span style="font-size:14px;color:#1a1a1a;">Thanh khoản</span>
+              <span style="font-size:14px;font-weight:700;color:#1a1a1a;">${esc(state.aiResult.summary.liquidity||'')}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;">
+              <span style="font-size:14px;color:#1a1a1a;">Khuyến nghị</span>
+              <span style="font-size:14px;font-weight:800;color:${(state.aiResult.summary.verdict||'').includes('Nên')?'#2E7D32':(state.aiResult.summary.verdict||'').includes('Không')?'#FF1744':'#B45309'};">${esc(state.aiResult.summary.verdict||'')}</span>
+            </div>
+            <div style="font-size:14px;color:#1a1a1a;line-height:1.6;padding-top:12px;border-top:1px solid #f0f0f0;margin-top:4px;">${esc(state.aiResult.summary.quickNote||'')}</div>
+          </div>
+
+          <!-- 2. CHIẾN LƯỢC ĐÀM PHÁN -->
+          ${state.aiResult.negotiation ? `
+          <div class="card" style="background:#1a1a1a;color:white;border:none;">
+            <div style="font-size:11px;opacity:0.5;letter-spacing:1.2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
+            <div style="font-size:14px;color:rgba(255,255,255,0.85);line-height:1.6;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.1);">${esc(state.aiResult.negotiation.strategy||'')}</div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <span style="font-size:14px;opacity:0.7;">Mở đàm phán</span>
+              <span style="font-size:16px;font-weight:800;color:#FF1744;">${esc(state.aiResult.negotiation.openingOffer||'')}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <span style="font-size:14px;opacity:0.7;">Giá mục tiêu</span>
+              <span style="font-size:16px;font-weight:800;">${esc(state.aiResult.negotiation.targetPrice||'')}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <span style="font-size:14px;opacity:0.7;">Không mua cao hơn</span>
+              <span style="font-size:14px;font-weight:700;color:#FF1744;">${esc(state.aiResult.negotiation.redLine||'')}</span>
+            </div>
+            <div style="padding:10px 0 4px;">
+              <div style="font-size:12px;opacity:0.5;margin-bottom:6px;">TÂM LÝ CHỦ NHÀ</div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:1.6;">${esc(state.aiResult.negotiation.sellerPsychology||'')}</div>
+            </div>
+          </div>
+          ` : ''}
+
+          <!-- 3. BỐI CẢNH THỊ TRƯỜNG -->
+          ${state.aiResult.marketContext ? `
+          <div class="card">
+            <div class="card-header">📊 Bối cảnh thị trường</div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+              <span style="font-size:14px;color:#1a1a1a;">Khoảng giá khu vực</span>
+              <span style="font-size:14px;font-weight:700;color:#1a1a1a;">${esc(state.aiResult.marketContext.priceRange||'')}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+              <span style="font-size:14px;color:#1a1a1a;">Xu hướng</span>
+              <span style="font-size:14px;font-weight:700;color:${(state.aiResult.marketContext.trend||'').includes('Tăng')?'#2E7D32':(state.aiResult.marketContext.trend||'').includes('Giảm')?'#FF1744':'#1a1a1a'};">${esc(state.aiResult.marketContext.trend||'')}</span>
+            </div>
+            ${state.aiResult.marketContext.comparables ? `
+            <div style="padding:8px 0;">
+              <div style="font-size:12px;color:#888;margin-bottom:6px;">CĂN TƯƠNG ĐƯƠNG</div>
+              <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(state.aiResult.marketContext.comparables)}</div>
+            </div>` : ''}
+          </div>
+          ` : ''}
+
+          <!-- 4. RỦI RO & ĐIỂM BÁN -->
+          ${(state.aiResult.risks && state.aiResult.risks.length > 0) || (state.aiResult.sellingPoints && state.aiResult.sellingPoints.length > 0) ? `
+          <div class="card">
+            <div class="card-header">💎 Điểm mạnh & ⚠️ Rủi ro</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+              <div style="padding-right:12px;border-right:1px solid #E8E8E8;">
+                ${(state.aiResult.sellingPoints||[]).map(function(s){ return `<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f8f8f8;"><span style="color:#2E7D32;flex-shrink:0;">✓</span><span style="color:#1a1a1a;">${esc(s)}</span></div>`; }).join('')}
+              </div>
+              <div style="padding-left:12px;">
+                ${(state.aiResult.risks||[]).map(function(r){ return `<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f8f8f8;"><span style="color:#FF1744;flex-shrink:0;">!</span><span style="color:#1a1a1a;">${esc(r)}</span></div>`; }).join('')}
+              </div>
+            </div>
+          </div>
+          ` : ''}
+
+          <!-- 5. KẾT LUẬN -->
+          ${state.aiResult.conclusion ? `
+          <div class="card" style="border:1px solid #E8E8E8;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:12px;">KẾT LUẬN CHUYÊN GIA</div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+              <span style="font-size:14px;color:#1a1a1a;">Thời điểm quyết định</span>
+              <span style="font-size:14px;font-weight:800;color:${(state.aiResult.conclusion.timeToDecide||'').includes('Khẩn')?'#FF1744':'#1a1a1a'};">${esc(state.aiResult.conclusion.timeToDecide||'')}</span>
+            </div>
+            ${state.aiResult.conclusion.reason ? `
+            <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">
+              <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(state.aiResult.conclusion.reason)}</div>
+            </div>` : ''}
+            <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">
+              <div style="font-size:12px;color:#888;margin-bottom:4px;">CHO KHÁCH MUA Ở</div>
+              <div style="font-size:14px;color:#1a1a1a;line-height:1.5;">${esc(state.aiResult.conclusion.forBuyer||'')}</div>
+            </div>
+            <div style="padding:8px 0;">
+              <div style="font-size:12px;color:#888;margin-bottom:4px;">CHO NHÀ ĐẦU TƯ</div>
+              <div style="font-size:14px;color:#1a1a1a;line-height:1.5;">${esc(state.aiResult.conclusion.forInvestor||'')}</div>
+            </div>
+          </div>
+          ` : ''}
+
+          <div style="font-size:11px;color:#888;text-align:center;margin-top:8px;line-height:1.4;">Phân tích AI mang tính tham khảo. Quyết định cuối thuộc về bạn.</div>
+
+        ` : `
+          <div class="card" style="text-align:center;padding:24px;">
+            <div style="font-size:14px;color:#555;margin-bottom:12px;">Kết quả cần cập nhật. Vui lòng phân tích lại.</div>
+            <button class="btn-primary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">✨ Phân tích lại</button>
+          </div>
+        `) : ''}
+      </div>
+      ${!state.aiLoading ? `
+        <div class="bottom-bar">
+          <div class="bar-2">
+            <button class="btn-secondary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">✨ Phân tích lại</button>
+            <button class="btn-primary" onclick="nav('detail')">✓ Hoàn tất</button>
           </div>
         </div>
-      </div>
       ` : ''}
-
-      <!-- 5. KẾT LUẬN -->
-      ${state.aiResult.conclusion ? `
-      <div class="card" style="border:1px solid #E8E8E8;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:12px;">KẾT LUẬN CHUYÊN GIA</div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-          <span style="font-size:14px;color:#1a1a1a;">Thời điểm quyết định</span>
-          <span style="font-size:14px;font-weight:800;color:${(state.aiResult.conclusion.timeToDecide||'').includes('Khẩn')?'#FF1744':'#1a1a1a'};">${esc(state.aiResult.conclusion.timeToDecide||'')}</span>
-        </div>
-        ${state.aiResult.conclusion.reason ? `
-        <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">
-          <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(state.aiResult.conclusion.reason)}</div>
-        </div>` : ''}
-        <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">
-          <div style="font-size:12px;color:#888;margin-bottom:4px;">CHO KHÁCH MUA Ở</div>
-          <div style="font-size:14px;color:#1a1a1a;line-height:1.5;">${esc(state.aiResult.conclusion.forBuyer||'')}</div>
-        </div>
-        <div style="padding:8px 0;">
-          <div style="font-size:12px;color:#888;margin-bottom:4px;">CHO NHÀ ĐẦU TƯ</div>
-          <div style="font-size:14px;color:#1a1a1a;line-height:1.5;">${esc(state.aiResult.conclusion.forInvestor||'')}</div>
-        </div>
-      </div>
-      ` : ''}
-
-      <div style="font-size:11px;color:#888;text-align:center;margin-top:8px;line-height:1.4;">Phân tích AI mang tính tham khảo. Quyết định cuối thuộc về bạn.</div>
-
-    ` : `
-      <div class="card" style="text-align:center;padding:24px;">
-        <div style="font-size:14px;color:#555;margin-bottom:12px;">Kết quả cần cập nhật. Vui lòng phân tích lại.</div>
-        <button class="btn-primary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">✨ Phân tích lại</button>
-      </div>
-    `) : ''}
-  </div>
-  ${!state.aiLoading ? `
-    <div class="bottom-bar">
-      <div class="bar-2">
-        <button class="btn-secondary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">✨ Phân tích lại</button>
-        <button class="btn-primary" onclick="nav('detail')">✓ Hoàn tất</button>
-      </div>
-    </div>
-  ` : ''}
-</div>`;
-```
-
+    </div>`;
 }
 
 function renderApiModal() {
-return ` <div class="modal-overlay" onclick="if(event.target===this) setState({showApiModal:false})"> <div class="modal"> <div class="modal-title">🔑 Cần API Key Gemini</div> <div class="modal-desc"> Để dùng AI tư vấn, bạn cần API key MIỄN PHÍ từ Google.<br/><br/> <b>Cách lấy (2 phút):</b><br/> 1. Vào <a href="https://aistudio.google.com/apikey" target="_blank" class="modal-link">aistudio.google.com/apikey</a><br/> 2. Đăng nhập Google → bấm "Create API key"<br/> 3. Copy key (chuỗi bắt đầu bằng "AIza...")<br/> 4. Dán vào ô bên dưới<br/><br/> ✅ Miễn phí 1500 lần dùng/ngày </div> <input class="input" id="apikey-input" type="text" placeholder="AIzaSy..." value="${esc(getApiKey())}" /> <div style="display:flex;gap:10px;margin-top:14px;"> <button class="btn-secondary" style="flex:1" onclick="setState({showApiModal:false})">Hủy</button> <button class="btn-primary" style="flex:1" onclick="saveApiKeyAndContinue()">Lưu & Dùng</button> </div> </div> </div>`;
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this) setState({showApiModal:false})">
+      <div class="modal">
+        <div class="modal-title">🔑 Cần API Key Gemini</div>
+        <div class="modal-desc">
+          Để dùng AI tư vấn, bạn cần API key MIỄN PHÍ từ Google.<br/><br/>
+          <b>Cách lấy (2 phút):</b><br/>
+          1. Vào <a href="https://aistudio.google.com/apikey" target="_blank" class="modal-link">aistudio.google.com/apikey</a><br/>
+          2. Đăng nhập Google → bấm "Create API key"<br/>
+          3. Copy key (chuỗi bắt đầu bằng "AIza...")<br/>
+          4. Dán vào ô bên dưới<br/><br/>
+          ✅ Miễn phí 1500 lần dùng/ngày
+        </div>
+        <input class="input" id="apikey-input" type="text" placeholder="AIzaSy..." value="${esc(getApiKey())}" />
+        <div style="display:flex;gap:10px;margin-top:14px;">
+          <button class="btn-secondary" style="flex:1" onclick="setState({showApiModal:false})">Hủy</button>
+          <button class="btn-primary" style="flex:1" onclick="saveApiKeyAndContinue()">Lưu & Dùng</button>
+        </div>
+      </div>
+    </div>`;
 }
 
 function saveApiKeyAndContinue() {
-const key = document.getElementById(‘apikey-input’).value.trim();
-if (!key) { alert(‘Vui lòng nhập API key’); return; }
-setApiKey(key);
-setState({ showApiModal: false });
-const p = state.properties.find(x => x.id === state.currentId);
-if (p && state.screen === ‘ai’) callGeminiAI(p);
+  const key = document.getElementById('apikey-input').value.trim();
+  if (!key) { alert('Vui lòng nhập API key'); return; }
+  setApiKey(key);
+  setState({ showApiModal: false });
+  const p = state.properties.find(x => x.id === state.currentId);
+  if (p && state.screen === 'ai') callGeminiAI(p);
 }
 
 async function autoFillFromNotes() {
-const notes = state.formData.notes || ‘’;
-if (!notes.trim()) {
-alert(‘Vui lòng nhập mô tả trước khi điền tự động.’);
-return;
-}
-const apiKey = getApiKey();
-if (!apiKey) { setState({ showApiModal: true }); return; }
+  const notes = state.formData.notes || '';
+  if (!notes.trim()) {
+    alert('Vui lòng nhập mô tả trước khi điền tự động.');
+    return;
+  }
+  const apiKey = getApiKey();
+  if (!apiKey) { setState({ showApiModal: true }); return; }
 
-// Hiển thị loading
-const btn = document.getElementById(‘autofill-btn’);
-const icon = document.getElementById(‘autofill-icon’);
-const text = document.getElementById(‘autofill-text’);
-if (btn) { btn.disabled = true; if(icon) icon.textContent = ‘⏳’; if(text) text.textContent = ‘Đang phân tích…’; }
+  // Hiển thị loading
+  const btn = document.getElementById('autofill-btn');
+  const icon = document.getElementById('autofill-icon');
+  const text = document.getElementById('autofill-text');
+  if (btn) { btn.disabled = true; if(icon) icon.textContent = '⏳'; if(text) text.textContent = 'Đang phân tích...'; }
 
-try {
-const prompt = `Đọc đoạn mô tả bất động sản sau và trích xuất thông tin. Chỉ trả về JSON thuần, không markdown, không backtick:
+  try {
+    const prompt = `Đọc đoạn mô tả bất động sản sau và trích xuất thông tin. Chỉ trả về JSON thuần, không markdown, không backtick:
 
 MÔ TẢ:
 ${notes}
 
-Trả về JSON với các trường sau (để trống “” nếu không có thông tin):
+Trả về JSON với các trường sau (để trống "" nếu không có thông tin):
 {
-“address”: “địa chỉ đầy đủ”,
-“width”: “số mét ngang (chỉ số, không đơn vị)”,
-“length”: “số mét dài (chỉ số, không đơn vị)”,
-“area”: “diện tích m2 (chỉ số, không đơn vị, để trống nếu có ngang×dài)”,
-“floors”: “số tầng (chỉ số)”,
-“direction”: “hướng cửa chính (một trong: Đông, Tây, Nam, Bắc, Đông Nam, Đông Bắc, Tây Nam, Tây Bắc)”,
-“alleyType”: “loại đường (một trong: mt=mặt tiền, alley1=hẻm>6m, alley2=hẻm3-5m, alley3=hẻm<3m)”,
-“shape”: “hình dạng (một trong: rectangle=vuông vức, flared=nở hậu, L=chữL, taper=tóp hậu, xeo=xéo méo, triangle=tam giác)”,
-“legal”: “pháp lý (một trong: pink_book=sổ hồng, red_book=sổ đỏ, co_owned=đồng sở hữu, pending=chờ sổ)”,
-“askingPrice”: “giá bán (chỉ số tỷ, ví dụ 9 hoặc 9.5)”,
-“hienTrang”: “hiện trạng nhà (một trong: 100=xây mới, 90=cải tạo mới, 80=còn tốt, 60=trung bình, 40=cũ, 20=rất cũ, 5=nhà nát)”,
-“loGioiArea”: “diện tích ranh lộ giới m² nếu có (chỉ số, để trống nếu không có)”,
-“extraArea”: “diện tích đất không CN m² nếu có (chỉ số, để trống nếu không có)”,
-“furniture”: “nội thất (một trong: none=không có, basic=cơ bản, full=đầy đủ, luxury=cao cấp)”,
-“planning”: “quy hoạch (một trong: clear=không vướng, road=dính lộ giới, public=đất công, other=quy hoạch khác)”
+  "address": "địa chỉ đầy đủ",
+  "width": "số mét ngang (chỉ số, không đơn vị)",
+  "length": "số mét dài (chỉ số, không đơn vị)",
+  "area": "diện tích m2 (chỉ số, không đơn vị, để trống nếu có ngang×dài)",
+  "floors": "số tầng (chỉ số)",
+  "direction": "hướng cửa chính (một trong: Đông, Tây, Nam, Bắc, Đông Nam, Đông Bắc, Tây Nam, Tây Bắc)",
+  "alleyType": "loại đường (một trong: mt=mặt tiền, alley1=hẻm>6m, alley2=hẻm3-5m, alley3=hẻm<3m)",
+  "shape": "hình dạng (một trong: rectangle=vuông vức, flared=nở hậu, L=chữL, taper=tóp hậu, xeo=xéo méo, triangle=tam giác)",
+  "legal": "pháp lý (một trong: pink_book=sổ hồng, red_book=sổ đỏ, co_owned=đồng sở hữu, pending=chờ sổ)",
+  "askingPrice": "giá bán (chỉ số tỷ, ví dụ 9 hoặc 9.5)",
+  "hienTrang": "hiện trạng nhà (một trong: 100=xây mới, 90=cải tạo mới, 80=còn tốt, 60=trung bình, 40=cũ, 20=rất cũ, 5=nhà nát)",
+  "loGioiArea": "diện tích ranh lộ giới m² nếu có (chỉ số, để trống nếu không có)",
+  "extraArea": "diện tích đất không CN m² nếu có (chỉ số, để trống nếu không có)",
+  "furniture": "nội thất (một trong: none=không có, basic=cơ bản, full=đầy đủ, luxury=cao cấp)",
+  "planning": "quy hoạch (một trong: clear=không vướng, road=dính lộ giới, public=đất công, other=quy hoạch khác)"
 }`;
 
-```
-const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-  body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1 } })
-});
+    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1 } })
+    });
 
-const data = await resp.json();
-const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-const clean = raw.replace(/```json|```/g, '').trim();
-const extracted = JSON.parse(clean);
+    const data = await resp.json();
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const extracted = JSON.parse(clean);
 
-// Điền vào form — chỉ điền trường còn trống
-const f = state.formData;
-const updated = { ...f };
-if (extracted.address && !f.address) updated.address = extracted.address;
-if (extracted.width && !f.width) updated.width = extracted.width;
-if (extracted.length && !f.length) updated.length = extracted.length;
-if (extracted.area && !f.area) updated.area = extracted.area;
-if (extracted.floors && !f.floors) updated.floors = extracted.floors;
-if (extracted.direction && !f.direction) updated.direction = extracted.direction;
-if (extracted.alleyType && f.alleyType === 'mt') updated.alleyType = extracted.alleyType;
-if (extracted.shape && f.shape === 'rectangle') updated.shape = extracted.shape;
-if (extracted.legal && f.legal === 'pink_book') updated.legal = extracted.legal;
-if (extracted.askingPrice && !f.askingPrice) updated.askingPrice = extracted.askingPrice;
-if (extracted.hienTrang && f.hienTrang === '80') updated.hienTrang = extracted.hienTrang;
-if (extracted.loGioiArea && !f.loGioiArea) updated.loGioiArea = extracted.loGioiArea;
-if (extracted.extraArea && !f.extraArea) updated.extraArea = extracted.extraArea;
-if (extracted.furniture && f.furniture === 'none') updated.furniture = extracted.furniture;
-if (extracted.planning && f.planning === 'clear') updated.planning = extracted.planning;
+    // Điền vào form — chỉ điền trường còn trống
+    const f = state.formData;
+    const updated = { ...f };
+    if (extracted.address && !f.address) updated.address = extracted.address;
+    if (extracted.width && !f.width) updated.width = extracted.width;
+    if (extracted.length && !f.length) updated.length = extracted.length;
+    if (extracted.area && !f.area) updated.area = extracted.area;
+    if (extracted.floors && !f.floors) updated.floors = extracted.floors;
+    if (extracted.direction && !f.direction) updated.direction = extracted.direction;
+    if (extracted.alleyType && f.alleyType === 'mt') updated.alleyType = extracted.alleyType;
+    if (extracted.shape && f.shape === 'rectangle') updated.shape = extracted.shape;
+    if (extracted.legal && f.legal === 'pink_book') updated.legal = extracted.legal;
+    if (extracted.askingPrice && !f.askingPrice) updated.askingPrice = extracted.askingPrice;
+    if (extracted.hienTrang && f.hienTrang === '80') updated.hienTrang = extracted.hienTrang;
+    if (extracted.loGioiArea && !f.loGioiArea) updated.loGioiArea = extracted.loGioiArea;
+    if (extracted.extraArea && !f.extraArea) updated.extraArea = extracted.extraArea;
+    if (extracted.furniture && f.furniture === 'none') updated.furniture = extracted.furniture;
+    if (extracted.planning && f.planning === 'clear') updated.planning = extracted.planning;
 
-// Auto tính dtThucTe = width × length
-if (updated.width && updated.length) {
-  updated.dtThucTe = (parseFloat(updated.width) * parseFloat(updated.length)).toFixed(1);
-  if (!updated.area) updated.area = updated.dtThucTe;
-}
-// Auto tính sanXD từ area × floors
-if (updated.area && updated.floors && !updated._sanXDEdited) {
-  updated.sanXD = Math.round(parseFloat(updated.area) * parseFloat(updated.floors));
-}
+    // Auto tính dtThucTe = width × length
+    if (updated.width && updated.length) {
+      updated.dtThucTe = (parseFloat(updated.width) * parseFloat(updated.length)).toFixed(1);
+      if (!updated.area) updated.area = updated.dtThucTe;
+    }
+    // Auto tính sanXD từ area × floors
+    if (updated.area && updated.floors && !updated._sanXDEdited) {
+      updated.sanXD = Math.round(parseFloat(updated.area) * parseFloat(updated.floors));
+    }
 
-setState({ formData: updated });
+    setState({ formData: updated });
 
-// Cập nhật UI các input auto
-setTimeout(() => {
-  const areaEl = document.getElementById('input-area');
-  const sanXDEl = document.getElementById('input-sanXD');
-  if (areaEl && updated.area) areaEl.value = updated.area;
-  if (sanXDEl && updated.sanXD) sanXDEl.value = updated.sanXD;
-}, 50);
-```
+    // Cập nhật UI các input auto
+    setTimeout(() => {
+      const areaEl = document.getElementById('input-area');
+      const sanXDEl = document.getElementById('input-sanXD');
+      if (areaEl && updated.area) areaEl.value = updated.area;
+      if (sanXDEl && updated.sanXD) sanXDEl.value = updated.sanXD;
+    }, 50);
 
-} catch(e) {
-alert(‘Không phân tích được. Vui lòng thử lại.’);
-console.error(e);
-} finally {
-if (btn) { btn.disabled = false; if(icon) icon.textContent = ‘✨’; if(text) text.textContent = ‘Điền tự động từ mô tả’; }
-}
+  } catch(e) {
+    alert('Không phân tích được. Vui lòng thử lại.');
+    console.error(e);
+  } finally {
+    if (btn) { btn.disabled = false; if(icon) icon.textContent = '✨'; if(text) text.textContent = 'Điền tự động từ mô tả'; }
+  }
 }
 
 function addIssue(v) {
-if (!v) return;
-const issues = […(state.formData.issues||[])];
-if (!issues.includes(v)) issues.push(v);
-setState({ formData: { …state.formData, issues } });
+  if (!v) return;
+  const issues = [...(state.formData.issues||[])];
+  if (!issues.includes(v)) issues.push(v);
+  setState({ formData: { ...state.formData, issues } });
 }
 function removeIssue(v) {
-const issues = (state.formData.issues||[]).filter(x => x !== v);
-setState({ formData: { …state.formData, issues } });
+  const issues = (state.formData.issues||[]).filter(x => x !== v);
+  setState({ formData: { ...state.formData, issues } });
 }
+
 
 // ============== CUSTOMER HELPERS ==============
 function emptyCustomer() {
-return {
-name: ‘’, phone: ‘’, budgetMin: ‘’, budgetMax: ‘’,
-areas: ‘’, purpose: ‘buy_live’, notes: ‘’,
-status: ‘watching’, createdAt: Date.now()
-};
+  return {
+    name: '', phone: '', budgetMin: '', budgetMax: '',
+    areas: '', purpose: 'buy_live', notes: '',
+    status: 'watching', createdAt: Date.now()
+  };
 }
 
 function statusLabel(s) {
-return { hot:‘🔥 Nóng’, watching:‘👀 Đang xem’, cold:‘❄️ Lạnh’, closed:‘✅ Đã chốt’ }[s] || s;
+  return { hot:'🔥 Nóng', watching:'👀 Đang xem', cold:'❄️ Lạnh', closed:'✅ Đã chốt' }[s] || s;
 }
 function statusColor(s) {
-return { hot:’#FF1744’, watching:’#B45309’, cold:’#1565C0’, closed:’#2E7D32’ }[s] || ‘#888’;
+  return { hot:'#FF1744', watching:'#B45309', cold:'#1565C0', closed:'#2E7D32' }[s] || '#888';
 }
 function purposeLabel(s) {
-return { buy_live:‘Mua ở’, invest:‘Đầu tư’, both:‘Mua ở + Đầu tư’ }[s] || s;
+  return { buy_live:'Mua ở', invest:'Đầu tư', both:'Mua ở + Đầu tư' }[s] || s;
 }
 
 async function toggleStar(id, e) {
-e && e.stopPropagation();
-const user = firebase.auth().currentUser;
-if (!user) return;
-const p = state.properties.find(x => x.id === id);
-if (!p) return;
-const newVal = !p.isStarred;
-await db.collection(‘users’).doc(user.uid).collection(‘properties’).doc(id).update({ isStarred: newVal });
-state.properties = state.properties.map(x => x.id === id ? { …x, isStarred: newVal } : x);
-render();
+  e && e.stopPropagation();
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  const p = state.properties.find(x => x.id === id);
+  if (!p) return;
+  const newVal = !p.isStarred;
+  await db.collection('users').doc(user.uid).collection('properties').doc(id).update({ isStarred: newVal });
+  state.properties = state.properties.map(x => x.id === id ? { ...x, isStarred: newVal } : x);
+  render();
 }
 
 async function saveCustomer() {
-const f = state.customerForm;
-if (!f.name) { alert(‘Vui lòng nhập tên khách hàng’); return; }
-const user = firebase.auth().currentUser;
-if (!user) return;
-const data = { …f, updatedAt: Date.now() };
-try {
-if (state.currentCustomerId) {
-await db.collection(‘users’).doc(user.uid).collection(‘customers’).doc(state.currentCustomerId).set(data);
-state.customers = state.customers.map(c => c.id === state.currentCustomerId ? { id: state.currentCustomerId, …data } : c);
-} else {
-data.createdAt = Date.now();
-const ref = await db.collection(‘users’).doc(user.uid).collection(‘customers’).add(data);
-state.customers = [{ id: ref.id, …data }, …state.customers];
-}
-nav(‘customers’);
-} catch(e) { alert(’Lỗi lưu: ’ + e.message); }
+  const f = state.customerForm;
+  if (!f.name) { alert('Vui lòng nhập tên khách hàng'); return; }
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  const data = { ...f, updatedAt: Date.now() };
+  try {
+    if (state.currentCustomerId) {
+      await db.collection('users').doc(user.uid).collection('customers').doc(state.currentCustomerId).set(data);
+      state.customers = state.customers.map(c => c.id === state.currentCustomerId ? { id: state.currentCustomerId, ...data } : c);
+    } else {
+      data.createdAt = Date.now();
+      const ref = await db.collection('users').doc(user.uid).collection('customers').add(data);
+      state.customers = [{ id: ref.id, ...data }, ...state.customers];
+    }
+    nav('customers');
+  } catch(e) { alert('Lỗi lưu: ' + e.message); }
 }
 
 async function deleteCustomer(id) {
-if (!confirm(‘Xóa khách hàng này?’)) return;
-const user = firebase.auth().currentUser;
-if (!user) return;
-await db.collection(‘users’).doc(user.uid).collection(‘customers’).doc(id).delete();
-state.customers = state.customers.filter(c => c.id !== id);
-nav(‘customers’);
+  if (!confirm('Xóa khách hàng này?')) return;
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  await db.collection('users').doc(user.uid).collection('customers').doc(id).delete();
+  state.customers = state.customers.filter(c => c.id !== id);
+  nav('customers');
 }
 
 function newCustomer() {
-nav(‘customer-form’, { currentCustomerId: null, customerForm: emptyCustomer() });
+  nav('customer-form', { currentCustomerId: null, customerForm: emptyCustomer() });
 }
 
 function editCustomer(id) {
-const c = state.customers.find(x => x.id === id);
-if (c) nav(‘customer-form’, { currentCustomerId: id, customerForm: { …c } });
+  const c = state.customers.find(x => x.id === id);
+  if (c) nav('customer-form', { currentCustomerId: id, customerForm: { ...c } });
 }
 
 function openCustomer(id) {
-nav(‘customer-detail’, { currentCustomerId: id });
+  nav('customer-detail', { currentCustomerId: id });
 }
 
 function updateCustomerForm(key, value) {
-state.customerForm = { …state.customerForm, [key]: value };
+  state.customerForm = { ...state.customerForm, [key]: value };
 }
 
 async function matchCustomerAI(customerId) {
-const customer = state.customers.find(c => c.id === customerId);
-if (!customer) return;
-if (!state.properties || state.properties.length === 0) {
-alert(‘Chưa có hồ sơ nhà nào. Vui lòng thêm hồ sơ trước.’);
-return;
-}
-const apiKey = getApiKey();
-if (!apiKey) { setState({ showApiModal: true }); return; }
+  const customer = state.customers.find(c => c.id === customerId);
+  if (!customer) return;
+  if (!state.properties || state.properties.length === 0) {
+    alert('Chưa có hồ sơ nhà nào. Vui lòng thêm hồ sơ trước.');
+    return;
+  }
+  const apiKey = getApiKey();
+  if (!apiKey) { setState({ showApiModal: true }); return; }
 
-nav(‘customer-match’, { currentCustomerId: customerId, matchResult: null, matchLoading: true });
+  nav('customer-match', { currentCustomerId: customerId, matchResult: null, matchLoading: true });
 
-const propList = state.properties.slice(0, 15).map((p, i) => {
-const r = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
-return `Căn ${i+1}: ${p.address} Giá: ${p.askingPrice} tỷ | DT: ${p.area}m² | ${p.floors} tầng Vị trí: ${alleyLabel(p.alleyType)} | Hướng: ${p.direction||'chưa rõ'} Pháp lý: ${legalLabel(p.legal)} | Hình dạng: ${shapeLabel(p.shape)} Giá trị TT ước tính: ${r ? r.estimatedValue.toFixed(2)+' tỷ' : 'chưa tính'} Mô tả: ${p.notes||'không có'}`;
-}).join(’\n\n’);
+  const propList = state.properties.slice(0, 15).map((p, i) => {
+    const r = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
+    return `Căn ${i+1}: ${p.address}
+  Giá: ${p.askingPrice} tỷ | DT: ${p.area}m² | ${p.floors} tầng
+  Vị trí: ${alleyLabel(p.alleyType)} | Hướng: ${p.direction||'chưa rõ'}
+  Pháp lý: ${legalLabel(p.legal)} | Hình dạng: ${shapeLabel(p.shape)}
+  Giá trị TT ước tính: ${r ? r.estimatedValue.toFixed(2)+' tỷ' : 'chưa tính'}
+  Mô tả: ${p.notes||'không có'}`;
+  }).join('\n\n');
 
-const prompt = `Bạn là môi giới BĐS kỳ cựu. Hãy phân tích và ghép khách với nhà phù hợp nhất.
+  const prompt = `Bạn là môi giới BĐS kỳ cựu. Hãy phân tích và ghép khách với nhà phù hợp nhất.
 
 THÔNG TIN KHÁCH HÀNG:
 Tên: ${customer.name}
-Ngân sách: ${customer.budgetMin||’?’} – ${customer.budgetMax||’?’} tỷ
-Khu vực muốn: ${customer.areas||‘chưa rõ’}
+Ngân sách: ${customer.budgetMin||'?'} – ${customer.budgetMax||'?'} tỷ
+Khu vực muốn: ${customer.areas||'chưa rõ'}
 Mục đích: ${purposeLabel(customer.purpose)}
-Ghi chú nhu cầu: ${customer.notes||‘không có’}
+Ghi chú nhu cầu: ${customer.notes||'không có'}
 
 DANH SÁCH NHÀ HIỆN CÓ:
 ${propList}
 
 Hãy chọn top 3 căn phù hợp nhất và giải thích. Trả về JSON thuần:
 {
-“matches”: [
-{
-“index”: 1,
-“address”: “địa chỉ căn”,
-“score”: “Rất phù hợp / Phù hợp / Tạm được”,
-“reasons”: [“lý do 1”, “lý do 2”],
-“warnings”: [“điểm chưa phù hợp nếu có”],
-“tip”: “gợi ý khi giới thiệu cho khách này”
-}
-],
-“summary”: “nhận xét tổng quan về khách và thị trường hiện tại”
+  "matches": [
+    {
+      "index": 1,
+      "address": "địa chỉ căn",
+      "score": "Rất phù hợp / Phù hợp / Tạm được",
+      "reasons": ["lý do 1", "lý do 2"],
+      "warnings": ["điểm chưa phù hợp nếu có"],
+      "tip": "gợi ý khi giới thiệu cho khách này"
+    }
+  ],
+  "summary": "nhận xét tổng quan về khách và thị trường hiện tại"
 }`;
 
-try {
-const resp = await fetch(‘https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent’, {
-method: ‘POST’,
-headers: { ‘Content-Type’: ‘application/json’, ‘x-goog-api-key’: apiKey },
-body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2 } })
-});
-const data = await resp.json();
-const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || ‘’;
-const clean = raw.replace(/`json|`/g, ‘’).trim();
-const result = JSON.parse(clean);
-setState({ matchResult: result, matchLoading: false });
-} catch(e) {
-setState({ matchResult: null, matchLoading: false, matchError: ‘Không phân tích được. Thử lại.’ });
-}
+  try {
+    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2 } })
+    });
+    const data = await resp.json();
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(clean);
+    setState({ matchResult: result, matchLoading: false });
+  } catch(e) {
+    setState({ matchResult: null, matchLoading: false, matchError: 'Không phân tích được. Thử lại.' });
+  }
 }
 
 // ============== CUSTOMER SCREENS ==============
 function renderCustomers() {
-const customers = state.customers || [];
-return `<div class="screen"> <div class="topbar"> <button class="topbar-back" onclick="nav('home')">‹</button> <div class="topbar-title">Khách hàng</div> <button onclick="newCustomer()" style="background:none;border:none;font-size:24px;color:#FF1744;cursor:pointer;padding:4px 8px;">+</button> </div> <div class="content-pad" style="padding-top:16px;"> ${customers.length === 0 ? `
-<div style="text-align:center;padding:60px 20px;color:#888;">
-<div style="font-size:40px;margin-bottom:12px;">👥</div>
-<div style="font-size:16px;font-weight:600;margin-bottom:8px;">Chưa có khách hàng</div>
-<div style="font-size:14px;margin-bottom:20px;">Thêm khách để AI ghép với nhà phù hợp</div>
-<button class="btn-primary" onclick="newCustomer()">+ Thêm khách hàng</button>
-</div>
-`: customers.map(c =>`
-<div class="card" style="margin-bottom:12px;cursor:pointer;" onclick="openCustomer('${c.id}')">
-<div style="display:flex;justify-content:space-between;align-items:flex-start;">
-<div style="flex:1;">
-<div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:4px;">${esc(c.name)}</div>
-<div style="font-size:13px;color:#555;margin-bottom:4px;">${esc(c.phone||’’)} ${c.phone && c.budgetMin ? ‘·’ : ‘’} ${c.budgetMin ? c.budgetMin+’–’+c.budgetMax+’ tỷ’ : ‘’}</div>
-<div style="font-size:12px;color:#888;">${esc(c.areas||’’)} ${c.areas && c.purpose ? ‘·’ : ‘’} ${purposeLabel(c.purpose)}</div>
-</div>
-<div style="font-size:12px;font-weight:700;color:${statusColor(c.status)};white-space:nowrap;margin-left:8px;">${statusLabel(c.status)}</div>
-</div>
-${c.notes ? `<div style="font-size:12px;color:#888;margin-top:8px;padding-top:8px;border-top:1px solid #f5f5f5;">${esc(c.notes.substring(0,80))}${c.notes.length>80?'...':''}</div>` : ‘’}
-</div>
-`).join(’’)}
-</div>
-<div class="bottom-bar">
-<button class="btn-primary" onclick="newCustomer()" style="width:100%;">+ Thêm khách hàng</button>
-</div>
-
+  const customers = state.customers || [];
+  return `<div class="screen">
+    <div class="topbar">
+      <button class="topbar-back" onclick="nav('home')">‹</button>
+      <div class="topbar-title">Khách hàng</div>
+      <button onclick="newCustomer()" style="background:none;border:none;font-size:24px;color:#FF1744;cursor:pointer;padding:4px 8px;">+</button>
+    </div>
+    <div class="content-pad" style="padding-top:16px;">
+      ${customers.length === 0 ? `
+        <div style="text-align:center;padding:60px 20px;color:#888;">
+          <div style="font-size:40px;margin-bottom:12px;">👥</div>
+          <div style="font-size:16px;font-weight:600;margin-bottom:8px;">Chưa có khách hàng</div>
+          <div style="font-size:14px;margin-bottom:20px;">Thêm khách để AI ghép với nhà phù hợp</div>
+          <button class="btn-primary" onclick="newCustomer()">+ Thêm khách hàng</button>
+        </div>
+      ` : customers.map(c => `
+        <div class="card" style="margin-bottom:12px;cursor:pointer;" onclick="openCustomer('${c.id}')">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div style="flex:1;">
+              <div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:4px;">${esc(c.name)}</div>
+              <div style="font-size:13px;color:#555;margin-bottom:4px;">${esc(c.phone||'')} ${c.phone && c.budgetMin ? '·' : ''} ${c.budgetMin ? c.budgetMin+'–'+c.budgetMax+' tỷ' : ''}</div>
+              <div style="font-size:12px;color:#888;">${esc(c.areas||'')} ${c.areas && c.purpose ? '·' : ''} ${purposeLabel(c.purpose)}</div>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:${statusColor(c.status)};white-space:nowrap;margin-left:8px;">${statusLabel(c.status)}</div>
+          </div>
+          ${c.notes ? `<div style="font-size:12px;color:#888;margin-top:8px;padding-top:8px;border-top:1px solid #f5f5f5;">${esc(c.notes.substring(0,80))}${c.notes.length>80?'...':''}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+    <div class="bottom-bar">
+      <button class="btn-primary" onclick="newCustomer()" style="width:100%;">+ Thêm khách hàng</button>
+    </div>
   </div>`;
 }
 
 function renderCustomerForm() {
-const f = state.customerForm || emptyCustomer();
-const isEdit = !!state.currentCustomerId;
-const cfield = (label, key, val, type=‘text’, placeholder=’’) =>
-`<div class="field" style="margin-top:20px;"> <label class="field-label">${label}</label> <input class="input" style="margin-top:8px;" type="${type}" value="${esc(val||'')}" placeholder="${placeholder}" oninput="updateCustomerForm('${key}', this.value)"> </div>`;
+  const f = state.customerForm || emptyCustomer();
+  const isEdit = !!state.currentCustomerId;
+  const cfield = (label, key, val, type='text', placeholder='') =>
+    `<div class="field" style="margin-top:20px;">
+      <label class="field-label">${label}</label>
+      <input class="input" style="margin-top:8px;" type="${type}" value="${esc(val||'')}" placeholder="${placeholder}" oninput="updateCustomerForm('${key}', this.value)">
+    </div>`;
 
-return `<div class="screen">
-<div class="topbar">
-<button class="topbar-back" onclick="nav('customers')">‹</button>
-<div class="topbar-title">${isEdit ? ‘Sửa khách hàng’ : ‘Khách hàng mới’}</div>
-</div>
-<div class="content-pad form-flat" style="padding-top:16px;">
-${cfield(‘Tên khách hàng’, ‘name’, f.name, ‘text’, ‘Nguyễn Văn A’)}
-${cfield(‘Số điện thoại / Zalo’, ‘phone’, f.phone, ‘tel’, ‘0901 234 567’)}
+  return `<div class="screen">
+    <div class="topbar">
+      <button class="topbar-back" onclick="nav('customers')">‹</button>
+      <div class="topbar-title">${isEdit ? 'Sửa khách hàng' : 'Khách hàng mới'}</div>
+    </div>
+    <div class="content-pad form-flat" style="padding-top:16px;">
+      ${cfield('Tên khách hàng', 'name', f.name, 'text', 'Nguyễn Văn A')}
+      ${cfield('Số điện thoại / Zalo', 'phone', f.phone, 'tel', '0901 234 567')}
 
-```
-  <div class="row-2" style="margin-top:20px;">
-    ${cfield('Ngân sách từ (tỷ)', 'budgetMin', f.budgetMin, 'number', '8')}
-    ${cfield('Đến (tỷ)', 'budgetMax', f.budgetMax, 'number', '10')}
-  </div>
+      <div class="row-2" style="margin-top:20px;">
+        ${cfield('Ngân sách từ (tỷ)', 'budgetMin', f.budgetMin, 'number', '8')}
+        ${cfield('Đến (tỷ)', 'budgetMax', f.budgetMax, 'number', '10')}
+      </div>
 
-  ${cfield('Khu vực mong muốn', 'areas', f.areas, 'text', 'Bình Thạnh, Q.3...')}
+      ${cfield('Khu vực mong muốn', 'areas', f.areas, 'text', 'Bình Thạnh, Q.3...')}
 
-  <div class="f-select-wrap" style="margin-top:20px;">
-    <span class="field-label">Mục đích</span>
-    <select class="input" onchange="updateCustomerForm('purpose', this.value)">
-      ${[{v:'buy_live',l:'Mua ở'},{v:'invest',l:'Đầu tư'},{v:'both',l:'Mua ở + Đầu tư'}]
-        .map(o=>`<option value="${o.v}" ${f.purpose===o.v?'selected':''}>${o.l}</option>`).join('')}
-    </select>
-  </div>
+      <div class="f-select-wrap" style="margin-top:20px;">
+        <span class="field-label">Mục đích</span>
+        <select class="input" onchange="updateCustomerForm('purpose', this.value)">
+          ${[{v:'buy_live',l:'Mua ở'},{v:'invest',l:'Đầu tư'},{v:'both',l:'Mua ở + Đầu tư'}]
+            .map(o=>`<option value="${o.v}" ${f.purpose===o.v?'selected':''}>${o.l}</option>`).join('')}
+        </select>
+      </div>
 
-  <div class="f-select-wrap" style="margin-top:20px;">
-    <span class="field-label">Trạng thái</span>
-    <select class="input" onchange="updateCustomerForm('status', this.value)">
-      ${[{v:'hot',l:'🔥 Nóng — Cần mua gấp'},{v:'watching',l:'👀 Đang xem — Chưa quyết'},{v:'cold',l:'❄️ Lạnh — Chưa cần ngay'},{v:'closed',l:'✅ Đã chốt'}]
-        .map(o=>`<option value="${o.v}" ${f.status===o.v?'selected':''}>${o.l}</option>`).join('')}
-    </select>
-  </div>
+      <div class="f-select-wrap" style="margin-top:20px;">
+        <span class="field-label">Trạng thái</span>
+        <select class="input" onchange="updateCustomerForm('status', this.value)">
+          ${[{v:'hot',l:'🔥 Nóng — Cần mua gấp'},{v:'watching',l:'👀 Đang xem — Chưa quyết'},{v:'cold',l:'❄️ Lạnh — Chưa cần ngay'},{v:'closed',l:'✅ Đã chốt'}]
+            .map(o=>`<option value="${o.v}" ${f.status===o.v?'selected':''}>${o.l}</option>`).join('')}
+        </select>
+      </div>
 
-  <div style="margin-top:20px;">
-    <label class="field-label">Ghi chú nhu cầu</label>
-    <textarea class="textarea" style="margin-top:8px;" placeholder="Vd: Cần hẻm xe hơi, gần trường, vợ sợ gần chùa..." oninput="updateCustomerForm('notes', this.value)">${esc(f.notes||'')}</textarea>
-  </div>
-</div>
-<div class="bottom-bar">
-  <div class="bar-2">
-    <button class="btn-secondary" onclick="nav('customers')">Hủy</button>
-    <button class="btn-primary" onclick="saveCustomer()">✓ Lưu khách hàng</button>
-  </div>
-</div>
-```
-
+      <div style="margin-top:20px;">
+        <label class="field-label">Ghi chú nhu cầu</label>
+        <textarea class="textarea" style="margin-top:8px;" placeholder="Vd: Cần hẻm xe hơi, gần trường, vợ sợ gần chùa..." oninput="updateCustomerForm('notes', this.value)">${esc(f.notes||'')}</textarea>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <div class="bar-2">
+        <button class="btn-secondary" onclick="nav('customers')">Hủy</button>
+        <button class="btn-primary" onclick="saveCustomer()">✓ Lưu khách hàng</button>
+      </div>
+    </div>
   </div>`;
 }
 
 function renderCustomerDetail() {
-const c = state.customers.find(x => x.id === state.currentCustomerId);
-if (!c) { setTimeout(()=>nav(‘customers’), 0); return ‘’; }
+  const c = state.customers.find(x => x.id === state.currentCustomerId);
+  if (!c) { setTimeout(()=>nav('customers'), 0); return ''; }
 
-return `<div class="screen">
-<div class="topbar">
-<button class="topbar-back" onclick="nav('customers')">‹</button>
-<div class="topbar-title">Chi tiết khách hàng</div>
-<button onclick="deleteCustomer('${c.id}')" style="background:none;border:none;cursor:pointer;padding:4px 8px;font-size:18px;">🗑</button>
-</div>
-<div class="content-pad" style="padding-top:16px;">
-
-```
-  <div class="card" style="background:#1a1a1a;color:white;border:none;margin-bottom:16px;">
-    <div style="font-size:11px;opacity:0.5;letter-spacing:1px;margin-bottom:8px;">KHÁCH HÀNG</div>
-    <div style="font-size:22px;font-weight:800;margin-bottom:6px;">${esc(c.name)}</div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;">
-      ${c.phone ? `<div style="font-size:14px;opacity:0.8;">${esc(c.phone)}</div>` : ''}
-      <div style="font-size:14px;font-weight:700;color:${statusColor(c.status)};">${statusLabel(c.status)}</div>
+  return `<div class="screen">
+    <div class="topbar">
+      <button class="topbar-back" onclick="nav('customers')">‹</button>
+      <div class="topbar-title">Chi tiết khách hàng</div>
+      <button onclick="deleteCustomer('${c.id}')" style="background:none;border:none;cursor:pointer;padding:4px 8px;font-size:18px;">🗑</button>
     </div>
-  </div>
+    <div class="content-pad" style="padding-top:16px;">
 
-  <div class="card" style="margin-bottom:16px;">
-    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
-      <span style="font-size:14px;color:#888;">Ngân sách</span>
-      <span style="font-size:14px;font-weight:700;">${c.budgetMin||'?'} – ${c.budgetMax||'?'} tỷ</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
-      <span style="font-size:14px;color:#888;">Khu vực</span>
-      <span style="font-size:14px;font-weight:700;">${esc(c.areas||'Chưa rõ')}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:8px 0;">
-      <span style="font-size:14px;color:#888;">Mục đích</span>
-      <span style="font-size:14px;font-weight:700;">${purposeLabel(c.purpose)}</span>
-    </div>
-    ${c.notes ? `
-    <div style="padding:10px 0;border-top:1px solid #f5f5f5;margin-top:4px;">
-      <div style="font-size:12px;color:#888;margin-bottom:4px;">GHI CHÚ NHU CẦU</div>
-      <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(c.notes)}</div>
-    </div>` : ''}
-  </div>
+      <div class="card" style="background:#1a1a1a;color:white;border:none;margin-bottom:16px;">
+        <div style="font-size:11px;opacity:0.5;letter-spacing:1px;margin-bottom:8px;">KHÁCH HÀNG</div>
+        <div style="font-size:22px;font-weight:800;margin-bottom:6px;">${esc(c.name)}</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+          ${c.phone ? `<div style="font-size:14px;opacity:0.8;">${esc(c.phone)}</div>` : ''}
+          <div style="font-size:14px;font-weight:700;color:${statusColor(c.status)};">${statusLabel(c.status)}</div>
+        </div>
+      </div>
 
-</div>
-<div class="bottom-bar">
-  <div class="bar-2">
-    <button class="btn-secondary" onclick="editCustomer('${c.id}')">✏️ Sửa</button>
-    <button class="btn-primary" onclick="matchCustomerAI('${c.id}')">🤖 Tìm nhà phù hợp</button>
-  </div>
-</div>
-```
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
+          <span style="font-size:14px;color:#888;">Ngân sách</span>
+          <span style="font-size:14px;font-weight:700;">${c.budgetMin||'?'} – ${c.budgetMax||'?'} tỷ</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
+          <span style="font-size:14px;color:#888;">Khu vực</span>
+          <span style="font-size:14px;font-weight:700;">${esc(c.areas||'Chưa rõ')}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+          <span style="font-size:14px;color:#888;">Mục đích</span>
+          <span style="font-size:14px;font-weight:700;">${purposeLabel(c.purpose)}</span>
+        </div>
+        ${c.notes ? `
+        <div style="padding:10px 0;border-top:1px solid #f5f5f5;margin-top:4px;">
+          <div style="font-size:12px;color:#888;margin-bottom:4px;">GHI CHÚ NHU CẦU</div>
+          <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(c.notes)}</div>
+        </div>` : ''}
+      </div>
 
+    </div>
+    <div class="bottom-bar">
+      <div class="bar-2">
+        <button class="btn-secondary" onclick="editCustomer('${c.id}')">✏️ Sửa</button>
+        <button class="btn-primary" onclick="matchCustomerAI('${c.id}')">🤖 Tìm nhà phù hợp</button>
+      </div>
+    </div>
   </div>`;
 }
 
 function renderCustomerMatch() {
-const c = state.customers.find(x => x.id === state.currentCustomerId);
-if (!c) { setTimeout(()=>nav(‘customers’), 0); return ‘’; }
-const result = state.matchResult;
-const loading = state.matchLoading;
+  const c = state.customers.find(x => x.id === state.currentCustomerId);
+  if (!c) { setTimeout(()=>nav('customers'), 0); return ''; }
+  const result = state.matchResult;
+  const loading = state.matchLoading;
 
-return `<div class="screen">
-<div class="topbar">
-<button class="topbar-back" onclick="nav('customer-detail')">‹</button>
-<div class="topbar-title">🤖 Tìm nhà phù hợp</div>
-</div>
-<div class="content-pad" style="padding-top:16px;">
-
-```
-  <div class="card" style="margin-bottom:16px;">
-    <div style="font-size:11px;color:#888;margin-bottom:4px;">ĐANG TÌM CHO</div>
-    <div style="font-size:16px;font-weight:800;">${esc(c.name)}</div>
-    <div style="font-size:13px;color:#555;margin-top:2px;">${c.budgetMin}–${c.budgetMax} tỷ · ${esc(c.areas||'')} · ${purposeLabel(c.purpose)}</div>
-  </div>
-
-  ${loading ? `
-    <div style="text-align:center;padding:60px 20px;">
-      <div style="font-size:32px;margin-bottom:16px;">🤖</div>
-      <div style="font-size:16px;font-weight:600;margin-bottom:8px;">AI đang phân tích...</div>
-      <div style="font-size:13px;color:#888;">Đang so sánh ${state.properties.length} hồ sơ nhà</div>
+  return `<div class="screen">
+    <div class="topbar">
+      <button class="topbar-back" onclick="nav('customer-detail')">‹</button>
+      <div class="topbar-title">🤖 Tìm nhà phù hợp</div>
     </div>
-  ` : result ? `
+    <div class="content-pad" style="padding-top:16px;">
 
-    ${result.summary ? `
-    <div class="card" style="background:#1a1a1a;color:white;border:none;margin-bottom:16px;">
-      <div style="font-size:11px;opacity:0.5;letter-spacing:1px;margin-bottom:8px;">NHẬN XÉT TỔNG QUAN</div>
-      <div style="font-size:14px;line-height:1.6;opacity:0.9;">${esc(result.summary)}</div>
-    </div>` : ''}
+      <div class="card" style="margin-bottom:16px;">
+        <div style="font-size:11px;color:#888;margin-bottom:4px;">ĐANG TÌM CHO</div>
+        <div style="font-size:16px;font-weight:800;">${esc(c.name)}</div>
+        <div style="font-size:13px;color:#555;margin-top:2px;">${c.budgetMin}–${c.budgetMax} tỷ · ${esc(c.areas||'')} · ${purposeLabel(c.purpose)}</div>
+      </div>
 
-    ${(result.matches||[]).map((m, i) => `
-    <div class="card" style="margin-bottom:12px;border:1.5px solid ${i===0?'#FF1744':'#E8E8E8'};">
-      ${i===0 ? `<div style="font-size:11px;font-weight:700;color:#FF1744;margin-bottom:8px;">🏆 PHÙ HỢP NHẤT</div>` : ''}
-      <div style="font-size:15px;font-weight:700;margin-bottom:4px;">${esc(m.address||'')}</div>
-      <div style="display:inline-block;font-size:12px;font-weight:700;color:${m.score==='Rất phù hợp'?'#2E7D32':m.score==='Phù hợp'?'#B45309':'#888'};background:${m.score==='Rất phù hợp'?'#F0FFF4':m.score==='Phù hợp'?'#FFFBEB':'#f5f5f5'};padding:3px 10px;border-radius:20px;margin-bottom:10px;">${esc(m.score||'')}</div>
-      ${(m.reasons||[]).map(r=>`<div style="display:flex;gap:8px;padding:3px 0;font-size:13px;"><span style="color:#2E7D32;flex-shrink:0;">✓</span><span>${esc(r)}</span></div>`).join('')}
-      ${(m.warnings||[]).map(w=>`<div style="display:flex;gap:8px;padding:3px 0;font-size:13px;"><span style="color:#FF1744;flex-shrink:0;">!</span><span>${esc(w)}</span></div>`).join('')}
-      ${m.tip ? `<div style="font-size:13px;color:#555;font-style:italic;padding-top:8px;border-top:1px solid #f5f5f5;margin-top:8px;">💡 ${esc(m.tip)}</div>` : ''}
+      ${loading ? `
+        <div style="text-align:center;padding:60px 20px;">
+          <div style="font-size:32px;margin-bottom:16px;">🤖</div>
+          <div style="font-size:16px;font-weight:600;margin-bottom:8px;">AI đang phân tích...</div>
+          <div style="font-size:13px;color:#888;">Đang so sánh ${state.properties.length} hồ sơ nhà</div>
+        </div>
+      ` : result ? `
+
+        ${result.summary ? `
+        <div class="card" style="background:#1a1a1a;color:white;border:none;margin-bottom:16px;">
+          <div style="font-size:11px;opacity:0.5;letter-spacing:1px;margin-bottom:8px;">NHẬN XÉT TỔNG QUAN</div>
+          <div style="font-size:14px;line-height:1.6;opacity:0.9;">${esc(result.summary)}</div>
+        </div>` : ''}
+
+        ${(result.matches||[]).map((m, i) => `
+        <div class="card" style="margin-bottom:12px;border:1.5px solid ${i===0?'#FF1744':'#E8E8E8'};">
+          ${i===0 ? `<div style="font-size:11px;font-weight:700;color:#FF1744;margin-bottom:8px;">🏆 PHÙ HỢP NHẤT</div>` : ''}
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px;">${esc(m.address||'')}</div>
+          <div style="display:inline-block;font-size:12px;font-weight:700;color:${m.score==='Rất phù hợp'?'#2E7D32':m.score==='Phù hợp'?'#B45309':'#888'};background:${m.score==='Rất phù hợp'?'#F0FFF4':m.score==='Phù hợp'?'#FFFBEB':'#f5f5f5'};padding:3px 10px;border-radius:20px;margin-bottom:10px;">${esc(m.score||'')}</div>
+          ${(m.reasons||[]).map(r=>`<div style="display:flex;gap:8px;padding:3px 0;font-size:13px;"><span style="color:#2E7D32;flex-shrink:0;">✓</span><span>${esc(r)}</span></div>`).join('')}
+          ${(m.warnings||[]).map(w=>`<div style="display:flex;gap:8px;padding:3px 0;font-size:13px;"><span style="color:#FF1744;flex-shrink:0;">!</span><span>${esc(w)}</span></div>`).join('')}
+          ${m.tip ? `<div style="font-size:13px;color:#555;font-style:italic;padding-top:8px;border-top:1px solid #f5f5f5;margin-top:8px;">💡 ${esc(m.tip)}</div>` : ''}
+        </div>
+        `).join('')}
+
+      ` : `
+        <div style="text-align:center;padding:40px 20px;color:#888;">
+          <div style="font-size:14px;">Không có kết quả. Thử lại.</div>
+          <button class="btn-primary" style="margin-top:16px;" onclick="matchCustomerAI('${c.id}')">🤖 Thử lại</button>
+        </div>
+      `}
     </div>
-    `).join('')}
-
-  ` : `
-    <div style="text-align:center;padding:40px 20px;color:#888;">
-      <div style="font-size:14px;">Không có kết quả. Thử lại.</div>
-      <button class="btn-primary" style="margin-top:16px;" onclick="matchCustomerAI('${c.id}')">🤖 Thử lại</button>
+    <div class="bottom-bar">
+      <button class="btn-primary" onclick="matchCustomerAI('${c.id}')" style="width:100%;">🤖 Phân tích lại</button>
     </div>
-  `}
-</div>
-<div class="bottom-bar">
-  <button class="btn-primary" onclick="matchCustomerAI('${c.id}')" style="width:100%;">🤖 Phân tích lại</button>
-</div>
-```
-
   </div>`;
 }
 
 // ============== INIT ==============
 // Firebase onAuthStateChanged sẽ gọi render() khi sẵn sàng
 </script>
-
 </body>
 </html>
