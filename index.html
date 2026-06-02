@@ -82,7 +82,7 @@ body {
 
 /* ===== Stats ===== */
 .stats-row {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
   margin: 0 16px;
   position: relative; z-index: 2;
 }
@@ -102,39 +102,35 @@ body {
 .tab-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   background: white;
-  border-top: 1px solid #F0F0F0;
-  display: flex; align-items: flex-end; justify-content: space-around;
-  padding: 8px 0 28px;
+  border-top: 1px solid #ECECEC;
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 10px 0 30px;
   z-index: 100;
-  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 -1px 8px rgba(0,0,0,0.07);
 }
 .tab-item {
   display: flex; flex-direction: column; align-items: center;
-  gap: 4px; cursor: pointer; flex: 1;
-  background: none; border: none; padding: 4px 0;
+  gap: 5px; cursor: pointer; flex: 1;
+  background: none; border: none; padding: 0;
 }
-.tab-item svg { transition: opacity 0.15s; }
-.tab-item span { font-size: 10px; font-weight: 600; color: #aaa; }
+.tab-item span { font-size: 11px; font-weight: 600; color: #666; }
 .tab-item.active span { color: #FF1744; }
-.tab-item.active svg { opacity: 1; }
-.tab-item svg { opacity: 0.4; }
+.tab-item svg { display: block; }
 .tab-add {
-  width: 54px; height: 54px; border-radius: 50%;
+  width: 52px; height: 52px; border-radius: 50%;
   background: linear-gradient(135deg, #FF1744, #CC0000);
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 8px; flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(255,23,68,0.45);
+  box-shadow: 0 4px 14px rgba(255,23,68,0.4);
   cursor: pointer; border: none;
-  transform: translateY(-12px);
+  transform: translateY(-14px);
+  flex-shrink: 0;
 }
 .tab-add-wrap {
   display: flex; flex-direction: column; align-items: center;
-  flex: 1; cursor: pointer; background: none; border: none;
-  padding: 0;
+  gap: 5px; flex: 1; cursor: pointer; background: none; border: none; padding: 0;
 }
-.tab-add-wrap span { font-size: 10px; font-weight: 600; color: #aaa; margin-top: 2px; }
-/* Padding bottom cho các trang có tab bar */
-.has-tabbar { padding-bottom: 90px; }
+.tab-add-wrap span { font-size: 11px; font-weight: 600; color: #666; margin-top: 18px; }
+.has-tabbar { padding-bottom: 100px; }
 .action-card {
   background: #fff;
   border-radius: 14px;
@@ -1262,7 +1258,7 @@ function renderLogin() {
     </div>`;
 }
 
-function renderTabBar(active) {
+function renderTabBar(active, addCustomer=false) {
   const tabs = [
     { id: 'list', label: 'Hồ sơ', svg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${active==='list'?'#FF1744':'#888'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>` },
     { id: 'customers', label: 'Khách hàng', svg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${active==='customers'?'#FF1744':'#888'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
@@ -1275,7 +1271,7 @@ function renderTabBar(active) {
       <span>${tabs[0].label}</span>
     </button>
 
-    <button class="tab-add-wrap" onclick="newProperty()">
+    <button class="tab-add-wrap" onclick="${addCustomer ? 'newCustomer()' : 'newProperty()'}">
       <div class="tab-add">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -1323,10 +1319,7 @@ function renderHome() {
         <div class="stats-row">
           <div class="stat-card"><div class="stat-num">${state.properties.length}</div><div class="stat-label">Hồ sơ</div></div>
           <div class="stat-card"><div class="stat-num">${state.customers.length}</div><div class="stat-label">Khách hàng</div></div>
-          <div class="stat-card" onclick="setState({showApiModal:true})" style="cursor:pointer;">
-            <div class="stat-num accent">+AI</div>
-            <div class="stat-label">Gemini</div>
-          </div>
+
         </div>
       </div>
       <div class="content-pad">
@@ -1484,6 +1477,7 @@ function renderList() {
       <div class="prop-card-delete" onclick="deleteProperty('${p.id}')">🗑️<br/>Xóa</div>
     </div>`;
   }).join('');
+  const cards = cardsHtml;
   setTimeout(() => { paged.forEach(p => initSwipe(p.id)); }, 50);
 
   const pagination = totalPages > 1 ? `
@@ -2728,7 +2722,7 @@ function renderCustomers() {
         </div>
       ` : cards + pagination}
     </div>
-    ${renderTabBar('customers')}
+    ${renderTabBar('customers', true)}
   </div>`;
 }
 
