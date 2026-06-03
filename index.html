@@ -46,7 +46,7 @@ body {
   flex-shrink: 0;
 }
 .brand-name { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; color: #1a1a1a; }
-.brand-sub { font-size: 11px; color: rgba(255,255,255,0.6); }
+.brand-sub { font-size: 11px; color: #999; }
 .hero-setting {
   position: absolute; top: 52px; right: 20px;
   background: none; border: none; cursor: pointer; padding: 4px;
@@ -232,7 +232,7 @@ body {
 }
 .recent-card:active { transform: scale(0.98); }
 .recent-left { flex: 1; min-width: 0; }
-.recent-addr { font-size: 17px; font-weight: 600; margin-bottom: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #000000; }
+.recent-addr { font-size: 16px; font-weight: 600; margin-bottom: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #000000; }
 .recent-divider { height: 1px; background: #E8E8E8; margin-bottom: 10px; }
 .recent-meta { font-size: 14px; color: #000000; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .recent-meta .dot { color: #000000; }
@@ -1380,10 +1380,12 @@ function renderHome() {
           </div>
           ${currentUser ? `
           <div style="position:relative;">
-            <button class="hero-avatar" onclick="setState({showLogout:!state.showLogout})">
-              ${currentUser.photoURL
-                ? `<img src="${esc(currentUser.photoURL)}" />`
-                : avatarLetter}
+            <button class="hero-avatar" onclick="setState({showLogout:!state.showLogout})"
+              style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;width:28px;height:28px;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
             </button>
             ${state.showLogout ? `<div class="hero-logout-popup" onclick="signOut()">Đăng xuất</div>` : ''}
           </div>` : ''}
@@ -1495,7 +1497,7 @@ function renderList() {
           <div class="prop-addr" style="flex:1;padding-right:8px;">${esc(p.address)||'Chưa có địa chỉ'}</div>
           <button class="star-btn" onclick="toggleStar('${p.id}',event)">${p.isStarred?'⭐':'☆'}</button>
         </div>
-        <div style="font-size:12px;color:#1a1a1a;margin-bottom:6px;">
+        <div style="font-size:14px;color:#1a1a1a;margin-bottom:6px;">
           <span style="font-weight:600;color:#1a1a1a;">${p.area||'—'}m²</span>
           ${specs ? ' · '+specs : ''}
         </div>
@@ -1548,11 +1550,11 @@ function renderList() {
         <input type="text" placeholder="Tìm theo quận / địa chỉ..."
           value="${fDistrict}"
           oninput="setState({filterDistrict:this.value,listPage:1})"
-          style="width:100%;padding:10px 14px;border:1.5px solid #E8E8E8;border-radius:10px;font-size:14px;background:white;box-sizing:border-box;margin-bottom:10px;" />
+          style="width:100%;padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;box-sizing:border-box;margin-bottom:10px;font-family:inherit;outline:none;" />
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
           <select onchange="setState({filterBudget:this.value,listPage:1})"
-            style="padding:10px;border:1.5px solid ${fBudget?'#FF1744':'#E8E8E8'};border-radius:10px;font-size:13px;background:white;">
+            style="padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;font-family:inherit;width:100%;">
             <option value="">Phân khúc</option>
             <option value="u5" ${fBudget==='u5'?'selected':''}>Dưới 5 tỷ</option>
             <option value="5-10" ${fBudget==='5-10'?'selected':''}>5 – 10 tỷ</option>
@@ -1560,7 +1562,7 @@ function renderList() {
             <option value="o20" ${fBudget==='o20'?'selected':''}>Trên 20 tỷ</option>
           </select>
           <select onchange="setState({filterArea:this.value,listPage:1})"
-            style="padding:10px;border:1.5px solid ${fArea?'#FF1744':'#E8E8E8'};border-radius:10px;font-size:13px;background:white;">
+            style="padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;font-family:inherit;width:100%;">
             <option value="">Diện tích</option>
             <option value="u40" ${fArea==='u40'?'selected':''}>Dưới 40 m²</option>
             <option value="40-60" ${fArea==='40-60'?'selected':''}>40 – 60 m²</option>
@@ -1571,7 +1573,7 @@ function renderList() {
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
           <select onchange="setState({filterAlley:this.value,listPage:1})"
-            style="padding:10px;border:1.5px solid ${fAlley?'#FF1744':'#E8E8E8'};border-radius:10px;font-size:13px;background:white;">
+            style="padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;font-family:inherit;width:100%;">
             <option value="">Loại đường/hẻm</option>
             <option value="mt" ${fAlley==='mt'?'selected':''}>Mặt tiền</option>
             <option value="alley1" ${fAlley==='alley1'?'selected':''}>Hẻm xe hơi > 6m</option>
@@ -1579,7 +1581,7 @@ function renderList() {
             <option value="alley3" ${fAlley==='alley3'?'selected':''}>Hẻm < 3m</option>
           </select>
           <select onchange="setState({filterDirection:this.value,listPage:1})"
-            style="padding:10px;border:1.5px solid ${fDirection?'#FF1744':'#E8E8E8'};border-radius:10px;font-size:13px;background:white;">
+            style="padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;font-family:inherit;width:100%;">
             <option value="">Hướng cửa chính</option>
             ${['Đông','Tây','Nam','Bắc','Đông Nam','Đông Bắc','Tây Nam','Tây Bắc']
               .map(h=>`<option value="${h}" ${fDirection===h?'selected':''}>${h}</option>`).join('')}
