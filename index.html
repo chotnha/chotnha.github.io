@@ -251,7 +251,7 @@ body {
 
 /* ===== Prop Card ===== */
 .prop-card-wrap {
-  position: relative; overflow: hidden; border-radius: 14px; margin-bottom: 10px;
+  position: relative; overflow: hidden; border-radius: 14px; margin-bottom: 24px;
 }
 .prop-card {
   background: white; border-radius: 14px; padding: 16px;
@@ -378,28 +378,28 @@ body {
 
 /* ===== Detail Hero ===== */
 .hero-detail {
-  background: linear-gradient(135deg, #1a0a0a 0%, #2d1010 50%, #1a0505 100%);
-  color: white;
+  background: #F7F7F7;
+  color: #1a1a1a;
   border-radius: 16px;
   padding: 22px 20px;
   margin-bottom: 18px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  border: 1px solid #E8E8E8;
 }
-.hero-detail-label { font-size: 10px; opacity: 0.6; letter-spacing: 1.5px; }
-.hero-detail-addr { font-size: 20px; font-weight: 800; margin: 6px 0; letter-spacing: -0.5px; }
-.hero-detail-meta { font-size: 12px; opacity: 0.75; display: flex; gap: 8px; flex-wrap: wrap; }
+.hero-detail-label { font-size: 10px; color: #888; letter-spacing: 1.5px; }
+.hero-detail-addr { font-size: 15px; font-weight: 700; margin: 6px 0; letter-spacing: -0.3px; color: #1a1a1a; }
+.hero-detail-meta { font-size: 12px; color: #555; display: flex; gap: 8px; flex-wrap: wrap; }
 .hero-prices {
   display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr;
   margin-top: 18px; padding-top: 18px;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  border-top: 1px solid #E8E8E8;
   align-items: center; gap: 4px;
 }
 .hero-price-item { text-align: center; }
-.hero-price-lbl { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
-.hero-price-val { font-size: 16px; font-weight: 800; margin-top: 4px; }
-.hero-price-val.red { color: #FF6B6B; }
-.hero-price-val.green { color: #6FE5A8; }
-.hero-price-divider { height: 30px; background: rgba(255,255,255,0.15); }
+.hero-price-lbl { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.hero-price-val { font-size: 16px; font-weight: 800; margin-top: 4px; color: #1a1a1a; }
+.hero-price-val.red { color: #FF1744; }
+.hero-price-val.green { color: #2E7D32; }
+.hero-price-divider { height: 30px; background: #E8E8E8; width: 1px; }
 
 .info-row {
   display: flex; justify-content: space-between; align-items: center;
@@ -1548,8 +1548,10 @@ function renderList() {
       <div style="background:#F9F9F9;padding:14px 16px;border-bottom:2px solid #E8E8E8;">
 
         <input type="text" placeholder="Tìm theo quận / địa chỉ..."
+          id="search-district"
           value="${fDistrict}"
-          oninput="setState({filterDistrict:this.value,listPage:1})"
+          onchange="setState({filterDistrict:this.value,listPage:1})"
+          onkeydown="if(event.key==='Enter'){setState({filterDistrict:this.value,listPage:1});this.blur();}"
           style="width:100%;padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;box-sizing:border-box;margin-bottom:10px;font-family:inherit;outline:none;" />
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
@@ -1857,16 +1859,16 @@ function renderDetail() {
       </div>
       <div class="bottom-bar" style="padding:10px 16px 28px;">
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <button onclick="editProperty('${p.id}')"
-            style="padding:11px 8px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:13px;font-weight:600;cursor:pointer;">
+          <button onclick="editProperty('${p.id}')" class="btn-secondary"
+            style="padding:11px 8px;font-size:13px;">
             ✎ Sửa
           </button>
-          <button onclick="openValuation('${p.id}')"
-            style="padding:11px 8px;border-radius:12px;border:none;background:#FF1744;color:white;font-size:13px;font-weight:700;cursor:pointer;">
+          <button onclick="openValuation('${p.id}')" class="btn-secondary"
+            style="padding:11px 8px;font-size:13px;">
             📊 Định giá
           </button>
-          <button onclick="openAI('${p.id}')"
-            style="padding:11px 8px;border-radius:12px;border:none;background:#1a1a1a;color:white;font-size:13px;font-weight:700;cursor:pointer;">
+          <button onclick="openAI('${p.id}')" class="btn-secondary"
+            style="padding:11px 8px;font-size:13px;">
             +AI
           </button>
         </div>
