@@ -2266,14 +2266,14 @@ function renderAI() {
         ` : `
           <div class="card" style="text-align:center;padding:24px;">
             <div style="font-size:14px;color:#555;margin-bottom:12px;">Kết quả cần cập nhật. Vui lòng phân tích lại.</div>
-            <button class="btn-primary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">Ghép nhà AI</button>
+            <button class="btn-primary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">+AI Phân tích lại</button>
           </div>
         `) : ''}
       </div>
       ${!state.aiLoading ? `
         <div class="bottom-bar">
           <div class="bar-2">
-            <button class="btn-secondary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">Ghép nhà AI</button>
+            <button class="btn-secondary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">+AI Phân tích lại</button>
             <button class="btn-primary" onclick="nav('detail')">✓ Hoàn tất</button>
           </div>
         </div>
