@@ -232,9 +232,9 @@ body {
 }
 .recent-card:active { transform: scale(0.98); }
 .recent-left { flex: 1; min-width: 0; }
-.recent-addr { font-size: 15px; font-weight: 600; margin-bottom: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #000000; }
+.recent-addr { font-size: 14px; font-weight: 600; margin-bottom: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #000000; }
 .recent-divider { height: 1px; background: #E8E8E8; margin-bottom: 10px; }
-.recent-meta { font-size: 13px; color: #000000; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.recent-meta { font-size: 12px; color: #000000; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .recent-meta .dot { color: #000000; }
 .recent-meta .price { color: #FF1744; font-weight: 700; }
 .recent-arrow { color: #888; font-size: 18px; }
@@ -275,7 +275,7 @@ body {
 }
 .prop-card-wrap.swiped .prop-card-delete { transform: translateX(0); }
 .prop-head { display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px; }
-.prop-addr { font-size: 15px; font-weight: 700; flex: 1; }
+.prop-addr { font-size: 14px; font-weight: 700; flex: 1; }
 .badge-valued { font-size: 16px; margin-left: 8px; }
 .prop-specs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 .spec {
@@ -1498,7 +1498,7 @@ function renderList() {
           <div class="prop-addr" style="flex:1;padding-right:8px;">${esc(p.address)||'Chưa có địa chỉ'}</div>
           <button class="star-btn" onclick="toggleStar('${p.id}',event)">${p.isStarred?'⭐':'☆'}</button>
         </div>
-        <div style="font-size:13px;color:#1a1a1a;margin-bottom:6px;">
+        <div style="font-size:12px;color:#1a1a1a;margin-bottom:6px;">
           <span style="font-weight:600;color:#1a1a1a;">${p.area||'—'}m²</span>
           ${specs ? ' · '+specs : ''}
         </div>
