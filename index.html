@@ -14,7 +14,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-  background: #F7F7F7;
+  background: #FFFFFF;
   color: #1a1a1a;
   max-width: 480px;
   margin: 0 auto;
@@ -28,12 +28,14 @@ body {
 
 /* ===== Hero (home) ===== */
 .hero {
-  background: #1a1a1a;
-  color: #fff;
-  padding: 20px 20px 16px;
+  background: #ffffff;
+  color: #1a1a1a;
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid #F0F0F0;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
 }
 .hero-bg { display: none; }
-.hero-content { width: 100%; }
+.hero-content { width: 100%; display: flex; align-items: center; justify-content: space-between; }
 .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
 .brand-mark {
   width: 38px; height: 38px;
@@ -42,7 +44,7 @@ body {
   display: flex; align-items: center; justify-content: center;
   font-weight: 900; font-size: 20px; color: white;
 }
-.brand-name { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; color: white; }
+.brand-name { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; color: #1a1a1a; }
 .brand-sub { font-size: 11px; color: rgba(255,255,255,0.6); }
 .hero-setting {
   position: absolute; top: 52px; right: 20px;
@@ -86,7 +88,7 @@ body {
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px;
-  background: #F7F7F7;
+  background: #FFFFFF;
   position: sticky; top: 0; z-index: 10;
   border-bottom: 1px solid #E8E8E8;
 }
@@ -198,16 +200,16 @@ body {
 
 /* ===== Recent ===== */
 .recent-card {
-  background: white; border-radius: 12px; padding: 14px;
-  border: 1px solid #E8E8E8; width: 100%; text-align: left;
+  background: white; border-radius: 14px; padding: 16px;
+  border: 1px solid #888; width: 100%; text-align: left;
   display: flex; align-items: center; gap: 12px;
-  margin-bottom: 8px; cursor: pointer;
+  margin-bottom: 24px; cursor: pointer;
   font-family: inherit;
 }
 .recent-card:active { transform: scale(0.98); }
 .recent-left { flex: 1; min-width: 0; }
-.recent-addr { font-size: 16px; font-weight: 600; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #000000; }
-.recent-meta { font-size: 13px; color: #000000; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.recent-addr { font-size: 18px; font-weight: 600; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #000000; }
+.recent-meta { font-size: 14px; color: #000000; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .recent-meta .dot { color: #000000; }
 .recent-meta .price { color: #FF1744; font-weight: 700; }
 .recent-arrow { color: #000000; font-size: 18px; }
@@ -592,7 +594,7 @@ body {
   min-height: 100vh;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  background: #F9F9F9;
+  background: #FFFFFF;
 }
 .loading-screen .spinner { width: 36px; height: 36px; border: 3px solid #f0f0f0; border-top-color: #FF1744; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
 
@@ -758,6 +760,7 @@ let state = {
   customerPage: 1,
   filterCustomerStatus: '',
   showViewModal: null,
+  showLogout: false,
   listFilter: 'all',
   listPage: 1,
   filterDistrict: '',
@@ -1334,25 +1337,30 @@ function renderHome() {
   return `
     <div class="screen has-tabbar">
       <div class="hero">
-        <div class="hero-content">
-          <div class="brand">
+        <div class="hero-content" style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="brand" style="flex:1;">
             <div class="brand-mark">B</div>
             <div>
               <div class="brand-name">Broker OS</div>
               <div class="brand-sub">Định giá chuyên sâu</div>
             </div>
           </div>
-
           ${currentUser ? `
-        <div class="content-pad" style="padding-bottom:0;padding-top:0;">
-          <div class="user-bar">
-            <img src="${esc(currentUser.photoURL||'')}" onerror="this.style.display='none'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" />
-            <span class="user-name">${esc(currentUser.displayName||currentUser.email)}</span>
-            <button class="btn-logout" onclick="signOut()">Đăng xuất</button>
-          </div>
+          <div style="position:relative;">
+            <button class="hero-avatar" onclick="setState({showLogout:!state.showLogout})">
+              ${currentUser.photoURL
+                ? `<img src="${esc(currentUser.photoURL)}" />`
+                : avatarLetter}
+            </button>
+            ${state.showLogout ? `<div class="hero-logout-popup" onclick="signOut()">Đăng xuất</div>` : ''}
+          </div>` : ''}
         </div>
-      ` : ''}
-        </div>
+        ${currentUser ? `
+        <div class="hero-kpi">
+          <span class="hero-kpi-item">${state.properties.length} hồ sơ</span>
+          <span class="hero-kpi-dot">·</span>
+          <span class="hero-kpi-item">${state.customers.length} khách hàng</span>
+        </div>` : ''}
       </div>
 
       <div class="content-pad">
@@ -1367,10 +1375,10 @@ function renderHome() {
               p.direction || '',
             ].filter(Boolean);
             return `
-            <button class="recent-card" onclick="openProperty('${p.id}')" style="padding:14px 16px;">
-              <div class="recent-left">
-                <div class="recent-addr" style="font-size:14px;font-weight:600;margin-bottom:6px;">${esc(p.address)||'Chưa có địa chỉ'}</div>
-                <div class="recent-meta" style="font-size:12px;color:#555;line-height:1.8;">${specs.join(' · ')}</div>
+            <button class="recent-card" onclick="openProperty('${p.id}')">
+              <div class="recent-left" style="flex:1;">
+                <div class="recent-addr">${esc(p.address)||'Chưa có địa chỉ'}</div>
+                <div class="recent-meta">${specs.join(' · ')}</div>
               </div>
               <div class="recent-arrow">›</div>
             </button>`;
