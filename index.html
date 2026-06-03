@@ -2099,7 +2099,7 @@ function renderValuation() {
 
         <!-- 4. CHIẾN LƯỢC ĐÀM PHÁN -->
         <div class="card" style="background:#F8F8F8;border:1px solid #E8E8E8;">
-          <div style="font-size:11px;opacity:0.5;letter-spacing:1.2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
+          <div style="font-size:10px;font-weight:800;color:#FF1744;letter-spacing:2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
 
           <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
             <span style="font-size:14px;color:#555;">Đánh giá</span>
@@ -2205,19 +2205,19 @@ function renderAI() {
 
           <!-- 2. CHIẾN LƯỢC ĐÀM PHÁN -->
           ${state.aiResult.negotiation ? `
-          <div class="card" style="background:#1a1a1a;color:white;border:none;">
-            <div style="font-size:11px;opacity:0.5;letter-spacing:1.2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
-            <div style="font-size:14px;color:rgba(255,255,255,0.85);line-height:1.6;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.1);">${esc(state.aiResult.negotiation.strategy||'')}</div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-              <span style="font-size:14px;opacity:0.7;">Mở đàm phán</span>
+          <div class="card" style="background:#FFFFFF;color:#1a1a1a;border:1px solid #eee;border-left:4px solid #FF1744;">
+            <div style="font-size:10px;font-weight:800;color:#FF1744;letter-spacing:2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
+            <div style="font-size:14px;color:#1a1a1a;line-height:1.6;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #F0F0F0;">${esc(state.aiResult.negotiation.strategy||'')}</div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+              <span style="font-size:14px;color:#555;">Mở đàm phán</span>
               <span style="font-size:16px;font-weight:800;color:#FF1744;">${esc(state.aiResult.negotiation.openingOffer||'')}</span>
             </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-              <span style="font-size:14px;opacity:0.7;">Giá mục tiêu</span>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+              <span style="font-size:14px;color:#555;">Giá mục tiêu</span>
               <span style="font-size:16px;font-weight:800;">${esc(state.aiResult.negotiation.targetPrice||'')}</span>
             </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-              <span style="font-size:14px;opacity:0.7;">Không mua cao hơn</span>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+              <span style="font-size:14px;color:#555;">Không mua cao hơn</span>
               <span style="font-size:14px;font-weight:700;color:#FF1744;">${esc(state.aiResult.negotiation.redLine||'')}</span>
             </div>
             <div style="padding:10px 0 4px;">
@@ -2790,11 +2790,11 @@ function renderCustomerDetail() {
     </div>
     <div class="content-pad" style="padding-top:16px;">
 
-      <div class="card" style="background:#1a1a1a;color:white;border:none;margin-bottom:16px;">
-        <div style="font-size:11px;opacity:0.5;letter-spacing:1px;margin-bottom:8px;">KHÁCH HÀNG</div>
-        <div style="font-size:22px;font-weight:800;margin-bottom:6px;">${esc(c.name)}</div>
+      <div class="card" style="background:#FFFFFF;color:#1a1a1a;border:1px solid #eee;border-left:4px solid #FF1744;margin-bottom:16px;">
+        <div style="font-size:10px;font-weight:800;color:#FF1744;letter-spacing:2px;margin-bottom:12px;">KHÁCH HÀNG</div>
+        <div style="font-size:20px;font-weight:800;margin-bottom:6px;color:#1a1a1a;">${esc(c.name)}</div>
         <div style="display:flex;gap:16px;flex-wrap:wrap;">
-          ${c.phone ? `<div style="font-size:14px;opacity:0.8;">${esc(c.phone)}</div>` : ''}
+          ${c.phone ? `<div style="font-size:14px;color:#555;">${esc(c.phone)}</div>` : ''}
           <div style="font-size:14px;font-weight:700;color:${statusColor(c.status)};">${statusLabel(c.status)}</div>
         </div>
       </div>
@@ -2886,9 +2886,9 @@ function renderCustomerMatch() {
       ` : result ? `
 
         ${result.summary ? `
-        <div class="card" style="background:#1a1a1a;color:white;border:none;margin-bottom:16px;">
-          <div style="font-size:11px;opacity:0.5;letter-spacing:1px;margin-bottom:8px;">NHẬN XÉT TỔNG QUAN</div>
-          <div style="font-size:14px;line-height:1.6;opacity:0.9;">${esc(result.summary)}</div>
+        <div class="card" style="background:#FFFFFF;color:#1a1a1a;border:1px solid #eee;border-left:4px solid #FF1744;margin-bottom:16px;">
+          <div style="font-size:10px;font-weight:800;color:#FF1744;letter-spacing:2px;margin-bottom:12px;">NHẬN XÉT TỔNG QUAN</div>
+          <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(result.summary)}</div>
         </div>` : ''}
 
         ${(result.matches||[]).map((m, i) => `
