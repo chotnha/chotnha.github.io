@@ -258,18 +258,7 @@ body {
   cursor: pointer; border: 1px solid #555;
   transition: transform 0.25s ease; position: relative;
 }
-.prop-card .star-btn {
-  position: relative; z-index: 10;
-  pointer-events: auto;
-  background: none; cursor: pointer;
-  font-size: 13px; padding: 5px 8px; line-height: 1;
-  flex-shrink: 0;
-  border: 1.5px solid #aaa; border-radius: 20px;
-  color: #aaa; font-weight: 600;
-}
-.prop-card .star-btn.starred {
-  border-color: #FF1744; color: #FF1744;
-}
+
 .prop-card-wrap.swiped .prop-card { transform: translateX(-80px); border-radius: 14px 0 0 14px; }
 .prop-card-delete {
   position: absolute; right: 0; top: 0; bottom: 0; width: 80px;
@@ -469,13 +458,13 @@ body {
 .compare-row .red { color: #FF1744; }
 
 .negotiation-box {
-  background: linear-gradient(135deg, #1a1a1a, #2a1010);
-  color: white; border-radius: 12px;
+  background: #FFF8F8; color: #1a1a1a;
+  border-radius: 12px; border: 1.5px solid #FFD0D0;
   padding: 16px; margin-top: 14px;
 }
-.neg-title { font-size: 11px; opacity: 0.7; letter-spacing: 1px; }
-.neg-price { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin: 4px 0 8px; }
-.neg-price::after { content: ' tỷ'; font-size: 16px; opacity: 0.7; font-weight: 500; }
+.neg-title { font-size: 11px; color: #FF1744; letter-spacing: 1px; font-weight: 700; }
+.neg-price { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin: 4px 0 8px; color: #1a1a1a; }
+.neg-price::after { content: ' tỷ'; font-size: 16px; color: #888; font-weight: 500; }
 .neg-desc { font-size: 12px; opacity: 0.85; line-height: 1.5; }
 
 .point-row {
@@ -497,19 +486,18 @@ body {
 
 /* ===== AI ===== */
 .ai-hero {
-  background: linear-gradient(135deg, #1a1a1a 0%, #4a1515 100%);
-  color: white; border-radius: 16px;
-  padding: 22px 20px; margin-bottom: 14px;
+  background: #FFFFFF; color: #1a1a1a;
+  border-radius: 16px; padding: 22px 20px; margin-bottom: 14px;
+  border: 1px solid #eee; border-left: 4px solid #FF1744;
 }
 .ai-badge {
   display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
+  background: #FFF0F0;
   padding: 5px 11px; border-radius: 999px;
-  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #FF1744;
 }
-.ai-title { font-size: 22px; font-weight: 800; margin: 10px 0 4px; letter-spacing: -0.5px; }
-.ai-desc { font-size: 13px; opacity: 0.7; }
+.ai-title { font-size: 18px; font-weight: 800; margin: 10px 0 4px; color: #1a1a1a; }
+.ai-desc { font-size: 13px; color: #555; }
 
 .ai-loading { text-align: center; padding: 40px 20px; }
 .spinner {
@@ -1177,16 +1165,6 @@ function initSwipe(id) {
   }, {passive:true});
 }
 
-function toggleStar(id, e) {
-  e && e.stopPropagation();
-  const p = state.properties.find(x => x.id === id);
-  if (!p) return;
-  const newVal = !p.isStarred;
-  const newProps = state.properties.map(x => x.id === id ? { ...x, isStarred: newVal } : x);
-  state.properties = newProps;
-  if (currentUser) saveDataToFirestore(newProps);
-  render();
-}
 
 function openValuation(id) { nav('valuation', { currentId: id }); }
 function openAI(id) { 
@@ -1450,7 +1428,7 @@ function renderList() {
   const showPanel = state.showFilterPanel||false;
   const hasFilter = fDistrict||fBudget||fArea||fAlley||fDirection;
 
-  let filtered = filter === 'starred' ? allProps.filter(p => p.isStarred) : allProps;
+  let filtered = allProps;
   if (fDistrict) filtered = filtered.filter(p => (p.address||'').toLowerCase().includes(fDistrict));
   if (fBudget) {
     filtered = filtered.filter(p => {
@@ -1501,7 +1479,7 @@ function renderList() {
       <div class="prop-card" onclick="openProperty('${p.id}')">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
           <div class="prop-addr" style="flex:1;padding-right:8px;">${esc(p.address)||'Chưa có địa chỉ'}</div>
-          <button class="${p.isStarred?'star-btn starred':'star-btn'}" ontouchstart="toggleStar('${p.id}',event)" onclick="toggleStar('${p.id}',event)">★</button>
+          
         </div>
         <div style="font-size:12px;color:#1a1a1a;margin-bottom:6px;">
           <span style="font-weight:600;color:#1a1a1a;">${p.area||'—'}m²</span>
@@ -1606,9 +1584,7 @@ function renderList() {
         <button onclick="setState({listFilter:'all',listPage:1})" style="padding:6px 14px;border-radius:20px;border:1.5px solid ${filter==='all'?'#FF1744':'#E8E8E8'};background:${filter==='all'?'#FF1744':'white'};color:${filter==='all'?'white':'#1a1a1a'};font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">
           Tất cả (${allProps.length})
         </button>
-        <button onclick="setState({listFilter:'starred',listPage:1})" style="padding:6px 14px;border-radius:20px;border:1.5px solid ${filter==='starred'?'#FF1744':'#E8E8E8'};background:${filter==='starred'?'#FF1744':'white'};color:${filter==='starred'?'white':'#1a1a1a'};font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">
-          ⭐ Theo dõi (${allProps.filter(p=>p.isStarred).length})
-        </button>
+        
         ${hasFilter ? `<span style="padding:6px 10px;border-radius:20px;background:#FFF5F5;color:#FF1744;font-size:12px;font-weight:600;flex-shrink:0;">Tìm thấy ${filtered.length} hồ sơ</span>` : ''}
       </div>
       <div class="content-pad" style="padding-top:12px;">
@@ -2290,14 +2266,14 @@ function renderAI() {
         ` : `
           <div class="card" style="text-align:center;padding:24px;">
             <div style="font-size:14px;color:#555;margin-bottom:12px;">Kết quả cần cập nhật. Vui lòng phân tích lại.</div>
-            <button class="btn-primary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">+AI Phân tích lại</button>
+            <button class="btn-primary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">Ghép nhà AI</button>
           </div>
         `) : ''}
       </div>
       ${!state.aiLoading ? `
         <div class="bottom-bar">
           <div class="bar-2">
-            <button class="btn-secondary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">+AI Phân tích lại</button>
+            <button class="btn-secondary" onclick="callGeminiAI(state.properties.find(x=>x.id==='${p.id}'))">Ghép nhà AI</button>
             <button class="btn-primary" onclick="nav('detail')">✓ Hoàn tất</button>
           </div>
         </div>
@@ -2469,18 +2445,7 @@ function purposeLabel(s) {
   return { buy_live:'Mua ở', invest:'Đầu tư', both:'Mua ở + Đầu tư' }[s] || s;
 }
 
-async function toggleStar(id, e) {
-  e && e.stopPropagation();
-  const user = firebase.auth().currentUser;
-  if (!user) return;
-  const p = state.properties.find(x => x.id === id);
-  if (!p) return;
-  const newVal = !p.isStarred;
-  await dbFS.collection('users').doc(user.uid).collection('properties').doc(id).update({ isStarred: newVal });
-  state.properties = state.properties.map(x => x.id === id ? { ...x, isStarred: newVal } : x);
-  render();
-}
-
+async 
 
 async function saveCustomersToFirestore(arr) {
   if (!currentUser) return;
@@ -2852,7 +2817,7 @@ function renderCustomerDetail() {
     <div class="bottom-bar">
       <div class="bar-2">
         <button class="btn-secondary" onclick="editCustomer('${c.id}')">✏️ Sửa</button>
-        <button class="btn-primary" onclick="matchCustomerAI('${c.id}')">+AI Tìm nhà phù hợp</button>
+        <button class="btn-secondary" onclick="matchCustomerAI('${c.id}')">Ghép nhà AI</button>
       </div>
     </div>
   </div>`;
@@ -2867,7 +2832,7 @@ function renderCustomerMatch() {
   return `<div class="screen">
     <div class="topbar">
       <button class="topbar-back" onclick="nav('customer-detail')">‹</button>
-      <div class="topbar-title">+AI Tìm nhà phù hợp</div>
+      <div class="topbar-title">Ghép nhà AI</div>
     </div>
     <div class="content-pad" style="padding-top:16px;">
 
@@ -2905,12 +2870,12 @@ function renderCustomerMatch() {
       ` : `
         <div style="text-align:center;padding:40px 20px;color:#888;">
           <div style="font-size:14px;">Không có kết quả. Thử lại.</div>
-          <button class="btn-primary" style="margin-top:16px;" onclick="matchCustomerAI('${c.id}')">+AI Thử lại</button>
+          <button class="btn-primary" style="margin-top:16px;" onclick="matchCustomerAI('${c.id}')">Ghép nhà AI</button>
         </div>
       `}
     </div>
     <div class="bottom-bar">
-      <button class="btn-primary" onclick="matchCustomerAI('${c.id}')" style="width:100%;">+AI Phân tích lại</button>
+      <button class="btn-primary" onclick="matchCustomerAI('${c.id}')" style="width:100%;">Ghép nhà AI</button>
     </div>
   </div>`;
 }
