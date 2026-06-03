@@ -261,9 +261,14 @@ body {
 .prop-card .star-btn {
   position: relative; z-index: 10;
   pointer-events: auto;
-  background: none; border: none; cursor: pointer;
-  font-size: 18px; padding: 4px; line-height: 1;
+  background: none; cursor: pointer;
+  font-size: 13px; padding: 5px 8px; line-height: 1;
   flex-shrink: 0;
+  border: 1.5px solid #aaa; border-radius: 20px;
+  color: #aaa; font-weight: 600;
+}
+.prop-card .star-btn.starred {
+  border-color: #FF1744; color: #FF1744;
 }
 .prop-card-wrap.swiped .prop-card { transform: translateX(-80px); border-radius: 14px 0 0 14px; }
 .prop-card-delete {
@@ -1496,7 +1501,7 @@ function renderList() {
       <div class="prop-card" onclick="openProperty('${p.id}')">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
           <div class="prop-addr" style="flex:1;padding-right:8px;">${esc(p.address)||'Chưa có địa chỉ'}</div>
-          <button class="star-btn" onclick="toggleStar('${p.id}',event)">${p.isStarred?'⭐':'☆'}</button>
+          <button class="${p.isStarred?'star-btn starred':'star-btn'}" ontouchstart="toggleStar('${p.id}',event)" onclick="toggleStar('${p.id}',event)">★</button>
         </div>
         <div style="font-size:12px;color:#1a1a1a;margin-bottom:6px;">
           <span style="font-weight:600;color:#1a1a1a;">${p.area||'—'}m²</span>
