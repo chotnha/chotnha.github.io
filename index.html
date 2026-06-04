@@ -1604,7 +1604,7 @@ function renderList() {
         <select onchange="setState({filterStatus:this.value,listPage:1})"
           style="width:100%;padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:14px;background:white;font-family:inherit;margin-bottom:10px;">
           <option value="">Tất cả trạng thái</option>
-          ${[{v:'not_surveyed',l:'🟡 Chưa khảo sát'},{v:'active',l:' Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
+          ${[{v:'not_surveyed',l:'Chưa khảo sát'},{v:'active',l:' Bán mạnh'},{v:'paused',l:'Tạm dừng'},{v:'sold',l:'Đã bán'}]
             .map(o=>`<option value="${o.v}" ${state.filterStatus===o.v?'selected':''}>${o.l}</option>`).join('')}
         </select>
 
