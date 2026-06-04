@@ -831,7 +831,7 @@ function legalLabel(v) { return { pink_book:'Sổ hồng riêng', red_book:'Sổ
 function alleyLabel(v) { return { mt:'Mặt tiền', alley1:'Hẻm > 6m', alley2:'Hẻm 3-5m', alley3:'Hẻm < 3m' }[v]||v; }
 function shapeLabel(v) { return { rectangle:'Vuông vức', flared_light:'Nở hậu nhẹ', flared_nice:'Nở hậu đẹp (+3%)', flared_L:'Nở hậu L (+3%)', taper_light:'Tóp hậu nhẹ', taper_mid:'Tóp hậu vừa (-5%)', taper_heavy:'Tóp hậu nặng (-15%)', xeo:'Chặt góc xéo (-15%)', triangle:'Tam giác (-20%)', unknown:'Không xác định (-25%)' }[v]||v; }
 function propStatusLabel(v) {
-  return { active:'🔴 Đang bán', not_surveyed:'🟡 Chưa KS', paused:'⏸ Tạm dừng', sold:'✅ Đã bán' }[v] || '🔴 Đang bán';
+  return { active:'Bán mạnh', not_surveyed:'Chưa KS', paused:'⏸ Tạm dừng', sold:'Đã bán' }[v] || 'Bán mạnh';
 }
 function propStatusColor(v) {
   return { active:'#FF1744', not_surveyed:'#B45309', paused:'#555', sold:'#2E7D32' }[v] || '#FF1744';
@@ -841,7 +841,7 @@ function propStatusBg(v) {
 }
 function hoanCongLabel(v) { return { full:'Hoàn công đầy đủ', pending:'Đang chờ hoàn công', partial:'Hoàn công một phần', none:'Chưa hoàn công', impossible:'Không thể hoàn công' }[v]||v; }
 function hienTrangLabel(v) {
-  return { '100':'Xây mới', '90':'Cải tạo mới', '80':'Còn tốt', '60':'Trung bình', '40':'Cũ', '20':'Rất cũ', '5':'Nhà nát' }[String(v)] || v;
+  return { '100':'Xây mới 100%', '90':'Cải tạo mới', '80':'Còn tốt', '60':'Trung bình', '40':'Cũ', '20':'Rất cũ', '5':'Nhà nát' }[String(v)] || v;
 }
 function furnitureLabel(v) {
   return { none:'Không có', basic:'Cơ bản', full:'Đầy đủ', luxury:'Cao cấp' }[v] || v;
