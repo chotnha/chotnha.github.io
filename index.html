@@ -1604,7 +1604,7 @@ function renderList() {
         <select onchange="setState({filterStatus:this.value,listPage:1})"
           style="width:100%;padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:14px;background:white;font-family:inherit;margin-bottom:10px;">
           <option value="">Tất cả trạng thái</option>
-          ${[{v:'not_surveyed',l:'🟡 Chưa khảo sát'},{v:'active',l:'🔴 Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
+          ${[{v:'not_surveyed',l:'🟡 Chưa khảo sát'},{v:'active',l:' Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
             .map(o=>`<option value="${o.v}" ${state.filterStatus===o.v?'selected':''}>${o.l}</option>`).join('')}
         </select>
 
@@ -1670,7 +1670,7 @@ function renderForm() {
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Trạng thái</span>
           <select class="input" onchange="updateForm('propStatus', this.value)">
-            ${[{v:'not_surveyed',l: Chưa khảo sát'},{v:'active',l: Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
+            ${[{v:'not_surveyed',l:'🟡 Chưa khảo sát'},{v:'active',l:'🔴 Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
               .map(o=>`<option value="${o.v}" ${(f.propStatus||'active')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
@@ -1690,14 +1690,14 @@ function renderForm() {
         </div>
 
         <div class="field" style="margin-top:20px;">
-          <label class="field-label">DT thực tế (m²)</label>
+          <label class="field-label">Diện tích thực tế (m²)</label>
           <input class="input" type="number" placeholder=""
             value="${f.dtThucTe||''}" id="input-dtThucTe"
             oninput="updateForm('dtThucTe', this.value)" />
         </div>
 
         <div class="field" style="margin-top:20px;">
-          <label class="field-label">DT công nhận (m²)</label>
+          <label class="field-label">Diện tích công nhận (m²)</label>
           <input class="input" type="number" placeholder=""
             value="${f.area||''}" id="input-area" placeholder="Đất sạch 100%"
             oninput="updateForm('area', this.value)" />
@@ -1726,7 +1726,7 @@ function renderForm() {
         <div class="row-2" style="margin-top:20px;">
           ${field('Số tầng', 'floors', f.floors, 'number', '3')}
           <div class="field">
-            <label class="field-label">DT sàn XD (m²)</label>
+            <label class="field-label">Diện tích sàn XD (m²)</label>
             <input class="input" type="number" placeholder=""
               value="${f.sanXD||''}" id="input-sanXD"
               oninput="updateForm('sanXD', this.value)" />
