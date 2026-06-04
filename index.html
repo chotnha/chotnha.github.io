@@ -1668,13 +1668,12 @@ function renderForm() {
         </div>
 
         <div class="f-select-wrap" style="margin-top:20px;">
-          <span class="field-label">Trạng thái</span>
-          <select class="input" onchange="updateForm('propStatus', this.value)">
-            ${[{v:'not_surveyed',l:'Chưa khảo sát'},{v:'active',l:' Bán mạnh'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'Đã bán'}]
-              .map(o=>`<option value="${o.v}" ${(f.propStatus||'active')===o.v?'selected':''}>${o.l}</option>`).join('')}
-          </select>
-        </div>
-
+  <span class="field-label">Trạng thái</span>
+  <select class="input" onchange="updateForm('propStatus', this.value)">
+    ${[{v:'not_surveyed',l:'Chưa khảo sát'},{v:'active',l:'Bán mạnh'},{v:'paused',l:'Tạm dừng'},{v:'sold',l:'Đã bán'}]
+      .map(o=>`<option value="${o.v}" ${(f.propStatus||'active')===o.v?'selected':''}>${o.l}</option>`).join('')}
+  </select>
+</div>
         ${field('Giá chào (tỷ)', 'askingPrice', f.askingPrice, 'number', '9.5')}
 
         <div class="row-2" style="margin-top:20px;">
