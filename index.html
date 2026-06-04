@@ -32,7 +32,7 @@ body {
   color: #1a1a1a;
   padding: 16px 20px 14px;
   border-bottom: 1px solid #F0F0F0;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 12px rgba(255,23,68,0.10);
 }
 .hero-bg { display: none; }
 .hero-content { width: 100%; display: flex; align-items: center; justify-content: space-between; }
@@ -132,10 +132,10 @@ body {
 /* ===== Content ===== */
 .content-pad { padding: 16px; }
 .section-title {
-  font-size: 14px; font-weight: 700;
+  font-size: 12px; font-weight: 800;
   margin: 22px 4px 12px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
 }
 
 /* ===== Stats ===== */
@@ -418,7 +418,7 @@ body {
   border-left: 4px solid #FF1744;
 }
 .report-stamp { font-size: 10px; font-weight: 800; color: #FF1744; letter-spacing: 2px; margin-bottom: 8px; }
-.report-addr { font-size: 17px; font-weight: 800; line-height: 1.3; margin-bottom: 6px; }
+.report-addr { font-size: 15px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
 .report-date { font-size: 11px; color: #000000; }
 
 .result-card { background: linear-gradient(165deg, #fff 0%, #FFF8F8 100%); border: 1.5px solid #FBD7D7; }
@@ -790,6 +790,7 @@ let state = {
   showLogout: false,
   listFilter: 'all',
   listPage: 1,
+  filterStatus: '',
   filterDistrict: '',
   filterBudget: '',
   filterArea: '',
@@ -814,11 +815,12 @@ function setState(updates) {
 
 function emptyForm() {
   return {
-    address: '', width: '', length: '', dtThucTe: '', area: '', floors: '', sanXD: '',
-    loGioiArea: '', loGioiRate: '80',
-    extraArea: '', extraRate: '40',
+    address: '', propStatus: 'active', width: '', length: '', dtThucTe: '', area: '', floors: '', sanXD: '',
+    loGioiArea: '', loGioiRate: '',
+    extraArea: '', extraRate: '',
     askingPrice: '', giaTT: '', donGiaXD: '7', hienTrang: '80',
-    furniture: 'none', planning: 'clear',
+    furnitureDesc: '', furnitureValue: '',
+    hoanCong: 'full', hoanCongRate: '',
     alleyType: 'mt', shape: 'rectangle',
     issues: [], legal: 'pink_book', direction: '', notes: '', isStarred: false
   };
@@ -827,7 +829,17 @@ function emptyForm() {
 // ============== HELPERS ==============
 function legalLabel(v) { return { pink_book:'Sổ hồng riêng', red_book:'Sổ đỏ', co_owned:'Đồng sở hữu', pending:'Chờ sổ' }[v]||v; }
 function alleyLabel(v) { return { mt:'Mặt tiền', alley1:'Hẻm > 6m', alley2:'Hẻm 3-5m', alley3:'Hẻm < 3m' }[v]||v; }
-function shapeLabel(v) { return { rectangle:'Vuông vức', flared:'Nở hậu (+5%)', L:'Chữ L (+3%)', taper:'Tóp hậu (-13%)', xeo:'Xéo/Méo (-10%)', triangle:'Tam giác (-20%)' }[v]||v; }
+function shapeLabel(v) { return { rectangle:'Vuông vức', flared_light:'Nở hậu nhẹ', flared_nice:'Nở hậu đẹp (+3%)', flared_L:'Nở hậu L (+3%)', taper_light:'Tóp hậu nhẹ', taper_mid:'Tóp hậu vừa (-5%)', taper_heavy:'Tóp hậu nặng (-15%)', xeo:'Chặt góc xéo (-15%)', triangle:'Tam giác (-20%)', unknown:'Không xác định (-25%)' }[v]||v; }
+function propStatusLabel(v) {
+  return { active:'🔴 Đang bán', not_surveyed:'🟡 Chưa KS', paused:'⏸ Tạm dừng', sold:'✅ Đã bán' }[v] || '🔴 Đang bán';
+}
+function propStatusColor(v) {
+  return { active:'#FF1744', not_surveyed:'#B45309', paused:'#555', sold:'#2E7D32' }[v] || '#FF1744';
+}
+function propStatusBg(v) {
+  return { active:'#FFF0F0', not_surveyed:'#FFFBEB', paused:'#F5F5F5', sold:'#F0FFF4' }[v] || '#FFF0F0';
+}
+function hoanCongLabel(v) { return { full:'Hoàn công đầy đủ', pending:'Đang chờ hoàn công', partial:'Hoàn công một phần', none:'Chưa hoàn công', impossible:'Không thể hoàn công' }[v]||v; }
 function hienTrangLabel(v) {
   return { '100':'Xây mới', '90':'Cải tạo mới', '80':'Còn tốt', '60':'Trung bình', '40':'Cũ', '20':'Rất cũ', '5':'Nhà nát' }[String(v)] || v;
 }
@@ -843,7 +855,7 @@ function fmtTy(val) {
   return parseFloat(val).toFixed(2) + ' tỷ';
 }
 
-function issueLabel(v) { return { spiritual_temple:'Gần chùa', spiritual_grave:'Gần nghĩa trang/mộ', spiritual_shrine:'Gần đình/miếu', pole:'Cột điện/hố ga', noise:'Tiếng ồn', flood:'Ngập nước', tiny_alley:'Hẻm nội bộ', dead_end:'Hẻm cụt', road_hit:'Đâm đường', one_way:'Đường 1 chiều' }[v]||v; }
+function issueLabel(v) { return { spiritual_temple:'Gần chùa (-5%)', spiritual_grave:'Gần nghĩa trang/mộ (-10%)', spiritual_shrine:'Gần đình/miếu (-4%)', pole:'Cột điện/hố ga (-3%)', noise:'Tiếng ồn (-10%)', flood:'Ngập nước (-8%)', tiny_alley:'Hẻm nội bộ (-5%)', dead_end:'Hẻm cụt (-5%)', road_hit_light:'Đâm đường rất nhẹ (-5%)', road_hit_medium:'Đâm đường nhẹ (-10%)', road_hit_heavy:'Đâm đường nặng (-20%)', one_way:'Đường 1 chiều (-6%)' }[v]||v; }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ============== VALUATION CALCULATION ==============
@@ -856,14 +868,14 @@ function calculateValuation(p) {
   const donGiaXD   = parseFloat(p.donGiaXD)||7;
   const hienTrang  = parseFloat(p.hienTrang || p.doMoi)||80;
   const loGioiArea = parseFloat(p.loGioiArea)||0;
-  const loGioiRate = parseFloat(p.loGioiRate)||80;
+  const loGioiRate = parseFloat(p.loGioiRate)||0;
   const extraArea  = parseFloat(p.extraArea)||0;
-  const extraRate  = parseFloat(p.extraRate)||40;
+  const extraRate  = parseFloat(p.extraRate)||0;
 
   // ═══ BƯỚC 1: Giá trị đất theo thị trường ═══
   const giaTriDatTT      = (area && giaTT) ? +(area * giaTT / 1000).toFixed(3) : 0;
-  const giaTriLoGioi     = (loGioiArea && giaTT) ? +(loGioiArea * giaTT / 1000 * loGioiRate / 100).toFixed(3) : 0;
-  const giaTriExtra      = (extraArea && giaTT) ? +(extraArea * giaTT / 1000 * extraRate / 100).toFixed(3) : 0;
+  const giaTriLoGioi     = (loGioiArea && giaTT && loGioiRate) ? +(loGioiArea * giaTT / 1000 * loGioiRate / 100).toFixed(3) : 0;
+  const giaTriExtra      = (extraArea && giaTT && extraRate) ? +(extraArea * giaTT / 1000 * extraRate / 100).toFixed(3) : 0;
   const giaTriDatTongCong = +(giaTriDatTT + giaTriLoGioi + giaTriExtra).toFixed(3);
 
   // ═══ BƯỚC 2: Hệ số lỗi — NHÂN HỆ SỐ (không cộng dồn) ═══
@@ -876,7 +888,9 @@ function calculateValuation(p) {
     flood:  -8,
     tiny_alley: -5,
     dead_end:   -5,
-    road_hit:  -12,
+    road_hit_light: -5,
+    road_hit_medium: -10,
+    road_hit_heavy: -20,
     one_way:    -6,
   };
   let heSoLoi = 1.0;
@@ -884,23 +898,33 @@ function calculateValuation(p) {
   (p.issues||[]).forEach(iss => {
     const rate = PENALTY_RATE[iss];
     if (rate) {
-      heSoLoi *= (1 + rate / 100);  // NHÂN hệ số độc lập
+      heSoLoi *= (1 + rate / 100);
       issueDetails.push({ label: issueLabel(iss), pct: rate });
     }
   });
-  const totalPenaltyPct = +((heSoLoi - 1) * 100).toFixed(1); // chỉ để hiển thị
+  const totalPenaltyPct = +((heSoLoi - 1) * 100).toFixed(1);
 
   // ═══ BƯỚC 3: Giá trị đất sau trừ lỗi ═══
   const giaTriDatSauLoi = giaTriDatTongCong ? +(giaTriDatTongCong * heSoLoi).toFixed(3) : 0;
 
   // ═══ BƯỚC 4: Giá trị nhà ═══
   const sanXD = parseFloat(p.sanXD)||(area * floors);
-  const giaTriNha = (sanXD && donGiaXD && hienTrang)
+  const giaTriNhaCoBan = (sanXD && donGiaXD && hienTrang)
     ? +(sanXD * donGiaXD / 1000 * hienTrang / 100).toFixed(3) : 0;
+
+  // Trừ hoàn công vào giá trị nhà
+  const hoanCongRate = parseFloat(p.hoanCongRate)||0;
+  const hoanCongValue = hoanCongRate > 0 ? +(giaTriNhaCoBan * hoanCongRate / 100).toFixed(3) : 0;
+  const giaTriNha = +(giaTriNhaCoBan - hoanCongValue).toFixed(3);
 
   // ═══ BƯỚC 5: Hệ số điều chỉnh khác (hình dạng, pháp lý, mặt tiền) ═══
   const adjustments = [];
-  const shapeDiscount = { rectangle:0, flared:0.05, L:0.03, taper:-0.13, xeo:-0.10, triangle:-0.20 }[p.shape]||0;
+  const SHAPE_ADJ = {
+    rectangle: 0, flared_light: 0, flared_nice: 0.03, flared_L: 0.03,
+    taper_light: 0, taper_mid: -0.05, taper_heavy: -0.15,
+    xeo: -0.15, triangle: -0.20, unknown: -0.25
+  };
+  const shapeDiscount = SHAPE_ADJ[p.shape]||0;
   if (shapeDiscount !== 0 && giaTriDatSauLoi)
     adjustments.push({ label:'Hình dạng: '+shapeLabel(p.shape), value: +(giaTriDatSauLoi*shapeDiscount).toFixed(3) });
   if (p.legal === 'co_owned' && giaTriDatSauLoi)
@@ -913,9 +937,8 @@ function calculateValuation(p) {
     adjustments.push({ label:`Mặt tiền hẹp ${width}m`, value: +(giaTriDatSauLoi*-0.05).toFixed(3) });
   const adjSum = adjustments.reduce((s,a)=>s+a.value, 0);
 
-  // ═══ BƯỚC 5b: Nội thất ═══
-  const FURNITURE_VALUE = { none:0, basic:0.05, full:0.15, luxury:0.35 };
-  const furnitureValue = FURNITURE_VALUE[p.furniture] || 0;
+  // ═══ BƯỚC 5b: Nội thất (giá trị trực tiếp) ═══
+  const furnitureValue = parseFloat(p.furnitureValue)||0;
 
   // ═══ BƯỚC 5c: Quy hoạch ═══
   const PLANNING_RATE = { clear:0, road:-0.10, public:-0.25, other:-0.15 };
@@ -1022,7 +1045,8 @@ function calculateValuation(p) {
   if (weaknesses.length === 0) weaknesses.push('Không có điểm yếu nghiêm trọng');
 
   return {
-    giaTriDatTT, giaTriLoGioi, giaTriExtra, giaTriDatTongCong, giaTriDatSauLoi, giaTriNha,
+    giaTriDatTT, giaTriLoGioi, giaTriExtra, giaTriDatTongCong, giaTriDatSauLoi,
+    giaTriNhaCoBan, hoanCongValue, giaTriNha,
     furnitureValue, planningValue,
     adjustments, adjSum, estimatedValue, verdict, verdictDat, verdictTong,
     chenhLechDatPct, chenhLechDatTien,
@@ -1426,7 +1450,7 @@ function renderList() {
   const fAlley = state.filterAlley||'';
   const fDirection = state.filterDirection||'';
   const showPanel = state.showFilterPanel||false;
-  const hasFilter = fDistrict||fBudget||fArea||fAlley||fDirection;
+  const hasFilter = fDistrict||fBudget||fArea||fAlley||fDirection||(state.filterStatus||'');
 
   let filtered = allProps;
   if (fDistrict) filtered = filtered.filter(p => (p.address||'').toLowerCase().includes(fDistrict));
@@ -1450,6 +1474,8 @@ function renderList() {
       return true;
     });
   }
+  const fStatus = state.filterStatus||'';
+  if (fStatus) filtered = filtered.filter(p => (p.propStatus||'active') === fStatus);
   if (fAlley) filtered = filtered.filter(p => p.alleyType === fAlley);
   if (fDirection) filtered = filtered.filter(p => p.direction === fDirection);
 
@@ -1479,6 +1505,7 @@ function renderList() {
       <div class="prop-card" onclick="openProperty('${p.id}')">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
           <div class="prop-addr" style="flex:1;padding-right:8px;">${esc(p.address)||'Chưa có địa chỉ'}</div>
+          <span style="font-size:10px;font-weight:700;color:${propStatusColor(p.propStatus||'active')};background:${propStatusBg(p.propStatus||'active')};padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;">${propStatusLabel(p.propStatus||'active')}</span>
           
         </div>
         <div style="font-size:12px;color:#1a1a1a;margin-bottom:6px;">
@@ -1574,7 +1601,14 @@ function renderList() {
           </select>
         </div>
 
-        ${hasFilter ? `<button onclick="setState({filterDistrict:'',filterBudget:'',filterArea:'',filterAlley:'',filterDirection:'',listPage:1})"
+        <select onchange="setState({filterStatus:this.value,listPage:1})"
+          style="width:100%;padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:14px;background:white;font-family:inherit;margin-bottom:10px;">
+          <option value="">Tất cả trạng thái</option>
+          ${[{v:'not_surveyed',l:'🟡 Chưa khảo sát'},{v:'active',l:'🔴 Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
+            .map(o=>`<option value="${o.v}" ${state.filterStatus===o.v?'selected':''}>${o.l}</option>`).join('')}
+        </select>
+
+        ${hasFilter ? `<button onclick="setState({filterDistrict:'',filterBudget:'',filterArea:'',filterAlley:'',filterDirection:'',filterStatus:'',listPage:1})"
           style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #FF1744;background:white;color:#FF1744;font-size:13px;font-weight:700;cursor:pointer;">
           × Xóa tất cả bộ lọc
         </button>` : ''}
@@ -1613,12 +1647,31 @@ function renderForm() {
       <div class="content-pad form-flat">
 
         ${field('Địa chỉ', 'address', f.address, 'text', 'Vd: 123 Lê Văn Sỹ, Q.3')}
+        ${(()=>{
+          if (!f.address || f.address.length < 5) return '';
+          const addr = f.address.toLowerCase().trim();
+          const dup = state.properties.find(p =>
+            p.id !== state.currentId &&
+            p.address && p.address.toLowerCase().includes(addr.substring(0,15))
+          );
+          return dup ? `<div style="margin-top:6px;padding:8px 12px;background:#FFFBEB;border:1px solid #F59E0B;border-radius:10px;font-size:13px;color:#B45309;display:flex;align-items:center;gap:6px;">
+            ⚠️ Địa chỉ tương tự đã có: <b>${esc(dup.address)}</b>
+          </div>` : '';
+        })()}
 
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Loại đường / hẻm</span>
           <select class="input" onchange="updateForm('alleyType', this.value)">
             ${[{v:'mt',l:'Mặt tiền đường'},{v:'alley1',l:'Hẻm xe hơi > 6m'},{v:'alley2',l:'Hẻm xe hơi 3-5m'},{v:'alley3',l:'Hẻm < 3m'}]
               .map(o=>`<option value="${o.v}" ${f.alleyType===o.v?'selected':''}>${o.l}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="f-select-wrap" style="margin-top:20px;">
+          <span class="field-label">Trạng thái</span>
+          <select class="input" onchange="updateForm('propStatus', this.value)">
+            ${[{v:'not_surveyed',l:'🟡 Chưa khảo sát'},{v:'active',l:'🔴 Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
+              .map(o=>`<option value="${o.v}" ${(f.propStatus||'active')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
 
@@ -1646,18 +1699,18 @@ function renderForm() {
         <div class="field" style="margin-top:20px;">
           <label class="field-label">Diện tích công nhận (m²)</label>
           <input class="input" type="number" placeholder=""
-            value="${f.area||''}" id="input-area"
+            value="${f.area||''}" id="input-area" placeholder="Đất sạch 100%"
             oninput="updateForm('area', this.value)" />
         </div>
 
         <div class="row-2" style="margin-top:20px;">
-          ${field('DT ranh lộ giới (m²)', 'loGioiArea', f.loGioiArea, 'number', '')}
-          ${field('Hệ số (%)', 'loGioiRate', f.loGioiRate||'80', 'number', '80')}
+          ${field('DT lộ giới (CN) m²', 'loGioiArea', f.loGioiArea, 'number', '')}
+          ${field('Hệ số (%)', 'loGioiRate', f.loGioiRate||'', 'number', 'Vd: 80')}
         </div>
 
         <div class="row-2" style="margin-top:16px;">
-          ${field('DT đất không CN (m²)', 'extraArea', f.extraArea, 'number', '')}
-          ${field('Hệ số (%)', 'extraRate', f.extraRate||'40', 'number', '40')}
+          ${field('DT lộ giới (KCN) m²', 'extraArea', f.extraArea, 'number', '')}
+          ${field('Hệ số (%)', 'extraRate', f.extraRate||'', 'number', 'Vd: 40')}
         </div>
 
         <div style="height:1px;background:#E8E8E8;margin:24px 0;"></div>
@@ -1665,7 +1718,7 @@ function renderForm() {
         <div class="f-select-wrap">
           <span class="field-label">Hình dạng đất</span>
           <select class="input" onchange="updateForm('shape', this.value)">
-            ${[{v:'rectangle',l:'Vuông vức'},{v:'flared',l:'Nở hậu (+5%)'},{v:'L',l:'Chữ L (+3%)'},{v:'taper',l:'Tóp hậu (-13%)'},{v:'xeo',l:'Xéo/Méo (-10%)'},{v:'triangle',l:'Tam giác (-20%)'}]
+            ${[{v:'rectangle',l:'Vuông vức'},{v:'flared_light',l:'Nở hậu nhẹ'},{v:'flared_nice',l:'Nở hậu đẹp (+3%)'},{v:'flared_L',l:'Nở hậu L (+3%)'},{v:'taper_light',l:'Tóp hậu nhẹ (không trừ)'},{v:'taper_mid',l:'Tóp hậu vừa (-5%)'},{v:'taper_heavy',l:'Tóp hậu nặng (-15%)'},{v:'xeo',l:'Chặt góc xéo (-15%)'},{v:'triangle',l:'Tam giác (-20%)'},{v:'unknown',l:'Không xác định (-25%)'}]
               .map(o=>`<option value="${o.v}" ${f.shape===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
@@ -1688,12 +1741,9 @@ function renderForm() {
           </select>
         </div>
 
-        <div class="f-select-wrap" style="margin-top:20px;">
-          <span class="field-label">Nội thất</span>
-          <select class="input" onchange="updateForm('furniture', this.value)">
-            ${[{v:'none',l:'Không có'},{v:'basic',l:'Cơ bản'},{v:'full',l:'Đầy đủ'},{v:'luxury',l:'Cao cấp'}]
-              .map(o=>`<option value="${o.v}" ${(f.furniture||'none')===o.v?'selected':''}>${o.l}</option>`).join('')}
-          </select>
+        <div class="row-2" style="margin-top:20px;">
+          ${field('Nội thất (mô tả)', 'furnitureDesc', f.furnitureDesc, 'text', 'Vd: Tủ bếp, máy lạnh...')}
+          ${field('Giá trị (tỷ)', 'furnitureValue', f.furnitureValue, 'number', 'Vd: 0.15')}
         </div>
 
         <div class="f-select-wrap" style="margin-top:20px;">
@@ -1714,7 +1764,7 @@ function renderForm() {
               {v:'spiritual_shrine',l:'Gần đình/miếu (-4%)'},{v:'pole',l:'Cột điện/hố ga (-3%)'},
               {v:'noise',l:'Tiếng ồn (-10%)'},{v:'flood',l:'Ngập nước (-8%)'},
               {v:'tiny_alley',l:'Hẻm nội bộ (-5%)'},{v:'dead_end',l:'Hẻm cụt (-5%)'},
-              {v:'road_hit',l:'Đâm đường (-12%)'},{v:'one_way',l:'Đường 1 chiều (-6%)'}
+              {v:'road_hit_light',l:'Đâm đường rất nhẹ (-5%)'},{v:'road_hit_medium',l:'Đâm đường nhẹ (-10%)'},{v:'road_hit_heavy',l:'Đâm đường nặng (-20%)'},{v:'one_way',l:'Đường 1 chiều (-6%)'}
             ].filter(o=>!(f.issues||[]).includes(o.v))
               .map(o=>`<option value="${o.v}">${o.l}</option>`).join('')}
           </select>
@@ -1733,6 +1783,19 @@ function renderForm() {
             ${[{v:'pink_book',l:'Sổ hồng riêng'},{v:'red_book',l:'Sổ đỏ'},{v:'co_owned',l:'Đồng sở hữu'},{v:'pending',l:'Đang chờ sổ'}]
               .map(o=>`<option value="${o.v}" ${f.legal===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
+        </div>
+
+        <div style="height:1px;background:#E8E8E8;margin:24px 0;"></div>
+
+        <div class="row-2" style="margin-top:4px;">
+          <div class="f-select-wrap">
+            <span class="field-label">Hoàn công</span>
+            <select class="input" onchange="updateForm('hoanCong', this.value)">
+              ${[{v:'full',l:'Hoàn công đầy đủ'},{v:'pending',l:'Đang chờ hoàn công'},{v:'partial',l:'Hoàn công một phần'},{v:'none',l:'Chưa hoàn công'},{v:'impossible',l:'Không thể hoàn công'}]
+                .map(o=>`<option value="${o.v}" ${(f.hoanCong||'full')===o.v?'selected':''}>${o.l}</option>`).join('')}
+            </select>
+          </div>
+          ${field('Hệ số trừ (%)', 'hoanCongRate', f.hoanCongRate||'', 'number', 'Vd: 30')}
         </div>
 
         <div style="height:1px;background:#E8E8E8;margin:24px 0;"></div>
@@ -1958,7 +2021,7 @@ function renderValuation() {
           </div>
 
           <!-- Section: ĐẤT -->
-          <div style="font-size:10px;font-weight:700;letter-spacing:0.8px;color:#aaa;padding:8px 0 4px;">ĐẤT</div>
+          <div style="font-size:12px;font-weight:800;letter-spacing:0.8px;color:#1a1a1a;padding:8px 0 4px;">ĐẤT</div>
 
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
             <span style="font-size:13px;color:#1a1a1a;">DT đất CN</span>
@@ -1995,7 +2058,7 @@ function renderValuation() {
           </div>
 
           <!-- Section: NHÀ -->
-          <div style="font-size:10px;font-weight:700;letter-spacing:0.8px;color:#aaa;padding:8px 0 4px;">NHÀ</div>
+          <div style="font-size:12px;font-weight:800;letter-spacing:0.8px;color:#1a1a1a;padding:8px 0 4px;">NHÀ</div>
 
           ${p.floors > 1 ? `
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
