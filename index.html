@@ -831,7 +831,7 @@ function legalLabel(v) { return { pink_book:'Sổ hồng riêng', red_book:'Sổ
 function alleyLabel(v) { return { mt:'Mặt tiền', alley1:'Hẻm > 6m', alley2:'Hẻm 3-5m', alley3:'Hẻm < 3m' }[v]||v; }
 function shapeLabel(v) { return { rectangle:'Vuông vức', flared_light:'Nở hậu nhẹ', flared_nice:'Nở hậu đẹp (+3%)', flared_L:'Nở hậu L (+3%)', taper_light:'Tóp hậu nhẹ', taper_mid:'Tóp hậu vừa (-5%)', taper_heavy:'Tóp hậu nặng (-15%)', xeo:'Chặt góc xéo (-15%)', triangle:'Tam giác (-20%)', unknown:'Không xác định (-25%)' }[v]||v; }
 function propStatusLabel(v) {
-  return { active:'Bán mạnh', not_surveyed:'Chưa KS', paused:'⏸ Tạm dừng', sold:'Đã bán' }[v] || 'Bán mạnh';
+  return { active:'🔴 Đang bán', not_surveyed:'🟡 Chưa KS', paused:'⏸ Tạm dừng', sold:'✅ Đã bán' }[v] || '🔴 Đang bán';
 }
 function propStatusColor(v) {
   return { active:'#FF1744', not_surveyed:'#B45309', paused:'#555', sold:'#2E7D32' }[v] || '#FF1744';
@@ -841,7 +841,7 @@ function propStatusBg(v) {
 }
 function hoanCongLabel(v) { return { full:'Hoàn công đầy đủ', pending:'Đang chờ hoàn công', partial:'Hoàn công một phần', none:'Chưa hoàn công', impossible:'Không thể hoàn công' }[v]||v; }
 function hienTrangLabel(v) {
-  return { '100':'Xây mới 100%', '90':'Cải tạo mới', '80':'Còn tốt', '60':'Trung bình', '40':'Cũ', '20':'Rất cũ', '5':'Nhà nát' }[String(v)] || v;
+  return { '100':'Xây mới', '90':'Cải tạo mới', '80':'Còn tốt', '60':'Trung bình', '40':'Cũ', '20':'Rất cũ', '5':'Nhà nát' }[String(v)] || v;
 }
 function furnitureLabel(v) {
   return { none:'Không có', basic:'Cơ bản', full:'Đầy đủ', luxury:'Cao cấp' }[v] || v;
@@ -1383,7 +1383,7 @@ function renderHome() {
             <div class="brand-mark">B</div>
             <div>
               <div class="brand-name">Broker OS</div>
-              <div class="brand-sub">Dev by Tràng Lê</div>
+              <div class="brand-sub">Định giá chuyên sâu</div>
             </div>
           </div>
           ${currentUser ? `
@@ -1604,7 +1604,7 @@ function renderList() {
         <select onchange="setState({filterStatus:this.value,listPage:1})"
           style="width:100%;padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:14px;background:white;font-family:inherit;margin-bottom:10px;">
           <option value="">Tất cả trạng thái</option>
-          ${[{v:'not_surveyed',l:'Chưa khảo sát'},{v:'active',l:' Bán mạnh'},{v:'paused',l:'Tạm dừng'},{v:'sold',l:'Đã bán'}]
+          ${[{v:'not_surveyed',l:'🟡 Chưa khảo sát'},{v:'active',l:'🔴 Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
             .map(o=>`<option value="${o.v}" ${state.filterStatus===o.v?'selected':''}>${o.l}</option>`).join('')}
         </select>
 
@@ -1668,12 +1668,13 @@ function renderForm() {
         </div>
 
         <div class="f-select-wrap" style="margin-top:20px;">
-  <span class="field-label">Trạng thái</span>
-  <select class="input" onchange="updateForm('propStatus', this.value)">
-    ${[{v:'not_surveyed',l:'Chưa khảo sát'},{v:'active',l:'Bán mạnh'},{v:'paused',l:'Tạm dừng'},{v:'sold',l:'Đã bán'}]
-      .map(o=>`<option value="${o.v}" ${(f.propStatus||'active')===o.v?'selected':''}>${o.l}</option>`).join('')}
-  </select>
-</div>
+          <span class="field-label">Trạng thái</span>
+          <select class="input" onchange="updateForm('propStatus', this.value)">
+            ${[{v:'not_surveyed',l:'🟡 Chưa khảo sát'},{v:'active',l:'🔴 Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
+              .map(o=>`<option value="${o.v}" ${(f.propStatus||'active')===o.v?'selected':''}>${o.l}</option>`).join('')}
+          </select>
+        </div>
+
         ${field('Giá chào (tỷ)', 'askingPrice', f.askingPrice, 'number', '9.5')}
 
         <div class="row-2" style="margin-top:20px;">
@@ -1725,7 +1726,7 @@ function renderForm() {
         <div class="row-2" style="margin-top:20px;">
           ${field('Số tầng', 'floors', f.floors, 'number', '3')}
           <div class="field">
-            <label class="field-label">DT sàn XD (m²)</label>
+            <label class="field-label">Diện tích sàn XD (m²)</label>
             <input class="input" type="number" placeholder=""
               value="${f.sanXD||''}" id="input-sanXD"
               oninput="updateForm('sanXD', this.value)" />
@@ -2015,7 +2016,7 @@ function renderValuation() {
           <!-- Header 3 cột -->
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:2px solid #1a1a1a;margin-bottom:2px;">
             <span style="font-size:11px;font-weight:700;color:#888;"></span>
-            <span style="font-size:11px;font-weight:700;color:#1a1a1a;text-align:right;min-width:80px;">Giá bán</span>
+            <span style="font-size:11px;font-weight:700;color:#1a1a1a;text-align:right;min-width:80px;">Chủ chào</span>
             <span style="font-size:11px;font-weight:700;color:#2E7D32;text-align:right;min-width:80px;">Thị trường</span>
           </div>
 
@@ -2052,7 +2053,7 @@ function renderValuation() {
           </div>` : ''}
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
             <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị đất</span>
-            <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(parseFloat(p.askingPrice) - r.giaTriNha)}</span>
+            <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;">${r.donGiaRao > 0 ? fmtTy(+(r.donGiaRao * parseFloat(p.area||0) / 1000).toFixed(3)) : '—'}</span>
             <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.giaTriDatSauLoi)}</span>
           </div>
 
