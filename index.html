@@ -318,7 +318,7 @@ body {
   border: 0.6px solid #1a1a1a; border-radius: 10px;
   font-size: 16px; background: #FFFFFF;
   outline: none; font-family: inherit;
-  min-height: 178px; resize: vertical;
+  min-height: 260px; resize: vertical;
 }
 .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .chip {
@@ -786,6 +786,7 @@ let state = {
   customers: [],
   customerPage: 1,
   filterCustomerStatus: '',
+  showSendModal: null,
   showViewModal: null,
   showLogout: false,
   listFilter: 'all',
@@ -796,7 +797,7 @@ let state = {
   filterArea: '',
   filterAlley: '',
   filterDirection: '',
-  showFilterPanel: false,
+  showFilterPanel: true,
   currentId: null,
   formData: null,
   properties: [],
@@ -829,9 +830,9 @@ function emptyForm() {
 // ============== HELPERS ==============
 function legalLabel(v) { return { pink_book:'Sổ hồng riêng', red_book:'Sổ đỏ', co_owned:'Đồng sở hữu', pending:'Chờ sổ' }[v]||v; }
 function alleyLabel(v) { return { mt:'Mặt tiền', alley1:'Hẻm > 6m', alley2:'Hẻm 3-5m', alley3:'Hẻm < 3m' }[v]||v; }
-function shapeLabel(v) { return { rectangle:'Vuông vức', flared_light:'Nở hậu nhẹ', flared_nice:'Nở hậu đẹp (+3%)', flared_L:'Nở hậu L (+3%)', taper_light:'Tóp hậu nhẹ', taper_mid:'Tóp hậu vừa (-5%)', taper_heavy:'Tóp hậu nặng (-15%)', xeo:'Chặt góc xéo (-15%)', triangle:'Tam giác (-20%)', unknown:'Không xác định (-25%)' }[v]||v; }
+function shapeLabel(v) { return { rectangle:'Vuông vức', flared_light:'Nở hậu nhẹ', flared_nice:'Nở hậu đẹp', flared_L:'Nở hậu L', taper_light:'Tóp hậu nhẹ', taper_mid:'Tóp hậu vừa', taper_heavy:'Tóp hậu nặng', xeo:'Chặt góc xéo', triangle:'Tam giác', unknown:'Không xác định' }[v]||v; }
 function propStatusLabel(v) {
-  return { active:'🔴 Đang bán', not_surveyed:'🟡 Chưa KS', paused:'⏸ Tạm dừng', sold:'✅ Đã bán' }[v] || '🔴 Đang bán';
+  return { active:'Đang bán', not_surveyed:'Chưa KS', paused:'Tạm dừng', sold:'Đã bán' }[v] || 'Đang bán';
 }
 function propStatusColor(v) {
   return { active:'#FF1744', not_surveyed:'#B45309', paused:'#555', sold:'#2E7D32' }[v] || '#FF1744';
@@ -855,7 +856,7 @@ function fmtTy(val) {
   return parseFloat(val).toFixed(2) + ' tỷ';
 }
 
-function issueLabel(v) { return { spiritual_temple:'Gần chùa (-5%)', spiritual_grave:'Gần nghĩa trang/mộ (-10%)', spiritual_shrine:'Gần đình/miếu (-4%)', pole:'Cột điện/hố ga (-3%)', noise:'Tiếng ồn (-10%)', flood:'Ngập nước (-8%)', tiny_alley:'Hẻm nội bộ (-5%)', dead_end:'Hẻm cụt (-5%)', road_hit_light:'Đâm đường rất nhẹ (-5%)', road_hit_medium:'Đâm đường nhẹ (-10%)', road_hit_heavy:'Đâm đường nặng (-20%)', one_way:'Đường 1 chiều (-6%)' }[v]||v; }
+function issueLabel(v) { return { spiritual_temple:'Gần chùa', spiritual_grave:'Gần nghĩa trang/mộ', spiritual_shrine:'Gần đình/miếu', pole:'Cột điện/hố ga', noise:'Tiếng ồn', flood:'Ngập nước', tiny_alley:'Hẻm nội bộ', dead_end:'Hẻm cụt', road_hit_light:'Đâm đường rất nhẹ', road_hit_medium:'Đâm đường nhẹ', road_hit_heavy:'Đâm đường nặng', one_way:'Đường 1 chiều' }[v]||v; }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ============== VALUATION CALCULATION ==============
@@ -874,9 +875,9 @@ function calculateValuation(p) {
 
   // ═══ BƯỚC 1: Giá trị đất theo thị trường ═══
   const giaTriDatTT      = (area && giaTT) ? +(area * giaTT / 1000).toFixed(3) : 0;
-  const giaTriLoGioi     = (loGioiArea && giaTT && loGioiRate) ? +(loGioiArea * giaTT / 1000 * loGioiRate / 100).toFixed(3) : 0;
-  const giaTriExtra      = (extraArea && giaTT && extraRate) ? +(extraArea * giaTT / 1000 * extraRate / 100).toFixed(3) : 0;
-  const giaTriDatTongCong = +(giaTriDatTT + giaTriLoGioi + giaTriExtra).toFixed(3);
+  const giaTriLoGioi     = 0;
+  const giaTriExtra      = 0;
+  const giaTriDatTongCong = giaTriDatTT;
 
   // ═══ BƯỚC 2: Hệ số lỗi — NHÂN HỆ SỐ (không cộng dồn) ═══
   const PENALTY_RATE = {
@@ -1383,7 +1384,7 @@ function renderHome() {
             <div class="brand-mark">B</div>
             <div>
               <div class="brand-name">Broker OS</div>
-              <div class="brand-sub">Định giá chuyên sâu</div>
+              <div class="brand-sub">Dev By Tràng Lê</div>
             </div>
           </div>
           ${currentUser ? `
@@ -1604,7 +1605,7 @@ function renderList() {
         <select onchange="setState({filterStatus:this.value,listPage:1})"
           style="width:100%;padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:14px;background:white;font-family:inherit;margin-bottom:10px;">
           <option value="">Tất cả trạng thái</option>
-          ${[{v:'not_surveyed',l:'🟡 Chưa khảo sát'},{v:'active',l:'🔴 Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
+          ${[{v:'not_surveyed',l:'Chưa khảo sát'},{v:'active',l:'Đang bán'},{v:'paused',l:'Tạm dừng'},{v:'sold',l:'Đã bán'}]
             .map(o=>`<option value="${o.v}" ${state.filterStatus===o.v?'selected':''}>${o.l}</option>`).join('')}
         </select>
 
@@ -1670,7 +1671,7 @@ function renderForm() {
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Trạng thái</span>
           <select class="input" onchange="updateForm('propStatus', this.value)">
-            ${[{v:'not_surveyed',l:'🟡 Chưa khảo sát'},{v:'active',l:'🔴 Đang bán'},{v:'paused',l:'⏸ Tạm dừng'},{v:'sold',l:'✅ Đã bán'}]
+            ${[{v:'not_surveyed',l:'Chưa khảo sát'},{v:'active',l:'Đang bán'},{v:'paused',l:'Tạm dừng'},{v:'sold',l:'Đã bán'}]
               .map(o=>`<option value="${o.v}" ${(f.propStatus||'active')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
@@ -1703,22 +1704,14 @@ function renderForm() {
             oninput="updateForm('area', this.value)" />
         </div>
 
-        <div class="row-2" style="margin-top:20px;">
-          ${field('DT lộ giới (CN) m²', 'loGioiArea', f.loGioiArea, 'number', '')}
-          ${field('Hệ số (%)', 'loGioiRate', f.loGioiRate||'', 'number', 'Vd: 80')}
-        </div>
 
-        <div class="row-2" style="margin-top:16px;">
-          ${field('DT lộ giới (KCN) m²', 'extraArea', f.extraArea, 'number', '')}
-          ${field('Hệ số (%)', 'extraRate', f.extraRate||'', 'number', 'Vd: 40')}
-        </div>
 
         <div style="height:1px;background:#E8E8E8;margin:24px 0;"></div>
 
         <div class="f-select-wrap">
           <span class="field-label">Hình dạng đất</span>
           <select class="input" onchange="updateForm('shape', this.value)">
-            ${[{v:'rectangle',l:'Vuông vức'},{v:'flared_light',l:'Nở hậu nhẹ'},{v:'flared_nice',l:'Nở hậu đẹp (+3%)'},{v:'flared_L',l:'Nở hậu L (+3%)'},{v:'taper_light',l:'Tóp hậu nhẹ (không trừ)'},{v:'taper_mid',l:'Tóp hậu vừa (-5%)'},{v:'taper_heavy',l:'Tóp hậu nặng (-15%)'},{v:'xeo',l:'Chặt góc xéo (-15%)'},{v:'triangle',l:'Tam giác (-20%)'},{v:'unknown',l:'Không xác định (-25%)'}]
+            ${[{v:'rectangle',l:'Vuông vức'},{v:'flared_light',l:'Nở hậu nhẹ'},{v:'flared_nice',l:'Nở hậu đẹp'},{v:'flared_L',l:'Nở hậu L'},{v:'taper_light',l:'Tóp hậu nhẹ'},{v:'taper_mid',l:'Tóp hậu vừa'},{v:'taper_heavy',l:'Tóp hậu nặng'},{v:'xeo',l:'Chặt góc xéo'},{v:'triangle',l:'Tam giác'},{v:'unknown',l:'Không xác định'}]
               .map(o=>`<option value="${o.v}" ${f.shape===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
@@ -1742,7 +1735,13 @@ function renderForm() {
         </div>
 
         <div class="row-2" style="margin-top:20px;">
-          ${field('Nội thất (mô tả)', 'furnitureDesc', f.furnitureDesc, 'text', 'Vd: Tủ bếp, máy lạnh...')}
+          <div class="f-select-wrap">
+            <span class="field-label">Nội thất</span>
+            <select class="input" onchange="updateForm('furnitureDesc', this.value)">
+              ${[{v:'',l:'— Chọn —'},{v:'Bàn giao trống',l:'Bàn giao trống'},{v:'Nội thất cơ bản',l:'Nội thất cơ bản'},{v:'Full nội thất',l:'Full nội thất'},{v:'Nội thất cao cấp',l:'Nội thất cao cấp'},{v:'Chủ tặng nội thất',l:'Chủ tặng nội thất'}]
+                .map(o=>`<option value="${o.v}" ${(f.furnitureDesc||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
+            </select>
+          </div>
           ${field('Giá trị (tỷ)', 'furnitureValue', f.furnitureValue, 'number', 'Vd: 0.15')}
         </div>
 
@@ -1760,11 +1759,11 @@ function renderForm() {
           <select class="input" onchange="addIssue(this.value); this.value=''">
             <option value="">— Chọn yếu tố —</option>
             ${[
-              {v:'spiritual_temple',l:'Gần chùa (-5%)'},{v:'spiritual_grave',l:'Gần nghĩa trang/mộ (-10%)'},
-              {v:'spiritual_shrine',l:'Gần đình/miếu (-4%)'},{v:'pole',l:'Cột điện/hố ga (-3%)'},
-              {v:'noise',l:'Tiếng ồn (-10%)'},{v:'flood',l:'Ngập nước (-8%)'},
-              {v:'tiny_alley',l:'Hẻm nội bộ (-5%)'},{v:'dead_end',l:'Hẻm cụt (-5%)'},
-              {v:'road_hit_light',l:'Đâm đường rất nhẹ (-5%)'},{v:'road_hit_medium',l:'Đâm đường nhẹ (-10%)'},{v:'road_hit_heavy',l:'Đâm đường nặng (-20%)'},{v:'one_way',l:'Đường 1 chiều (-6%)'}
+              {v:'spiritual_temple',l:'Gần chùa'},{v:'spiritual_grave',l:'Gần nghĩa trang/mộ'},
+              {v:'spiritual_shrine',l:'Gần đình/miếu'},{v:'pole',l:'Cột điện/hố ga'},
+              {v:'noise',l:'Tiếng ồn'},{v:'flood',l:'Ngập nước'},
+              {v:'tiny_alley',l:'Hẻm nội bộ'},{v:'dead_end',l:'Hẻm cụt'},
+              {v:'road_hit_light',l:'Đâm đường rất nhẹ'},{v:'road_hit_medium',l:'Đâm đường nhẹ'},{v:'road_hit_heavy',l:'Đâm đường nặng'},{v:'one_way',l:'Đường 1 chiều'}
             ].filter(o=>!(f.issues||[]).includes(o.v))
               .map(o=>`<option value="${o.v}">${o.l}</option>`).join('')}
           </select>
@@ -2098,7 +2097,7 @@ function renderValuation() {
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px 0;border-bottom:1px solid #E8E8E8;">
             <span style="font-size:14px;font-weight:800;color:#1a1a1a;">TỔNG</span>
             <span style="font-size:16px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(parseFloat(p.askingPrice))}</span>
-            <span style="font-size:16px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.estimatedValue)}</span>
+            <span style="font-size:16px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(+(r.giaTriDatSauLoi + r.giaTriNha).toFixed(3))}</span>
           </div>
 
           <!-- KẾT LUẬN -->
@@ -2564,6 +2563,28 @@ function feedbackColor(f) {
   return { liked:'#2E7D32', pending:'#B45309', rejected:'#FF1744' }[f] || '#888';
 }
 
+async function addSentHistory(customerId, propertyId, feedback, note) {
+  const customer = state.customers.find(c => c.id === customerId);
+  const property = state.properties.find(p => p.id === propertyId);
+  if (!customer || !property) return;
+  const entry = {
+    propertyId,
+    address: property.address,
+    date: new Date().toLocaleDateString('vi-VN'),
+    feedback,
+    note: note || ''
+  };
+  const newHistory = [entry, ...(customer.sentHistory || [])];
+  const updated = { ...customer, sentHistory: newHistory };
+  const newCustomers = state.customers.map(c => c.id === customerId ? updated : c);
+  state.customers = newCustomers;
+  await saveCustomersToFirestore(newCustomers);
+  setState({ showSendModal: null });
+}
+
+function openSendModal(customerId) { setState({ showSendModal: customerId }); }
+function closeSendModal() { setState({ showSendModal: null }); }
+
 async function addViewHistory(customerId, propertyId, feedback, note) {
   const customer = state.customers.find(c => c.id === customerId);
   const property = state.properties.find(p => p.id === propertyId);
@@ -2793,7 +2814,7 @@ function renderCustomerForm() {
 
       <div style="margin-top:20px;">
         <label class="field-label">Yêu cầu khác</label>
-        <textarea class="textarea" style="margin-top:8px;" placeholder="Vd: Cần đậu xe trong nhà, gần trường, không ở gần chùa..." oninput="updateCustomerForm('notes', this.value)">${esc(f.notes||'')}</textarea>
+        <textarea class="textarea" style="margin-top:8px;min-height:180px;" placeholder="Vd: Cần đậu xe trong nhà, gần trường, không ở gần chùa..." oninput="updateCustomerForm('notes', this.value)">${esc(f.notes||'')}</textarea>
       </div>
 
     </div>
@@ -2858,7 +2879,47 @@ function renderCustomerDetail() {
         </div>` : ''}
         ${c.notes ? `<div style="padding:8px 0;">
           <div style="font-size:12px;color:#888;margin-bottom:4px;">YÊU CẦU KHÁC</div>
-          <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(c.notes)}</div>
+          <div style="font-size:14px;color:#1a1a1a;line-height:1.6;white-space:pre-wrap;">${esc(c.notes)}</div>
+        </div>` : ''}
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#FF1744;">NHÀ ĐÃ GỬI</div>
+          <button onclick="openSendModal('${c.id}')"
+            style="font-size:12px;font-weight:700;color:#FF1744;background:none;border:1.5px solid #FF1744;border-radius:20px;padding:3px 12px;cursor:pointer;">+ Ghi</button>
+        </div>
+        ${c.sentHistory && c.sentHistory.length > 0 ? c.sentHistory.map(h => `
+        <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+            <div style="font-size:13px;font-weight:600;color:#1a1a1a;flex:1;padding-right:8px;">${esc(h.address||'')}</div>
+            <span style="font-size:11px;font-weight:700;color:${feedbackColor(h.feedback)};white-space:nowrap;">${feedbackLabel(h.feedback)}</span>
+          </div>
+          <div style="font-size:12px;color:#888;">${h.date||''}${h.note ? ' · '+esc(h.note) : ''}</div>
+        </div>`).join('') : '<div style="font-size:13px;color:#888;padding:4px 0;">Chưa ghi nhà nào</div>'}
+
+        ${state.showSendModal === c.id ? `
+        <div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:flex-end;">
+          <div style="background:white;width:100%;border-radius:20px 20px 0 0;padding:20px 16px 40px;">
+            <div style="font-size:15px;font-weight:700;margin-bottom:16px;">Ghi nhà đã gửi khách xem</div>
+            <div style="font-size:12px;color:#888;margin-bottom:8px;">Chọn căn nhà:</div>
+            <div style="max-height:220px;overflow-y:auto;margin-bottom:16px;">
+              ${state.properties.length === 0
+                ? '<div style="font-size:13px;color:#888;">Chưa có hồ sơ nào</div>'
+                : state.properties.map(pr => `
+                <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
+                  <div style="font-size:13px;font-weight:600;margin-bottom:8px;">${esc(pr.address)}</div>
+                  <div style="display:flex;gap:6px;">
+                    ${['liked','pending','rejected'].map(fb => `
+                      <button onclick="addSentHistory('${c.id}','${pr.id}','${fb}','')"
+                        style="flex:1;padding:7px 4px;border-radius:8px;border:1.5px solid ${feedbackColor(fb)};background:white;color:${feedbackColor(fb)};font-size:11px;font-weight:700;cursor:pointer;">
+                        ${feedbackLabel(fb)}
+                      </button>`).join('')}
+                  </div>
+                </div>`).join('')}
+            </div>
+            <button onclick="closeSendModal()" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:14px;font-weight:600;cursor:pointer;">Đóng</button>
+          </div>
         </div>` : ''}
       </div>
 
