@@ -950,12 +950,12 @@ function calculateValuation(p) {
   const planningValue = 0; // không tính vào giá TT — để minh bạch
 
   // ═══ BƯỚC 6: Giá trị BĐS ước tính ═══
-  // Công thức: Đất (sau lỗi) + Nhà (sau hoàn công) + Nội thất
-  const estimatedValue = +(giaTriDatSauLoi + giaTriNha + furnitureValue).toFixed(3);
+  // Công thức: Đất (sau lỗi + hình dạng) + Nhà (sau hoàn công) + Nội thất
+  const estimatedValue = +(giaTriDatSauLoi + giaTriNha + furnitureValue + adjSum).toFixed(3);
 
-  // ═══ BƯỚC 7: Đơn giá đất chủ rao (tách ngược) ═══
+  // ═══ BƯỚC 7: Đơn giá đất chủ rao (tách ngược, trừ nội thất trước) ═══
   const donGiaRao = (askingPrice && area)
-    ? +((askingPrice - giaTriNha) * 1000 / area).toFixed(1) : 0;
+    ? +((askingPrice - giaTriNha - furnitureValue) * 1000 / area).toFixed(1) : 0;
 
   // ═══ BƯỚC 8: TẦNG 1 — So sánh đơn giá đất ═══
   // giaTT KHÔNG bị thay đổi bởi penalty
@@ -1050,7 +1050,7 @@ function calculateValuation(p) {
 
   return {
     giaTriDatTT, giaTriLoGioi, giaTriExtra, giaTriDatTongCong, giaTriDatSauLoi,
-    giaTriNhaCoBan, hoanCongValue, giaTriNha,
+    giaTriNhaCoBan, hoanCongValue, giaTriNha, adjSum,
     furnitureValue, planningValue,
     adjustments, adjSum, estimatedValue, verdict, verdictDat, verdictTong,
     chenhLechDatPct, chenhLechDatTien,
@@ -2118,9 +2118,9 @@ function renderValuation() {
           </div>
           ${r.issueDetails && r.issueDetails.length > 0 ? `
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#FF1744;">Trừ lỗi</span>
+            <span style="font-size:13px;color:#FF1744;">Trừ lỗi (${r.issueDetails.map(i=>i.pct+'%').join(', ')})</span>
             <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">—</span>
-            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">${fmtTy(r.giaTriDatSauLoi - r.giaTriDatTT)}</span>
+            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">${fmtTy(+(r.giaTriDatSauLoi - r.giaTriDatTT).toFixed(3))}</span>
           </div>` : ''}
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
             <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị đất</span>
@@ -2147,17 +2147,11 @@ function renderValuation() {
             <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${hienTrangLabel(r.hienTrang)}</span>
             <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${hienTrangLabel(r.hienTrang)}</span>
           </div>
-          ${r.furnitureValue > 0 ? `
+          ${r.hoanCongValue > 0 ? `
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#1a1a1a;">Nội thất (${furnitureLabel(p.furniture)})</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">+${fmtTy(r.furnitureValue)}</span>
-            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">—</span>
-          </div>` : ''}
-          ${r.planningValue < 0 ? `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#FF1744;">Quy hoạch (${planningLabel(p.planning)})</span>
+            <span style="font-size:13px;color:#FF1744;">Trừ hoàn công (${p.hoanCongRate}%)</span>
             <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">—</span>
-            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">${fmtTy(r.planningValue)}</span>
+            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">${fmtTy(-r.hoanCongValue)}</span>
           </div>` : ''}
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
             <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị nhà</span>
@@ -2166,11 +2160,19 @@ function renderValuation() {
           </div>
 
           ${r.furnitureValue > 0 ? `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:8px 0;border-bottom:1px solid #E8E8E8;">
-            <span style="font-size:13px;color:#555;">Nội thất</span>
-            <span style="font-size:13px;text-align:right;min-width:80px;">—</span>
-            <span style="font-size:13px;font-weight:700;color:#2E7D32;text-align:right;min-width:80px;">+${fmtTy(r.furnitureValue)}</span>
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
+            <span style="font-size:13px;font-weight:600;color:#1a1a1a;">Nội thất</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">+${fmtTy(r.furnitureValue)}</span>
+            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">+${fmtTy(r.furnitureValue)}</span>
           </div>` : ''}
+
+          ${r.adjSum !== 0 ? `
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
+            <span style="font-size:13px;font-weight:600;color:${r.adjSum > 0 ? '#2E7D32' : '#FF1744'};">Hình dạng (${r.adjSum > 0 ? '+' : ''}${((r.adjSum/r.giaTriDatSauLoi)*100).toFixed(0)}%)</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">—</span>
+            <span style="font-size:13px;font-weight:600;color:${r.adjSum > 0 ? '#2E7D32' : '#FF1744'};text-align:right;min-width:80px;">${r.adjSum > 0 ? '+' : ''}${fmtTy(r.adjSum)}</span>
+          </div>` : ''}
+
           <!-- TỔNG -->
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px 0;border-bottom:1px solid #E8E8E8;">
             <span style="font-size:14px;font-weight:800;color:#1a1a1a;">TỔNG</span>
