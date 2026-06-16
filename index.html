@@ -1547,7 +1547,7 @@ function renderList() {
 
   const cardsHtml = paged.map(p => {
     const rCard = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
-    const estCard = rCard ? rCard.estimatedValue : null;
+    const estCard = rCard ? +(rCard.giaTriDatSauLoi + rCard.giaTriNha).toFixed(3) : null;
     const valued = p.askingPrice && estCard;
     const diff = valued ? ((parseFloat(p.askingPrice) - estCard) / estCard * 100) : null;
     const diffStr = diff !== null ? (diff > 0 ? '+' : '') + diff.toFixed(1) + '%' : null;
@@ -1901,7 +1901,7 @@ function renderDetail() {
   if (!p) { setTimeout(()=>nav('list'), 0); return ''; }
   
   const r = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
-  const estimatedVal = r ? r.estimatedValue : null;
+  const estimatedVal = r ? +(r.giaTriDatSauLoi + r.giaTriNha).toFixed(3) : null;
   const valued = p.askingPrice && estimatedVal;
   const diff = valued ? ((parseFloat(p.askingPrice) - estimatedVal) / estimatedVal * 100) : null;
   
@@ -2628,6 +2628,17 @@ function feedbackColor(f) {
   return { liked:'#2E7D32', pending:'#B45309', rejected:'#FF1744' }[f] || '#888';
 }
 
+async function deleteSentHistory(customerId, idx) {
+  const customer = state.customers.find(c => c.id === customerId);
+  if (!customer) return;
+  const newHistory = (customer.sentHistory || []).filter((_, i) => i !== idx);
+  const updated = { ...customer, sentHistory: newHistory };
+  const newCustomers = state.customers.map(c => c.id === customerId ? updated : c);
+  state.customers = newCustomers;
+  await saveCustomersToFirestore(newCustomers);
+  render();
+}
+
 async function addSentHistory(customerId, propertyId, feedback, note) {
   const customer = state.customers.find(c => c.id === customerId);
   const property = state.properties.find(p => p.id === propertyId);
@@ -2954,11 +2965,14 @@ function renderCustomerDetail() {
           <button onclick="openSendModal('${c.id}')"
             style="font-size:12px;font-weight:700;color:#FF1744;background:none;border:1.5px solid #FF1744;border-radius:20px;padding:3px 12px;cursor:pointer;">+ Ghi</button>
         </div>
-        ${c.sentHistory && c.sentHistory.length > 0 ? c.sentHistory.map(h => `
+        ${c.sentHistory && c.sentHistory.length > 0 ? c.sentHistory.map((h, idx) => `
         <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
             <div style="font-size:13px;font-weight:600;color:#1a1a1a;flex:1;padding-right:8px;">${esc(h.address||'')}</div>
-            <span style="font-size:11px;font-weight:700;color:${feedbackColor(h.feedback)};white-space:nowrap;">${feedbackLabel(h.feedback)}</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:11px;font-weight:700;color:${feedbackColor(h.feedback)};white-space:nowrap;">${feedbackLabel(h.feedback)}</span>
+              <button onclick="deleteSentHistory('${c.id}',${idx})" style="background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:0;line-height:1;">×</button>
+            </div>
           </div>
           <div style="font-size:12px;color:#888;">${h.date||''}${h.note ? ' · '+esc(h.note) : ''}</div>
         </div>`).join('') : '<div style="font-size:13px;color:#888;padding:4px 0;">Chưa ghi nhà nào</div>'}
