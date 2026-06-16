@@ -921,7 +921,7 @@ function calculateValuation(p) {
   const hoanCongValue = hoanCongRate > 0 ? +(giaTriNhaCoBan * hoanCongRate / 100).toFixed(3) : 0;
   const giaTriNha = +(giaTriNhaCoBan - hoanCongValue).toFixed(3);
 
-  // ═══ BƯỚC 5: Hệ số điều chỉnh khác (hình dạng, pháp lý, mặt tiền) ═══
+  // ═══ BƯỚC 5: Hình dạng (chỉ để hiển thị, không tính vào giá TT) ═══
   const adjustments = [];
   const SHAPE_ADJ = {
     rectangle: 0, flared_light: 0, flared_nice: 0.03, flared_L: 0.03,
@@ -944,14 +944,14 @@ function calculateValuation(p) {
   // ═══ BƯỚC 5b: Nội thất (giá trị trực tiếp) ═══
   const furnitureValue = parseFloat(p.furnitureValue)||0;
 
-  // ═══ BƯỚC 5c: Quy hoạch ═══
+  // ═══ BƯỚC 5c: Quy hoạch (chỉ để hiển thị ghi chú) ═══
   const PLANNING_RATE = { clear:0, road:-0.10, public:-0.25, other:-0.15 };
   const planningRate = PLANNING_RATE[p.planning] || 0;
-  const planningValue = giaTriDatSauLoi * planningRate;
-  if (planningRate !== 0) adjustments.push({ label: planningLabel(p.planning), value: +planningValue.toFixed(3) });
+  const planningValue = 0; // không tính vào giá TT — để minh bạch
 
   // ═══ BƯỚC 6: Giá trị BĐS ước tính ═══
-  const estimatedValue = +(giaTriDatSauLoi + giaTriNha + adjSum + furnitureValue + planningValue).toFixed(3);
+  // Công thức: Đất (sau lỗi) + Nhà (sau hoàn công) + Nội thất
+  const estimatedValue = +(giaTriDatSauLoi + giaTriNha + furnitureValue).toFixed(3);
 
   // ═══ BƯỚC 7: Đơn giá đất chủ rao (tách ngược) ═══
   const donGiaRao = (askingPrice && area)
@@ -1547,7 +1547,7 @@ function renderList() {
 
   const cardsHtml = paged.map(p => {
     const rCard = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
-    const estCard = rCard ? +(rCard.giaTriDatSauLoi + rCard.giaTriNha).toFixed(3) : null;
+    const estCard = rCard ? rCard.estimatedValue : null;
     const valued = p.askingPrice && estCard;
     const diff = valued ? ((parseFloat(p.askingPrice) - estCard) / estCard * 100) : null;
     const diffStr = diff !== null ? (diff > 0 ? '+' : '') + diff.toFixed(1) + '%' : null;
@@ -1901,7 +1901,7 @@ function renderDetail() {
   if (!p) { setTimeout(()=>nav('list'), 0); return ''; }
   
   const r = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
-  const estimatedVal = r ? +(r.giaTriDatSauLoi + r.giaTriNha).toFixed(3) : null;
+  const estimatedVal = r ? r.estimatedValue : null;
   const valued = p.askingPrice && estimatedVal;
   const diff = valued ? ((parseFloat(p.askingPrice) - estimatedVal) / estimatedVal * 100) : null;
   
@@ -1921,6 +1921,12 @@ function renderDetail() {
             <span>${esc(p.width)}×${esc(p.length)}m</span><span>·</span>
             <span>${esc(p.floors)} tầng</span>
           </div>
+          ${p.askingPrice ? `
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid #E8E8E8;">
+              <span style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Giá chào</span>
+              <div style="font-size:16px;font-weight:800;color:#FF1744;margin-top:2px;">${fmtTy(parseFloat(p.askingPrice))} tỷ</div>
+            </div>
+          ` : ''}
           ${valued ? `
             <div class="hero-prices">
               <div class="hero-price-item">
@@ -1943,6 +1949,7 @@ function renderDetail() {
         
         <div class="section-title">Thông tin chi tiết</div>
         <div class="card">
+          ${p.askingPrice ? infoRow('Giá chào', fmtTy(parseFloat(p.askingPrice))+' tỷ') : ''}
           ${infoRow('Diện tích CN', esc(p.area)+' m²')}
           ${p.dtThucTe ? infoRow('DT thực tế', esc(p.dtThucTe)+' m²') : ''}
           ${infoRow('Mặt tiền × Dài', esc(p.width)+' × '+esc(p.length)+' m')}
@@ -2158,11 +2165,17 @@ function renderValuation() {
             <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.giaTriNha)}</span>
           </div>
 
+          ${r.furnitureValue > 0 ? `
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:8px 0;border-bottom:1px solid #E8E8E8;">
+            <span style="font-size:13px;color:#555;">Nội thất</span>
+            <span style="font-size:13px;text-align:right;min-width:80px;">—</span>
+            <span style="font-size:13px;font-weight:700;color:#2E7D32;text-align:right;min-width:80px;">+${fmtTy(r.furnitureValue)}</span>
+          </div>` : ''}
           <!-- TỔNG -->
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px 0;border-bottom:1px solid #E8E8E8;">
             <span style="font-size:14px;font-weight:800;color:#1a1a1a;">TỔNG</span>
             <span style="font-size:16px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(parseFloat(p.askingPrice))}</span>
-            <span style="font-size:16px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(+(r.giaTriDatSauLoi + r.giaTriNha).toFixed(3))}</span>
+            <span style="font-size:16px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.estimatedValue)}</span>
           </div>
 
           <!-- KẾT LUẬN -->
