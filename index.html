@@ -795,6 +795,7 @@ let state = {
   listFilter: 'all',
   listPage: 1,
   filterStatus: '',
+  filterMaxPrice: '',
   filterDistrict: '',
   filterBudget: '',
   filterArea: '',
@@ -819,20 +820,20 @@ function setState(updates) {
 
 function emptyForm() {
   return {
-    address: '', propStatus: 'active', width: '', length: '', dtThucTe: '', area: '', floors: '', sanXD: '',
+    address: '', propStatus: '', width: '', length: '', dtThucTe: '', area: '', floors: '', sanXD: '',
     loGioiArea: '', loGioiRate: '',
     extraArea: '', extraRate: '',
-    askingPrice: '', giaTT: '', donGiaXD: '7', hienTrang: '80',
+    askingPrice: '', giaTT: '', donGiaXD: '7', hienTrang: '',
     furnitureDesc: '', furnitureValue: '',
-    hoanCong: 'full', hoanCongRate: '',
-    alleyType: 'mt', shape: 'rectangle',
-    issues: [], legal: 'pink_book', direction: '', notes: '', isStarred: false
+    hoanCong: '', hoanCongRate: '',
+    alleyType: '', shape: '',
+    issues: [], legal: '', direction: '', notes: '', isStarred: false
   };
 }
 
 // ============== HELPERS ==============
 function legalLabel(v) { return { pink_book:'Sổ hồng riêng', red_book:'Sổ đỏ', co_owned:'Đồng sở hữu', pending:'Chờ sổ' }[v]||v; }
-function alleyLabel(v) { return { mt:'Mặt tiền', alley1:'Hẻm > 6m', alley2:'Hẻm 3-5m', alley3:'Hẻm < 3m' }[v]||v; }
+function alleyLabel(v) { return { mt:'Mặt tiền', alley1:'Hẻm > 6m', alley2:'Hẻm 3-5m', alley3:'Hẻm 3 gác <3m', alley4:'Hẻm xe máy <2m' }[v]||v; }
 function shapeLabel(v) { return { rectangle:'Vuông vức', flared_light:'Nở hậu nhẹ', flared_nice:'Nở hậu đẹp', flared_L:'Nở hậu L', taper_light:'Tóp hậu nhẹ', taper_mid:'Tóp hậu vừa', taper_heavy:'Tóp hậu nặng', xeo:'Chặt góc xéo', triangle:'Tam giác', unknown:'Không xác định' }[v]||v; }
 function propStatusLabel(v) {
   return { active:'Đang bán', not_surveyed:'Chưa KS', paused:'Tạm dừng', sold:'Đã bán' }[v] || 'Đang bán';
@@ -843,7 +844,7 @@ function propStatusColor(v) {
 function propStatusBg(v) {
   return { active:'#FFF0F0', not_surveyed:'#FFFBEB', paused:'#F5F5F5', sold:'#F0FFF4' }[v] || '#FFF0F0';
 }
-function hoanCongLabel(v) { return { full:'Hoàn công đầy đủ', pending:'Đang chờ hoàn công', partial:'Hoàn công một phần', none:'Chưa hoàn công', impossible:'Không thể hoàn công' }[v]||v; }
+function hoanCongLabel(v) { return { '':'Chưa xác định', full:'Hoàn công đầy đủ', pending:'Đang chờ hoàn công', partial:'Hoàn công một phần', none:'Chưa hoàn công', impossible:'Không thể hoàn công' }[v]||v; }
 function hienTrangLabel(v) {
   return { '100':'Xây mới', '90':'Cải tạo mới', '80':'Còn tốt', '60':'Trung bình', '40':'Cũ', '20':'Rất cũ', '5':'Nhà nát' }[String(v)] || v;
 }
@@ -1509,14 +1510,16 @@ function renderList() {
   const allProps = state.properties;
   const fDistrict = (state.filterDistrict||'').toLowerCase().trim();
   const fBudget = state.filterBudget||'';
+  const fMaxPrice = state.filterMaxPrice||'';
   const fArea = state.filterArea||'';
   const fAlley = state.filterAlley||'';
   const fDirection = state.filterDirection||'';
   const showPanel = state.showFilterPanel||false;
-  const hasFilter = fDistrict||fBudget||fArea||fAlley||fDirection||(state.filterStatus||'');
+  const hasFilter = fDistrict||fBudget||fMaxPrice||fArea||fAlley||fDirection||(state.filterStatus||'');
 
   let filtered = allProps;
   if (fDistrict) filtered = filtered.filter(p => (p.address||'').toLowerCase().includes(fDistrict));
+  if (fMaxPrice) filtered = filtered.filter(p => { const price = parseFloat(p.askingPrice)||0; return price > 0 && price <= parseFloat(fMaxPrice); });
   if (fBudget) {
     filtered = filtered.filter(p => {
       const price = parseFloat(p.askingPrice)||0;
@@ -1560,7 +1563,7 @@ function renderList() {
       p.alleyType ? alleyLabel(p.alleyType) : '',
       p.legal ? legalLabel(p.legal) : '',
       p.hienTrang && p.hienTrang !== '80' ? hienTrangLabel(p.hienTrang) : '',
-      p.furniture && p.furniture !== 'none' ? furnitureLabel(p.furniture) : '',
+      p.furnitureDesc ? p.furnitureDesc : '',
     ].filter(Boolean).join(' · ');
 
     return `
@@ -1631,7 +1634,7 @@ function renderList() {
           onkeydown="if(event.key==='Enter'){setState({filterDistrict:this.value,listPage:1});this.blur();}"
           style="width:100%;padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;box-sizing:border-box;margin-bottom:10px;font-family:inherit;outline:none;" />
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
           <select onchange="setState({filterBudget:this.value,listPage:1})"
             style="padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;font-family:inherit;width:100%;">
             <option value="">Phân khúc</option>
@@ -1650,6 +1653,17 @@ function renderList() {
           </select>
         </div>
 
+        <div style="margin-bottom:14px;padding:12px 14px;border:0.6px solid ${state.filterMaxPrice?'#FF1744':'#1a1a1a'};border-radius:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-size:13px;color:#555;">Giá tối đa</span>
+            <span style="font-size:14px;font-weight:800;color:#FF1744;">${state.filterMaxPrice ? state.filterMaxPrice+' tỷ' : 'Không giới hạn'}</span>
+          </div>
+          <input type="range" min="1" max="50" step="0.5" value="${state.filterMaxPrice||50}"
+            oninput="this.previousElementSibling.querySelector('span:last-child').textContent = (this.value>=50?'Không giới hạn':this.value+' tỷ')"
+            onchange="setState({filterMaxPrice: this.value>=50?'':this.value, listPage:1})"
+            style="width:100%;height:4px;accent-color:#FF1744;cursor:pointer;" />
+        </div>
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
           <select onchange="setState({filterAlley:this.value,listPage:1})"
             style="padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;font-family:inherit;width:100%;">
@@ -1657,7 +1671,8 @@ function renderList() {
             <option value="mt" ${fAlley==='mt'?'selected':''}>Mặt tiền</option>
             <option value="alley1" ${fAlley==='alley1'?'selected':''}>Hẻm xe hơi > 6m</option>
             <option value="alley2" ${fAlley==='alley2'?'selected':''}>Hẻm xe hơi 3-5m</option>
-            <option value="alley3" ${fAlley==='alley3'?'selected':''}>Hẻm < 3m</option>
+            <option value="alley3" ${fAlley==='alley3'?'selected':''}>Hẻm 3 gác <3m</option>
+            <option value="alley4" ${fAlley==='alley4'?'selected':''}>Hẻm xe máy <2m</option>
           </select>
           <select onchange="setState({filterDirection:this.value,listPage:1})"
             style="padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;font-family:inherit;width:100%;">
@@ -1674,7 +1689,7 @@ function renderList() {
             .map(o=>`<option value="${o.v}" ${state.filterStatus===o.v?'selected':''}>${o.l}</option>`).join('')}
         </select>
 
-        ${hasFilter ? `<button onclick="setState({filterDistrict:'',filterBudget:'',filterArea:'',filterAlley:'',filterDirection:'',filterStatus:'',listPage:1})"
+        ${hasFilter ? `<button onclick="setState({filterDistrict:'',filterBudget:'',filterMaxPrice:'',filterArea:'',filterAlley:'',filterDirection:'',filterStatus:'',listPage:1})"
           style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #FF1744;background:white;color:#FF1744;font-size:13px;font-weight:700;cursor:pointer;">
           × Xóa tất cả bộ lọc
         </button>` : ''}
@@ -1728,16 +1743,16 @@ function renderForm() {
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Loại đường / hẻm</span>
           <select class="input" onchange="updateForm('alleyType', this.value)">
-            ${[{v:'mt',l:'Mặt tiền đường'},{v:'alley1',l:'Hẻm xe hơi > 6m'},{v:'alley2',l:'Hẻm xe hơi 3-5m'},{v:'alley3',l:'Hẻm < 3m'}]
-              .map(o=>`<option value="${o.v}" ${f.alleyType===o.v?'selected':''}>${o.l}</option>`).join('')}
+            ${[{v:'',l:'Chọn loại đường/hẻm'},{v:'mt',l:'Mặt tiền đường'},{v:'alley1',l:'Hẻm xe hơi > 6m'},{v:'alley2',l:'Hẻm xe hơi 3-5m'},{v:'alley3',l:'Hẻm 3 gác <3m'},{v:'alley4',l:'Hẻm xe máy <2m'}]
+              .map(o=>`<option value="${o.v}" ${(f.alleyType||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
 
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Trạng thái</span>
           <select class="input" onchange="updateForm('propStatus', this.value)">
-            ${[{v:'not_surveyed',l:'Chưa khảo sát'},{v:'active',l:'Đang bán'},{v:'paused',l:'Tạm dừng'},{v:'sold',l:'Đã bán'}]
-              .map(o=>`<option value="${o.v}" ${(f.propStatus||'active')===o.v?'selected':''}>${o.l}</option>`).join('')}
+            ${[{v:'',l:'Chọn trạng thái'},{v:'not_surveyed',l:'Chưa khảo sát'},{v:'active',l:'Đang bán'},{v:'paused',l:'Tạm dừng'},{v:'sold',l:'Đã bán'}]
+              .map(o=>`<option value="${o.v}" ${(f.propStatus||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
 
@@ -1776,8 +1791,8 @@ function renderForm() {
         <div class="f-select-wrap">
           <span class="field-label">Hình dạng đất</span>
           <select class="input" onchange="updateForm('shape', this.value)">
-            ${[{v:'rectangle',l:'Vuông vức'},{v:'flared_light',l:'Nở hậu nhẹ'},{v:'flared_nice',l:'Nở hậu đẹp'},{v:'flared_L',l:'Nở hậu L'},{v:'taper_light',l:'Tóp hậu nhẹ'},{v:'taper_mid',l:'Tóp hậu vừa'},{v:'taper_heavy',l:'Tóp hậu nặng'},{v:'xeo',l:'Chặt góc xéo'},{v:'triangle',l:'Tam giác'},{v:'unknown',l:'Không xác định'}]
-              .map(o=>`<option value="${o.v}" ${f.shape===o.v?'selected':''}>${o.l}</option>`).join('')}
+            ${[{v:'',l:'Chọn hình dạng'},{v:'rectangle',l:'Vuông vức'},{v:'flared_light',l:'Nở hậu nhẹ'},{v:'flared_nice',l:'Nở hậu đẹp'},{v:'flared_L',l:'Nở hậu L'},{v:'taper_light',l:'Tóp hậu nhẹ'},{v:'taper_mid',l:'Tóp hậu vừa'},{v:'taper_heavy',l:'Tóp hậu nặng'},{v:'xeo',l:'Chặt góc xéo'},{v:'triangle',l:'Tam giác'},{v:'unknown',l:'Không xác định'}]
+              .map(o=>`<option value="${o.v}" ${(f.shape||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
 
@@ -1794,8 +1809,8 @@ function renderForm() {
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Hiện trạng nhà</span>
           <select class="input" onchange="updateForm('hienTrang', this.value)">
-            ${[{v:'100',l:'Xây mới'},{v:'90',l:'Cải tạo mới'},{v:'80',l:'Còn tốt'},{v:'60',l:'Trung bình'},{v:'40',l:'Cũ'},{v:'20',l:'Rất cũ'},{v:'5',l:'Nhà nát'}]
-              .map(o=>`<option value="${o.v}" ${String(f.hienTrang||'80')===o.v?'selected':''}>${o.l}</option>`).join('')}
+            ${[{v:'',l:'Chọn hiện trạng'},{v:'100',l:'Xây mới'},{v:'90',l:'Cải tạo mới'},{v:'80',l:'Còn tốt'},{v:'60',l:'Trung bình'},{v:'40',l:'Cũ'},{v:'20',l:'Rất cũ'},{v:'5',l:'Nhà nát'}]
+              .map(o=>`<option value="${o.v}" ${String(f.hienTrang||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
 
@@ -1844,8 +1859,8 @@ function renderForm() {
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Pháp lý</span>
           <select class="input" onchange="updateForm('legal', this.value)">
-            ${[{v:'pink_book',l:'Sổ hồng riêng'},{v:'red_book',l:'Sổ đỏ'},{v:'co_owned',l:'Đồng sở hữu'},{v:'pending',l:'Đang chờ sổ'}]
-              .map(o=>`<option value="${o.v}" ${f.legal===o.v?'selected':''}>${o.l}</option>`).join('')}
+            ${[{v:'',l:'Chọn pháp lý'},{v:'pink_book',l:'Sổ hồng riêng'},{v:'red_book',l:'Sổ đỏ'},{v:'co_owned',l:'Đồng sở hữu'},{v:'pending',l:'Đang chờ sổ'}]
+              .map(o=>`<option value="${o.v}" ${(f.legal||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
 
@@ -1855,8 +1870,8 @@ function renderForm() {
           <div class="f-select-wrap">
             <span class="field-label">Hoàn công</span>
             <select class="input" onchange="updateForm('hoanCong', this.value)">
-              ${[{v:'full',l:'Hoàn công đầy đủ'},{v:'pending',l:'Đang chờ hoàn công'},{v:'partial',l:'Hoàn công một phần'},{v:'none',l:'Chưa hoàn công'},{v:'impossible',l:'Không thể hoàn công'}]
-                .map(o=>`<option value="${o.v}" ${(f.hoanCong||'full')===o.v?'selected':''}>${o.l}</option>`).join('')}
+              ${[{v:'',l:'Chọn tình trạng'},{v:'full',l:'Hoàn công đầy đủ'},{v:'pending',l:'Đang chờ hoàn công'},{v:'partial',l:'Hoàn công một phần'},{v:'none',l:'Chưa hoàn công'},{v:'impossible',l:'Không thể hoàn công'}]
+                .map(o=>`<option value="${o.v}" ${(f.hoanCong||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
             </select>
           </div>
           ${field('Hệ số trừ (%)', 'hoanCongRate', f.hoanCongRate||'', 'number', 'Vd: 30')}
@@ -1949,7 +1964,7 @@ function renderDetail() {
         
         <div class="section-title">Thông tin chi tiết</div>
         <div class="card">
-          ${p.askingPrice ? infoRow('Giá chào', fmtTy(parseFloat(p.askingPrice))+' tỷ') : ''}
+          ${p.askingPrice ? infoRow('Giá chào', fmtTy(parseFloat(p.askingPrice))) : ''}
           ${infoRow('Diện tích CN', esc(p.area)+' m²')}
           ${p.dtThucTe ? infoRow('DT thực tế', esc(p.dtThucTe)+' m²') : ''}
           ${infoRow('Mặt tiền × Dài', esc(p.width)+' × '+esc(p.length)+' m')}
@@ -1957,10 +1972,11 @@ function renderDetail() {
           ${p.extraArea ? infoRow('Đất không CN', esc(p.extraArea)+'m² (hệ số '+esc(p.extraRate||'40')+'%)') : ''}
           ${infoRow('Số tầng', esc(p.floors))}
           ${infoRow('Hiện trạng', hienTrangLabel(p.hienTrang||'80'))}
-          ${p.furniture && p.furniture !== 'none' ? infoRow('Nội thất', furnitureLabel(p.furniture)) : ''}
           ${infoRow('Hướng', esc(p.direction)||'—')}
-          ${infoRow('Vị trí', alleyLabel(p.alleyType))}
+          ${infoRow('Loại đường/hẻm', alleyLabel(p.alleyType))}
           ${infoRow('Hình dạng', shapeLabel(p.shape))}
+          ${p.furnitureDesc ? infoRow('Nội thất', esc(p.furnitureDesc)) : ''}
+          ${p.hoanCong ? infoRow('Hoàn công', hoanCongLabel(p.hoanCong)) : ''}
           ${p.planning && p.planning !== 'clear' ? infoRow('Quy hoạch', planningLabel(p.planning)) : ''}
           ${infoRow('Pháp lý', legalLabel(p.legal))}
           ${p.issues&&p.issues.length>0 ? infoRow('Yếu tố ngoại vi', p.issues.map(i=>issueLabel(i)).join(', ')) : ''}
@@ -2056,153 +2072,19 @@ function renderValuation() {
             <span style="font-size:18px;font-weight:800;color:#2E7D32;">${fmtTy(r.estimatedValue)}</span>
           </div>
           ${r.chenhLechTongPct !== null ? `
-          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-            <span style="font-size:14px;">Chênh lệch</span>
-            <span style="font-size:15px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#FF1744'};">
-              ${r.chenhLechTongPct <= 0 ? '−' : '+'}${fmtTy(Math.abs(r.chenhLechTongTien))}
-            </span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;">
-            <span style="font-size:14px;">Tỷ lệ</span>
-            <span style="font-size:15px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : '#FF1744'};">
-              ${r.chenhLechTongPct !== null ? (r.chenhLechTongPct <= 0 ? '−' : '+') + Math.abs(r.chenhLechTongPct).toFixed(1) + '%' : '—'}
-            </span>
-          </div>
           <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : r.chenhLechTongPct <= 10 ? '#FFFBEB' : '#FFF5F5'};">
             <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">
               ${r.chenhLechTongPct <= 0
-                ? `🟢 Giá bán thấp hơn thị trường khoảng ${Math.round(Math.abs(r.chenhLechTongTien)*1000)} triệu đồng (${r.chenhLechTongPct !== null ? Math.abs(r.chenhLechTongPct).toFixed(1) : '0'}%)`
+                ? `🟢 Giá bán thấp hơn thị trường khoảng ${Math.round(Math.abs(r.chenhLechTongTien)*1000)} triệu đồng (${Math.abs(r.chenhLechTongPct).toFixed(1)}%)`
                 : r.chenhLechTongPct <= 10
-                ? `🟡 Giá bán cao hơn thị trường ${Math.round(r.chenhLechTongTien*1000)} triệu đồng (${r.chenhLechTongPct !== null ? r.chenhLechTongPct.toFixed(1) : '0'}%)`
-                : `🔴 Giá bán cao hơn thị trường ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct !== null ? r.chenhLechTongPct.toFixed(1) : '0'}%)`}
+                ? `🟡 Giá bán cao hơn thị trường ${Math.round(r.chenhLechTongTien*1000)} triệu đồng (${r.chenhLechTongPct.toFixed(1)}%)`
+                : `🔴 Giá bán cao hơn thị trường ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct.toFixed(1)}%)`}
             </span>
           </div>
           ` : '<div style="font-size:13px;color:#888;padding:8px 0;">Nhập đủ dữ liệu để xem kết quả</div>'}
         </div>
 
-                <!-- 2+3. PHÂN TÍCH GIÁ — bảng 3 cột -->
-        <div class="card">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:16px;">📊 PHÂN TÍCH GIÁ</div>
-
-          <!-- Header 3 cột -->
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:2px solid #1a1a1a;margin-bottom:2px;">
-            <span style="font-size:11px;font-weight:700;color:#888;"></span>
-            <span style="font-size:11px;font-weight:700;color:#1a1a1a;text-align:right;min-width:80px;">Chủ chào</span>
-            <span style="font-size:11px;font-weight:700;color:#2E7D32;text-align:right;min-width:80px;">Thị trường</span>
-          </div>
-
-          <!-- Section: ĐẤT -->
-          <div style="font-size:12px;font-weight:800;letter-spacing:0.8px;color:#1a1a1a;padding:8px 0 4px;">ĐẤT</div>
-
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#1a1a1a;">DT đất CN</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${p.area} m²</span>
-            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${p.area} m²</span>
-          </div>
-          ${r.loGioiArea > 0 ? `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#1a1a1a;">Ranh lộ giới (${r.loGioiRate}%)</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.loGioiArea} m²</span>
-            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">+${fmtTy(r.giaTriLoGioi)}</span>
-          </div>` : ''}
-          ${r.extraArea > 0 ? `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#1a1a1a;">Đất không CN (${r.extraRate}%)</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.extraArea} m²</span>
-            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">+${fmtTy(r.giaTriExtra)}</span>
-          </div>` : ''}
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#1a1a1a;">Đơn giá đất</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.donGiaRao > 0 ? r.donGiaRao.toFixed(0)+' tr/m²' : '—'}</span>
-            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${r.giaTT} tr/m²</span>
-          </div>
-          ${r.issueDetails && r.issueDetails.length > 0 ? `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#FF1744;">Trừ lỗi (${r.issueDetails.map(i=>i.pct+'%').join(', ')})</span>
-            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">—</span>
-            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">${fmtTy(+(r.giaTriDatSauLoi - r.giaTriDatTT).toFixed(3))}</span>
-          </div>` : ''}
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
-            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị đất</span>
-            <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;">${r.donGiaRao > 0 ? fmtTy(+(r.donGiaRao * parseFloat(p.area||0) / 1000).toFixed(3)) : '—'}</span>
-            <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.giaTriDatSauLoi)}</span>
-          </div>
-
-          <!-- Section: NHÀ -->
-          <div style="font-size:12px;font-weight:800;letter-spacing:0.8px;color:#1a1a1a;padding:8px 0 4px;">NHÀ</div>
-
-          ${p.floors > 1 ? `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#1a1a1a;">DT sàn</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.sanXD} m²</span>
-            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${r.sanXD} m²</span>
-          </div>` : ''}
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#1a1a1a;">Đơn giá XD</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${r.donGiaXD} tr/m²</span>
-            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${r.donGiaXD} tr/m²</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#1a1a1a;">Hiện trạng</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">${hienTrangLabel(r.hienTrang)}</span>
-            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">${hienTrangLabel(r.hienTrang)}</span>
-          </div>
-          ${r.hoanCongValue > 0 ? `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#FF1744;">Trừ hoàn công (${p.hoanCongRate}%)</span>
-            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">—</span>
-            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:80px;">${fmtTy(-r.hoanCongValue)}</span>
-          </div>` : ''}
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
-            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị nhà</span>
-            <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(r.giaTriNha)}</span>
-            <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.giaTriNha)}</span>
-          </div>
-
-          ${r.furnitureValue > 0 ? `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
-            <span style="font-size:13px;font-weight:600;color:#1a1a1a;">Nội thất</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">+${fmtTy(r.furnitureValue)}</span>
-            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:80px;">+${fmtTy(r.furnitureValue)}</span>
-          </div>` : ''}
-
-          ${r.adjSum !== 0 ? `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
-            <span style="font-size:13px;font-weight:600;color:${r.adjSum > 0 ? '#2E7D32' : '#FF1744'};">Hình dạng (${r.adjSum > 0 ? '+' : ''}${((r.adjSum/r.giaTriDatSauLoi)*100).toFixed(0)}%)</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:80px;">—</span>
-            <span style="font-size:13px;font-weight:600;color:${r.adjSum > 0 ? '#2E7D32' : '#FF1744'};text-align:right;min-width:80px;">${r.adjSum > 0 ? '+' : ''}${fmtTy(r.adjSum)}</span>
-          </div>` : ''}
-
-          <!-- TỔNG -->
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px 0;border-bottom:1px solid #E8E8E8;">
-            <span style="font-size:14px;font-weight:800;color:#1a1a1a;">TỔNG</span>
-            <span style="font-size:16px;font-weight:800;text-align:right;min-width:80px;">${fmtTy(parseFloat(p.askingPrice))}</span>
-            <span style="font-size:16px;font-weight:800;color:#2E7D32;text-align:right;min-width:80px;">${fmtTy(r.estimatedValue)}</span>
-          </div>
-
-          <!-- KẾT LUẬN -->
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:8px 0;">
-            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Chênh lệch</span>
-            <span style="font-size:14px;font-weight:800;text-align:right;min-width:80px;color:${r.chenhLechTongPct > 5 ? '#FF1744' : r.chenhLechTongPct < -5 ? '#2E7D32' : '#B45309'};">
-              ${r.chenhLechTongPct !== null ? (r.chenhLechTongPct > 0 ? '+' : '') + r.chenhLechTongPct.toFixed(1) + '%' : '—'}
-            </span>
-            <span style="font-size:13px;text-align:right;min-width:80px;color:#888;">chuẩn</span>
-          </div>
-
-          ${r.chenhLechTongPct !== null ? `
-          <div style="padding:10px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : r.chenhLechTongPct <= 5 ? '#FFFBEB' : '#FFF5F5'};margin-top:4px;">
-            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">
-              ${r.chenhLechTongPct <= 0
-                ? `🟢 Giá bán thấp hơn TT ${fmtTy(Math.abs(r.chenhLechTongTien))}`
-                : `🟠 Giá bán cao hơn TT ${fmtTy(r.chenhLechTongTien)}`}
-              (${r.chenhLechTongPct !== null ? Math.abs(r.chenhLechTongPct).toFixed(1) : '0'}%)
-            </span>
-          </div>` : ''}
-        </div>
-
-
-
-        <!-- 5. ĐIỂM MẠNH / YẾU — 2 CỘT -->
+        <!-- 2. ĐIỂM MẠNH / YẾU -->
         <div class="card">
           <div class="card-header">💎 Điểm mạnh & ⚠️ Điểm yếu</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:4px;">
@@ -2215,10 +2097,9 @@ function renderValuation() {
           </div>
         </div>
 
-        <!-- 4. CHIẾN LƯỢC ĐÀM PHÁN -->
+        <!-- 3. CHIẾN LƯỢC ĐÀM PHÁN -->
         <div class="card" style="background:#F8F8F8;border:1px solid #E8E8E8;">
           <div style="font-size:10px;font-weight:800;color:#FF1744;letter-spacing:2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
-
           <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
             <span style="font-size:14px;color:#555;">Đánh giá</span>
             <span style="font-size:14px;font-weight:700;">${r.damPhanLabel}</span>
@@ -2227,23 +2108,127 @@ function renderValuation() {
             <span style="font-size:14px;color:#555;">Khoảng mua hợp lý</span>
             <span style="font-size:14px;font-weight:700;">${fmtTy(r.openingOffer)} – ${fmtTy(r.targetDeal)}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;">
             <span style="font-size:14px;color:#555;">Giá mục tiêu</span>
             <span style="font-size:16px;font-weight:800;color:#FF1744;">${fmtTy(r.targetDeal)}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
-            <span style="font-size:14px;color:#555;">Mức độ thương lượng</span>
-            <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Thấp' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Cao'}</span>
+        </div>
+
+        <div class="section-title">PHÂN TÍCH CHI TIẾT</div>
+
+                <!-- 2+3. PHÂN TÍCH GIÁ — cấu trúc mới: NHÀ trước, ĐẤT sau, từng yếu tố riêng dòng -->
+
+        <!-- NHÀ -->
+        <div class="card">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:14px;">🏠 NHÀ (CÔNG TRÌNH)</div>
+
+          ${p.floors > 1 ? `
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">DT sàn xây dựng</span>
+            <span style="font-size:13px;font-weight:600;">${r.sanXD} m²</span>
+          </div>` : ''}
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">Đơn giá xây dựng</span>
+            <span style="font-size:13px;font-weight:600;">${r.donGiaXD} tr/m²</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
-            <span style="font-size:14px;color:#555;">Khả năng ép giá</span>
-            <span style="font-size:14px;font-weight:700;">${r.chenhLechTongPct <= 0 ? 'Khó' : r.chenhLechTongPct <= 10 ? 'Vừa' : 'Cao'}</span>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">Hiện trạng</span>
+            <span style="font-size:13px;font-weight:600;">${hienTrangLabel(r.hienTrang)}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;">
-            <span style="font-size:14px;color:#555;">Nguy cơ mất hàng</span>
-            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#FF1744' : '#2E7D32'};">${r.chenhLechTongPct <= 0 ? 'Cao' : r.chenhLechTongPct <= 10 ? 'Trung bình' : 'Thấp'}</span>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #E8E8E8;">
+            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị nhà gốc</span>
+            <span style="font-size:14px;font-weight:800;">${fmtTy(r.giaTriNhaCoBan)}</span>
+          </div>
+          ${r.hoanCongValue > 0 ? `
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#FF1744;">↳ ${hoanCongLabel(p.hoanCong)} (-${p.hoanCongRate}%)</span>
+            <span style="font-size:13px;font-weight:600;color:#FF1744;">−${fmtTy(r.hoanCongValue)}</span>
+          </div>` : ''}
+          <div style="display:flex;justify-content:space-between;padding:8px 0;margin-top:2px;background:#FAFAFA;border-radius:8px;padding-left:10px;padding-right:10px;">
+            <span style="font-size:13px;font-weight:800;color:#1a1a1a;">Giá trị nhà</span>
+            <span style="font-size:15px;font-weight:800;color:#2E7D32;">${fmtTy(r.giaTriNha)}</span>
           </div>
         </div>
+
+        <!-- ĐẤT -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <span style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;">📐 ĐẤT</span>
+            <div style="display:flex;gap:16px;">
+              <span style="font-size:10px;font-weight:700;color:#888;min-width:64px;text-align:right;">CHỦ CHÀO</span>
+              <span style="font-size:10px;font-weight:700;color:#2E7D32;min-width:64px;text-align:right;">THỊ TRƯỜNG</span>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">DT đất công nhận</span>
+            <span style="font-size:13px;font-weight:600;">${p.area} m²</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">Đơn giá đất</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:64px;">${r.donGiaRao > 0 ? r.donGiaRao.toFixed(0)+' tr/m²' : '—'}</span>
+            <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:64px;">${r.giaTT} tr/m²</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
+            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị đất gốc</span>
+            <span style="font-size:14px;font-weight:800;text-align:right;min-width:64px;">${r.donGiaRao > 0 ? fmtTy(+(r.donGiaRao * parseFloat(p.area||0) / 1000).toFixed(3)) : '—'}</span>
+            <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:64px;">${fmtTy(r.giaTriDatTT)}</span>
+          </div>
+
+          ${r.issueDetails && r.issueDetails.length > 0 ? r.issueDetails.map(iss => `
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#FF1744;">↳ ${iss.label} (${iss.pct}%)</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:64px;color:#ccc;">—</span>
+            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:64px;">−${fmtTy(Math.abs(r.giaTriDatTT * Math.abs(iss.pct)/100))}</span>
+          </div>`).join('') : ''}
+
+          ${r.adjSum !== 0 ? `
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:${r.adjSum>0?'#2E7D32':'#FF1744'};">↳ Hình dạng: ${shapeLabel(p.shape)}</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:64px;color:#ccc;">—</span>
+            <span style="font-size:13px;font-weight:600;color:${r.adjSum>0?'#2E7D32':'#FF1744'};text-align:right;min-width:64px;">${r.adjSum>0?'+':'−'}${fmtTy(Math.abs(r.adjSum))}</span>
+          </div>` : ''}
+
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:8px 0;margin-top:2px;background:#FAFAFA;border-radius:8px;padding-left:10px;padding-right:10px;">
+            <span style="font-size:13px;font-weight:800;color:#1a1a1a;">Giá trị đất</span>
+            <span style="font-size:15px;font-weight:800;text-align:right;min-width:64px;">${r.donGiaRao > 0 ? fmtTy(+(r.donGiaRao * parseFloat(p.area||0) / 1000).toFixed(3)) : '—'}</span>
+            <span style="font-size:15px;font-weight:800;color:#2E7D32;text-align:right;min-width:64px;">${fmtTy(r.giaTriDatSauLoi)}</span>
+          </div>
+        </div>
+
+        ${r.furnitureValue > 0 ? `
+        <!-- NỘI THẤT -->
+        <div class="card">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:10px;">🛋 NỘI THẤT</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;color:#1a1a1a;">${esc(p.furnitureDesc)||'Nội thất'}</span>
+            <span style="font-size:15px;font-weight:800;color:#2E7D32;">+${fmtTy(r.furnitureValue)}</span>
+          </div>
+        </div>` : ''}
+
+        <!-- TỔNG GIÁ TRỊ -->
+        <div class="card" style="border:1.5px solid ${r.chenhLechTongPct !== null && r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct !== null && r.chenhLechTongPct > 20 ? '#FF1744' : '#E8E8E8'};">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:14px;">⚖️ TỔNG GIÁ TRỊ</div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="font-size:14px;">Chủ chào</span>
+            <span style="font-size:18px;font-weight:800;">${fmtTy(parseFloat(p.askingPrice))}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="font-size:14px;">Thị trường (đất + nhà${r.furnitureValue>0?' + nội thất':''})</span>
+            <span style="font-size:18px;font-weight:800;color:#2E7D32;">${fmtTy(r.estimatedValue)}</span>
+          </div>
+          ${r.chenhLechTongPct !== null ? `
+          <div style="margin-top:10px;padding:10px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : r.chenhLechTongPct <= 10 ? '#FFFBEB' : '#FFF5F5'};">
+            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">
+              ${r.chenhLechTongPct <= 0
+                ? `🟢 Giá bán thấp hơn TT ${fmtTy(Math.abs(r.chenhLechTongTien))} (${Math.abs(r.chenhLechTongPct).toFixed(1)}%)`
+                : r.chenhLechTongPct <= 10
+                ? `🟡 Giá bán cao hơn TT ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct.toFixed(1)}%)`
+                : `🔴 Giá bán cao hơn TT ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct.toFixed(1)}%)`}
+            </span>
+          </div>` : ''}
+        </div>
+
 
 
         <div class="disclaimer">
@@ -2484,7 +2469,7 @@ Trả về JSON với các trường sau (để trống "" nếu không có thô
   "area": "diện tích m2 (chỉ số, không đơn vị, để trống nếu có ngang×dài)",
   "floors": "số tầng (chỉ số)",
   "direction": "hướng cửa chính (một trong: Đông, Tây, Nam, Bắc, Đông Nam, Đông Bắc, Tây Nam, Tây Bắc)",
-  "alleyType": "loại đường (một trong: mt=mặt tiền, alley1=hẻm>6m, alley2=hẻm3-5m, alley3=hẻm<3m)",
+  "alleyType": "loại đường (một trong: mt=mặt tiền, alley1=hẻm>6m, alley2=hẻm3-5m, alley3=hẻm3gác<3m, alley4=hẻmxemáy<2m)",
   "shape": "hình dạng (một trong: rectangle=vuông vức, flared=nở hậu, L=chữL, taper=tóp hậu, xeo=xéo méo, triangle=tam giác)",
   "legal": "pháp lý (một trong: pink_book=sổ hồng, red_book=sổ đỏ, co_owned=đồng sở hữu, pending=chờ sổ)",
   "askingPrice": "giá bán (chỉ số tỷ, ví dụ 9 hoặc 9.5)",
@@ -2670,7 +2655,7 @@ async function addSentHistory(customerId, propertyId, feedback, note) {
   const newCustomers = state.customers.map(c => c.id === customerId ? updated : c);
   state.customers = newCustomers;
   await saveCustomersToFirestore(newCustomers);
-  setState({ showSendModal: null });
+  setState({ showSendModal: null, sendModalSearch: '' });
 }
 
 function openSendModal(customerId) { setState({ showSendModal: customerId }); }
@@ -2881,8 +2866,8 @@ function renderCustomerForm() {
         <span class="field-label">Loại đường / hẻm</span>
         <select class="input" onchange="updateCustomerForm('alleyType', this.value)">
           <option value="">— Không yêu cầu —</option>
-          ${[{v:'mt',l:'Mặt tiền đường'},{v:'alley1',l:'Hẻm xe hơi > 6m'},{v:'alley2',l:'Hẻm xe hơi 3-5m'},{v:'alley3',l:'Hẻm < 3m'}]
-            .map(o=>`<option value="${o.v}" ${f.alleyType===o.v?'selected':''}>${o.l}</option>`).join('')}
+          ${[{v:'',l:'Chọn loại đường/hẻm'},{v:'mt',l:'Mặt tiền đường'},{v:'alley1',l:'Hẻm xe hơi > 6m'},{v:'alley2',l:'Hẻm xe hơi 3-5m'},{v:'alley3',l:'Hẻm 3 gác <3m'},{v:'alley4',l:'Hẻm xe máy <2m'}]
+            .map(o=>`<option value="${o.v}" ${(f.alleyType||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
         </select>
       </div>
 
@@ -2934,7 +2919,7 @@ function renderCustomerDetail() {
         <div style="font-size:10px;font-weight:800;color:#FF1744;letter-spacing:2px;margin-bottom:12px;">KHÁCH HÀNG</div>
         <div style="font-size:20px;font-weight:800;margin-bottom:6px;color:#1a1a1a;">${esc(c.name)}</div>
         <div style="display:flex;gap:16px;flex-wrap:wrap;">
-          ${c.phone ? `<div style="font-size:14px;color:#555;">${esc(c.phone)}</div>` : ''}
+          ${c.phone ? `<a href="tel:${esc(c.phone)}" style="font-size:14px;color:#FF1744;font-weight:600;text-decoration:none;">📞 ${esc(c.phone)}</a>` : ''}
           <div style="font-size:14px;font-weight:700;color:${statusColor(c.status)};">${statusLabel(c.status)}</div>
         </div>
       </div>
@@ -2984,35 +2969,35 @@ function renderCustomerDetail() {
         <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
             <div style="font-size:13px;font-weight:600;color:#1a1a1a;flex:1;padding-right:8px;">${esc(h.address||'')}</div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span style="font-size:11px;font-weight:700;color:${feedbackColor(h.feedback)};white-space:nowrap;">${feedbackLabel(h.feedback)}</span>
-              <button onclick="deleteSentHistory('${c.id}',${idx})" style="background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:0;line-height:1;">×</button>
-            </div>
+            <button onclick="deleteSentHistory('${c.id}',${idx})" style="background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;">×</button>
           </div>
           <div style="font-size:12px;color:#888;">${h.date||''}${h.note ? ' · '+esc(h.note) : ''}</div>
         </div>`).join('') : '<div style="font-size:13px;color:#888;padding:4px 0;">Chưa ghi nhà nào</div>'}
 
         ${state.showSendModal === c.id ? `
         <div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:flex-end;">
-          <div style="background:white;width:100%;border-radius:20px 20px 0 0;padding:20px 16px 40px;">
-            <div style="font-size:15px;font-weight:700;margin-bottom:16px;">Ghi nhà đã gửi khách xem</div>
-            <div style="font-size:12px;color:#888;margin-bottom:8px;">Chọn căn nhà:</div>
-            <div style="max-height:220px;overflow-y:auto;margin-bottom:16px;">
-              ${state.properties.length === 0
-                ? '<div style="font-size:13px;color:#888;">Chưa có hồ sơ nào</div>'
-                : state.properties.map(pr => `
+          <div style="background:white;width:100%;border-radius:20px 20px 0 0;padding:20px 16px 40px;max-height:85vh;display:flex;flex-direction:column;">
+            <div style="font-size:15px;font-weight:700;margin-bottom:12px;">Ghi nhà đã gửi khách xem</div>
+            <input class="input" type="text" placeholder="Tìm theo địa chỉ..." value="${state.sendModalSearch||''}"
+              oninput="setState({sendModalSearch:this.value})" style="margin-bottom:12px;flex-shrink:0;" />
+            <div style="overflow-y:auto;margin-bottom:16px;flex:1;">
+              ${(() => {
+                const q = (state.sendModalSearch||'').toLowerCase().trim();
+                const list = q ? state.properties.filter(pr => (pr.address||'').toLowerCase().includes(q)) : state.properties;
+                if (list.length === 0) return `<div style="font-size:13px;color:#888;padding:8px 0;">${state.properties.length === 0 ? 'Chưa có hồ sơ nào' : 'Không tìm thấy'}</div>`;
+                return list.map(pr => `
                 <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
                   <div style="font-size:13px;font-weight:600;margin-bottom:8px;">${esc(pr.address)}</div>
                   <div style="display:flex;gap:6px;">
-                    ${['liked','pending','rejected'].map(fb => `
-                      <button onclick="addSentHistory('${c.id}','${pr.id}','${fb}','')"
-                        style="flex:1;padding:7px 4px;border-radius:8px;border:1.5px solid ${feedbackColor(fb)};background:white;color:${feedbackColor(fb)};font-size:11px;font-weight:700;cursor:pointer;">
-                        ${feedbackLabel(fb)}
-                      </button>`).join('')}
+                    <input type="text" id="note-${pr.id}" placeholder="Ghi chú (vd: khách thích, hẻm hơi nhỏ...)"
+                      style="flex:1;padding:8px 10px;border:1px solid #E8E8E8;border-radius:8px;font-size:12px;font-family:inherit;" />
+                    <button onclick="addSentHistory('${c.id}','${pr.id}','', document.getElementById('note-${pr.id}').value)"
+                      style="padding:8px 14px;border-radius:8px;border:1.5px solid #FF1744;background:#FF1744;color:white;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Lưu</button>
                   </div>
-                </div>`).join('')}
+                </div>`).join('');
+              })()}
             </div>
-            <button onclick="closeSendModal()" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:14px;font-weight:600;cursor:pointer;">Đóng</button>
+            <button onclick="closeSendModal()" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0;">Đóng</button>
           </div>
         </div>` : ''}
       </div>
