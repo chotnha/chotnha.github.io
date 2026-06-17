@@ -138,6 +138,27 @@ body {
   letter-spacing: 0.8px;
 }
 
+input[type="range"].dual-range::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #FF1744;
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  cursor: pointer;
+  margin-top: 3px;
+}
+input[type="range"].dual-range::-moz-range-thumb {
+  pointer-events: auto;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #FF1744;
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+
 /* ===== Stats ===== */
 .stats-row {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
@@ -795,7 +816,8 @@ let state = {
   listFilter: 'all',
   listPage: 1,
   filterStatus: '',
-  filterMaxPrice: '',
+  filterPriceMin: '',
+  filterPriceMax: '',
   filterDistrict: '',
   filterBudget: '',
   filterArea: '',
@@ -818,13 +840,77 @@ function setState(updates) {
   render();
 }
 
+// ═══ DUAL PRICE RANGE SLIDER (log scale 1 - 10,000 tỷ) ═══
+const PRICE_MIN = 1, PRICE_MAX = 10000;
+function sliderToPrice(sliderVal) {
+  // sliderVal: 0-1000 → giá trị tỷ (log scale)
+  const pct = sliderVal / 1000;
+  const logMin = Math.log(PRICE_MIN), logMax = Math.log(PRICE_MAX);
+  const price = Math.exp(logMin + pct * (logMax - logMin));
+  // Snap về số đẹp
+  if (price < 10) return +(Math.round(price*10)/10).toFixed(1);
+  if (price < 100) return Math.round(price);
+  if (price < 1000) return Math.round(price/5)*5;
+  return Math.round(price/50)*50;
+}
+function priceToSlider(price) {
+  price = Math.max(PRICE_MIN, Math.min(PRICE_MAX, parseFloat(price)||PRICE_MIN));
+  const logMin = Math.log(PRICE_MIN), logMax = Math.log(PRICE_MAX);
+  const pct = (Math.log(price) - logMin) / (logMax - logMin);
+  return Math.round(pct * 1000);
+}
+function priceToPct(price) {
+  price = Math.max(PRICE_MIN, Math.min(PRICE_MAX, parseFloat(price)||PRICE_MIN));
+  const logMin = Math.log(PRICE_MIN), logMax = Math.log(PRICE_MAX);
+  return ((Math.log(price) - logMin) / (logMax - logMin)) * 100;
+}
+function fmtPriceLabel(v) {
+  if (v >= 1000) return (v/1000).toFixed(v%1000===0?0:1)+' nghìn tỷ';
+  return v + ' tỷ';
+}
+function fmtPriceRange(min, max) {
+  const lo = min || PRICE_MIN, hi = max || PRICE_MAX;
+  if (!min && !max) return 'Tất cả mức giá';
+  if (lo === hi) return fmtPriceLabel(lo);
+  if (hi >= PRICE_MAX) return 'Từ ' + fmtPriceLabel(lo);
+  if (lo <= PRICE_MIN) return 'Đến ' + fmtPriceLabel(hi);
+  return fmtPriceLabel(lo) + ' — ' + fmtPriceLabel(hi);
+}
+function syncPriceSlider(el, which) {
+  const inputs = el.parentElement.querySelectorAll('input[type="range"]');
+  const minInput = inputs[0], maxInput = inputs[1];
+  let minVal = parseInt(minInput.value), maxVal = parseInt(maxInput.value);
+  if (which === 'min' && minVal > maxVal) { minInput.value = maxVal; minVal = maxVal; }
+  if (which === 'max' && maxVal < minVal) { maxInput.value = minVal; maxVal = minVal; }
+  const priceMin = sliderToPrice(minVal);
+  const priceMax = sliderToPrice(maxVal);
+  const display = el.closest('div[style*="border-radius:14px"]').querySelector('#price-range-display');
+  if (display) display.textContent = fmtPriceRange(priceMin, priceMax);
+  const track = el.closest('div[style*="border-radius:14px"]').querySelector('#price-range-track');
+  if (track) {
+    track.style.left = priceToPct(priceMin) + '%';
+    track.style.right = (100 - priceToPct(priceMax)) + '%';
+  }
+}
+function commitPriceFilter() {
+  const inputs = document.querySelectorAll('input[type="range"].dual-range');
+  if (inputs.length < 2) return;
+  const priceMin = sliderToPrice(parseInt(inputs[0].value));
+  const priceMax = sliderToPrice(parseInt(inputs[1].value));
+  setState({
+    filterPriceMin: priceMin <= PRICE_MIN ? '' : priceMin,
+    filterPriceMax: priceMax >= PRICE_MAX ? '' : priceMax,
+    filterBudget: '',
+    listPage: 1
+  });
+}
+
 function emptyForm() {
   return {
     address: '', propStatus: '', width: '', length: '', dtThucTe: '', area: '', floors: '', sanXD: '',
-    loGioiArea: '', loGioiRate: '',
-    extraArea: '', extraRate: '',
+    dtCongNhan: '', dtKhongCongNhan: '', planning: 'phu_hop',
     askingPrice: '', giaTT: '', donGiaXD: '7', hienTrang: '',
-    furnitureDesc: '', furnitureValue: '',
+    furnitureType: 'khong', furnitureValue: '', furnitureCondition: 'tot',
     hoanCong: '', hoanCongRate: '',
     alleyType: '', shape: '',
     issues: [], legal: '', direction: '', notes: '', isStarred: false
@@ -834,7 +920,7 @@ function emptyForm() {
 // ============== HELPERS ==============
 function legalLabel(v) { return { pink_book:'Sổ hồng riêng', red_book:'Sổ đỏ', co_owned:'Đồng sở hữu', pending:'Chờ sổ' }[v]||v; }
 function alleyLabel(v) { return { mt:'Mặt tiền', alley1:'Hẻm > 6m', alley2:'Hẻm 3-5m', alley3:'Hẻm 3 gác <3m', alley4:'Hẻm xe máy <2m' }[v]||v; }
-function shapeLabel(v) { return { rectangle:'Vuông vức', flared_light:'Nở hậu nhẹ', flared_nice:'Nở hậu đẹp', flared_L:'Nở hậu L', taper_light:'Tóp hậu nhẹ', taper_mid:'Tóp hậu vừa', taper_heavy:'Tóp hậu nặng', xeo:'Chặt góc xéo', triangle:'Tam giác', unknown:'Không xác định' }[v]||v; }
+function shapeLabel(v) { return { vuong:'Vuông vức', no_hau:'Nở hậu', top_nhe:'Tóp hậu nhẹ', top_nang:'Tóp hậu nặng', chat_goc:'Chặt góc', tam_giac:'Tam giác' }[v]||v; }
 function propStatusLabel(v) {
   return { active:'Đang bán', not_surveyed:'Chưa KS', paused:'Tạm dừng', sold:'Đã bán' }[v] || 'Đang bán';
 }
@@ -846,13 +932,16 @@ function propStatusBg(v) {
 }
 function hoanCongLabel(v) { return { '':'Chưa xác định', full:'Hoàn công đầy đủ', pending:'Đang chờ hoàn công', partial:'Hoàn công một phần', none:'Chưa hoàn công', impossible:'Không thể hoàn công' }[v]||v; }
 function hienTrangLabel(v) {
-  return { '100':'Xây mới', '90':'Cải tạo mới', '80':'Còn tốt', '60':'Trung bình', '40':'Cũ', '20':'Rất cũ', '5':'Nhà nát' }[String(v)] || v;
+  return { '100':'Xây mới', '90':'Cải tạo mới', '80':'Còn tốt', '60':'Trung bình', '40':'Cũ', '20':'Rất cũ', '0':'Nhà nát' }[String(v)] || v;
 }
-function furnitureLabel(v) {
-  return { none:'Không có', basic:'Cơ bản', full:'Đầy đủ', luxury:'Cao cấp' }[v] || v;
+function furnitureTypeLabel(v) {
+  return { khong:'Không có nội thất', co_ban:'Nội thất cơ bản', full:'Full nội thất', cao_cap:'Nội thất cao cấp' }[v] || v;
+}
+function furnitureConditionLabel(v) {
+  return { moi:'Mới', tot:'Tốt', trungbinh:'Trung bình', cu:'Cũ', ratcu:'Rất cũ' }[v] || v;
 }
 function planningLabel(v) {
-  return { clear:'Không vướng QH', road:'Dính lộ giới', public:'Đất công', other:'Quy hoạch khác' }[v] || v;
+  return { phu_hop:'Phù hợp quy hoạch', on_dinh:'Không CN nhưng sử dụng ổn định', lo_gioi:'Vướng lộ giới', cong_cong:'Thuộc quy hoạch công cộng', khong_cn:'Không được công nhận' }[v] || v;
 }
 function fmtTy(val) {
   if (!val || isNaN(val) || val <= 0) return '—';
@@ -860,43 +949,82 @@ function fmtTy(val) {
   return parseFloat(val).toFixed(2) + ' tỷ';
 }
 
-function issueLabel(v) { return { spiritual_temple:'Gần chùa', spiritual_grave:'Gần nghĩa trang/mộ', spiritual_shrine:'Gần đình/miếu', pole:'Cột điện/hố ga', noise:'Tiếng ồn', flood:'Ngập nước', tiny_alley:'Hẻm nội bộ', dead_end:'Hẻm cụt', road_hit_light:'Đâm đường rất nhẹ', road_hit_medium:'Đâm đường nhẹ', road_hit_heavy:'Đâm đường nặng', one_way:'Đường 1 chiều' }[v]||v; }
+function issueLabel(v) { return { gan_chua:'Gần chùa', gan_nha_tho:'Gần nhà thờ', gan_dinh_mieu:'Gần đình/miếu', gan_mo:'Gần mộ', gan_nghia_trang:'Gần nghĩa trang', tru_dien:'Trụ điện trước nhà', ho_ga:'Hố ga trước cổng', ngap:'Ngập', hem_cut:'Hẻm cụt', dam_duong:'Đâm đường', dam_duong_nang:'Đâm đường nặng', mot_chieu:'Đường một chiều', gan_nha_may:'Gần nhà máy/xưởng', gan_trung_chuyen_rac:'Gần trạm trung chuyển rác', xe_tai_lon:'Đường xe tải lớn thường xuyên' }[v]||v; }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ============== VALUATION CALCULATION ==============
 function calculateValuation(p) {
-  const area       = parseFloat(p.area)||0;
+  const area       = parseFloat(p.area)||0;          // DienTichDatThucTe
   const floors     = parseFloat(p.floors)||1;
   const width      = parseFloat(p.width)||0;
-  const askingPrice = parseFloat(p.askingPrice)||0;
-  const giaTT      = parseFloat(p.giaTT)||0;
+  const askingPrice = parseFloat(p.askingPrice)||0;   // Giá chào tổng (chủ nhà)
+  const giaTT      = parseFloat(p.giaTT)||0;          // DonGiaDatThiTruong (tr/m²)
   const donGiaXD   = parseFloat(p.donGiaXD)||7;
-  const hienTrang  = parseFloat(p.hienTrang || p.doMoi)||80;
-  const loGioiArea = parseFloat(p.loGioiArea)||0;
-  const loGioiRate = parseFloat(p.loGioiRate)||0;
-  const extraArea  = parseFloat(p.extraArea)||0;
-  const extraRate  = parseFloat(p.extraRate)||0;
+  const hienTrang  = parseFloat(p.hienTrang)||0;      // HeSoHienTrang (%)
 
-  // ═══ BƯỚC 1: Giá trị đất theo thị trường ═══
-  const giaTriDatTT      = (area && giaTT) ? +(area * giaTT / 1000).toFixed(3) : 0;
-  const giaTriLoGioi     = 0;
-  const giaTriExtra      = 0;
-  const giaTriDatTongCong = giaTriDatTT;
+  // ═══ A1. DIỆN TÍCH CÔNG NHẬN / KHÔNG CÔNG NHẬN + QUY HOẠCH ═══
+  const dtCongNhan    = parseFloat(p.dtCongNhan)||area||0;   // nếu chưa nhập riêng, coi như toàn bộ là CN
+  const dtKhongCongNhan = parseFloat(p.dtKhongCongNhan)||0;
+  const dtCheck = +(dtCongNhan + dtKhongCongNhan).toFixed(2);
+  const dtMismatch = (area > 0 && Math.abs(dtCheck - area) > 0.5); // cảnh báo lệch >0.5m²
 
-  // ═══ BƯỚC 2: Hệ số lỗi — NHÂN HỆ SỐ (không cộng dồn) ═══
+  const PLANNING_RATE = {
+    phu_hop: 100, on_dinh: 50, lo_gioi: 30, cong_cong: 20, khong_cn: 0
+  };
+  const heSoQuyHoach = (PLANNING_RATE[p.planning] ?? 100) / 100;
+
+  // ═══ A2. GIÁ ĐẤT CƠ BẢN (theo Chủ nhà + theo Thị trường) ═══
+  // DonGiaDatChuNha: suy ra từ giá chào tổng (tách ngược, trừ giá trị nhà sau điều chỉnh tạm)
+  // → cần giaTriNha trước, nên tính nhà trước rồi quay lại tính đất chủ nhà
+
+  // ═══ B. NHÀ ═══
+  const sanXD = parseFloat(p.sanXD)||(area * floors);
+  const giaTriXayDungMoi = (sanXD && donGiaXD) ? +(sanXD * donGiaXD / 1000).toFixed(3) : 0;
+  const heSoHienTrang = hienTrang / 100;
+  const giaTriNhaTruocHoanCong = +(giaTriXayDungMoi * heSoHienTrang).toFixed(3);
+
+  const hoanCongRate = parseFloat(p.hoanCongRate)||0;
+  const khauTruHoanCong = hoanCongRate > 0 ? +(giaTriNhaTruocHoanCong * hoanCongRate / 100).toFixed(3) : 0;
+
+  // ═══ C. NỘI THẤT (tách riêng, có khấu hao) ═══
+  const NOITHAT_DEPRECIATION = { moi: 100, tot: 80, trungbinh: 60, cu: 40, ratcu: 20, khong: 0 };
+  const giaTriNoiThatGoc = parseFloat(p.furnitureValue)||0;
+  const heSoNoiThat = (NOITHAT_DEPRECIATION[p.furnitureCondition] ?? 0) / 100;
+  const giaTriNoiThatSauKhauHao = p.furnitureType && p.furnitureType !== 'khong'
+    ? +(giaTriNoiThatGoc * heSoNoiThat).toFixed(3) : 0;
+
+  const giaTriNhaSauDieuChinh = +(giaTriNhaTruocHoanCong - khauTruHoanCong + giaTriNoiThatSauKhauHao).toFixed(3);
+  // Giữ tên cũ để tương thích các nơi khác trong code
+  const giaTriNhaCoBan = giaTriNhaTruocHoanCong;
+  const hoanCongValue = khauTruHoanCong;
+  const giaTriNha = giaTriNhaSauDieuChinh;
+  const furnitureValue = giaTriNoiThatSauKhauHao;
+
+  // ═══ A3. ĐƠN GIÁ ĐẤT CHỦ NHÀ (suy ngược từ giá chào tổng) ═══
+  // DonGiaDatChuNha = (askingPrice - giaTriNhaSauDieuChinh) / DienTichDatThucTe × 1000
+  const donGiaRao = (askingPrice && area)
+    ? +((askingPrice - giaTriNhaSauDieuChinh) * 1000 / area).toFixed(1) : 0;
+  const donGiaChuNha = donGiaRao; // alias
+
+  // ═══ A4. GIÁ TRỊ ĐẤT THEO CÔNG NHẬN / KHÔNG CÔNG NHẬN — áp dụng cho cả 2 đơn giá ═══
+  function tinhGiaTriDat(donGia) {
+    if (!donGia || donGia <= 0) return 0;
+    const giaTriCN = dtCongNhan * donGia / 1000;
+    const giaTriKCN = dtKhongCongNhan * donGia / 1000 * heSoQuyHoach;
+    return +(giaTriCN + giaTriKCN).toFixed(3);
+  }
+  const giaDatCoBanChuNha = tinhGiaTriDat(donGiaChuNha);
+  const giaDatCoBanThiTruong = tinhGiaTriDat(giaTT);
+  // Tương thích tên cũ
+  const giaTriDatTT = giaDatCoBanThiTruong;
+  const giaTriDatTongCong = giaDatCoBanThiTruong;
+
+  // ═══ A5. HỆ SỐ NGOẠI VI — nhân tuần tự, không cộng dồn ═══
   const PENALTY_RATE = {
-    spiritual_temple: -5,
-    spiritual_grave:  -10,
-    spiritual_shrine: -4,
-    pole:   -3,
-    noise:  -10,
-    flood:  -8,
-    tiny_alley: -5,
-    dead_end:   -5,
-    road_hit_light: -5,
-    road_hit_medium: -10,
-    road_hit_heavy: -20,
-    one_way:    -6,
+    gan_chua: -2, gan_nha_tho: -2, gan_dinh_mieu: -3, gan_mo: -5, gan_nghia_trang: -10,
+    tru_dien: -3, ho_ga: -2, ngap: -7, hem_cut: -5,
+    dam_duong: -5, dam_duong_nang: -15, mot_chieu: -3,
+    gan_nha_may: -5, gan_trung_chuyen_rac: -10, xe_tai_lon: -5
   };
   let heSoLoi = 1.0;
   const issueDetails = [];
@@ -907,160 +1035,132 @@ function calculateValuation(p) {
       issueDetails.push({ label: issueLabel(iss), pct: rate });
     }
   });
+  const heSoNgoaiVi = heSoLoi;
   const totalPenaltyPct = +((heSoLoi - 1) * 100).toFixed(1);
 
-  // ═══ BƯỚC 3: Giá trị đất sau trừ lỗi ═══
-  const giaTriDatSauLoi = giaTriDatTongCong ? +(giaTriDatTongCong * heSoLoi).toFixed(3) : 0;
-
-  // ═══ BƯỚC 4: Giá trị nhà ═══
-  const sanXD = parseFloat(p.sanXD)||(area * floors);
-  const giaTriNhaCoBan = (sanXD && donGiaXD && hienTrang)
-    ? +(sanXD * donGiaXD / 1000 * hienTrang / 100).toFixed(3) : 0;
-
-  // Trừ hoàn công vào giá trị nhà
-  const hoanCongRate = parseFloat(p.hoanCongRate)||0;
-  const hoanCongValue = hoanCongRate > 0 ? +(giaTriNhaCoBan * hoanCongRate / 100).toFixed(3) : 0;
-  const giaTriNha = +(giaTriNhaCoBan - hoanCongValue).toFixed(3);
-
-  // ═══ BƯỚC 5: Hình dạng (chỉ để hiển thị, không tính vào giá TT) ═══
-  const adjustments = [];
+  // ═══ A6. HỆ SỐ HÌNH DẠNG ═══
   const SHAPE_ADJ = {
-    rectangle: 0, flared_light: 0, flared_nice: 0.03, flared_L: 0.03,
-    taper_light: 0, taper_mid: -0.05, taper_heavy: -0.15,
-    xeo: -0.15, triangle: -0.20, unknown: -0.25
+    vuong: 0, no_hau: 3, top_nhe: 0, top_nang: -10, chat_goc: -3, tam_giac: -20
   };
-  const shapeDiscount = SHAPE_ADJ[p.shape]||0;
-  if (shapeDiscount !== 0 && giaTriDatSauLoi)
-    adjustments.push({ label:'Hình dạng: '+shapeLabel(p.shape), value: +(giaTriDatSauLoi*shapeDiscount).toFixed(3) });
-  if (p.legal === 'co_owned' && giaTriDatSauLoi)
-    adjustments.push({ label:'Đồng sở hữu', value: +(giaTriDatSauLoi*-0.05).toFixed(3) });
-  else if (p.legal === 'pending' && giaTriDatSauLoi)
-    adjustments.push({ label:'Chưa có sổ', value: +(giaTriDatSauLoi*-0.15).toFixed(3) });
-  if (width > 4 && giaTriDatSauLoi)
-    adjustments.push({ label:`Mặt tiền rộng ${width}m`, value: +(giaTriDatSauLoi*0.07).toFixed(3) });
-  else if (width > 0 && width < 3 && giaTriDatSauLoi)
-    adjustments.push({ label:`Mặt tiền hẹp ${width}m`, value: +(giaTriDatSauLoi*-0.05).toFixed(3) });
+  const shapePct = SHAPE_ADJ[p.shape] ?? 0;
+  const heSoHinhDang = 1 + shapePct / 100;
+
+  // ═══ A7. GIÁ ĐẤT SAU ĐIỀU CHỈNH (NGOẠI VI × HÌNH DẠNG) — cho cả 2 cột ═══
+  const giaDatChuNhaSauDieuChinh = +(giaDatCoBanChuNha * heSoNgoaiVi * heSoHinhDang).toFixed(3);
+  const giaDatThiTruongSauDieuChinh = +(giaDatCoBanThiTruong * heSoNgoaiVi * heSoHinhDang).toFixed(3);
+  // Tương thích tên cũ
+  const giaTriDatSauLoi = giaDatThiTruongSauDieuChinh;
+
+  // Chi tiết điều chỉnh để hiển thị (hình dạng cộng/trừ bao nhiêu tiền, theo cột TT)
+  const adjustments = [];
+  if (shapePct !== 0 && giaDatCoBanThiTruong)
+    adjustments.push({ label: 'Hình dạng: '+shapeLabel(p.shape), value: +(giaDatCoBanThiTruong*heSoNgoaiVi*(heSoHinhDang-1)).toFixed(3) });
   const adjSum = adjustments.reduce((s,a)=>s+a.value, 0);
 
-  // ═══ BƯỚC 5b: Nội thất (giá trị trực tiếp) ═══
-  const furnitureValue = parseFloat(p.furnitureValue)||0;
+  // ═══ D. TỔNG GIÁ TRỊ TÀI SẢN ═══
+  const tongGiaTriChuNha = +(giaDatChuNhaSauDieuChinh + giaTriNhaSauDieuChinh).toFixed(3);
+  const tongGiaTriThiTruong = +(giaDatThiTruongSauDieuChinh + giaTriNhaSauDieuChinh).toFixed(3);
+  // Tương thích tên cũ
+  const estimatedValue = tongGiaTriThiTruong;
 
-  // ═══ BƯỚC 5c: Quy hoạch (chỉ để hiển thị ghi chú) ═══
-  const PLANNING_RATE = { clear:0, road:-0.10, public:-0.25, other:-0.15 };
-  const planningRate = PLANNING_RATE[p.planning] || 0;
-  const planningValue = 0; // không tính vào giá TT — để minh bạch
+  // ═══ E. CHÊNH LỆCH ═══
+  const chenhLechTien = +(tongGiaTriChuNha - tongGiaTriThiTruong).toFixed(3);
+  const chenhLechPhanTram = (tongGiaTriChuNha && tongGiaTriThiTruong)
+    ? +((tongGiaTriChuNha / tongGiaTriThiTruong - 1) * 100).toFixed(1) : null;
+  // Tương thích tên cũ
+  const chenhLechTongPct = chenhLechPhanTram;
+  const chenhLechTongTien = chenhLechTien;
 
-  // ═══ BƯỚC 6: Giá trị BĐS ước tính ═══
-  // Công thức: Đất (sau lỗi + hình dạng) + Nhà (sau hoàn công) + Nội thất
-  const estimatedValue = +(giaTriDatSauLoi + giaTriNha + furnitureValue + adjSum).toFixed(3);
-
-  // ═══ BƯỚC 7: Đơn giá đất chủ rao (tách ngược, trừ nội thất trước) ═══
-  const donGiaRao = (askingPrice && area)
-    ? +((askingPrice - giaTriNha - furnitureValue) * 1000 / area).toFixed(1) : 0;
-
-  // ═══ BƯỚC 8: TẦNG 1 — So sánh đơn giá đất ═══
-  // giaTT KHÔNG bị thay đổi bởi penalty
-  const chenhLechDatPct = (donGiaRao && giaTT)
-    ? +((donGiaRao - giaTT) / giaTT * 100).toFixed(1) : null;
-  const chenhLechDatTien = (donGiaRao && giaTT && area)
-    ? +((donGiaRao - giaTT) * area / 1000).toFixed(3) : null;
-
-  let verdictDat;
-  if (chenhLechDatPct === null) {
-    verdictDat = { type:'mid', text:'Chưa đủ dữ liệu' };
-  } else if (chenhLechDatPct <= -5) {
-    verdictDat = { type:'good', text:'🟢 Dưới thị trường' };
-  } else if (chenhLechDatPct <= 5) {
-    verdictDat = { type:'mid', text:'🟡 Phù hợp thị trường' };
-  } else if (chenhLechDatPct <= 20) {
-    verdictDat = { type:'warn', text:'🟠 Cao hơn thị trường' };
-  } else {
-    verdictDat = { type:'bad', text:'🔴 Vượt thị trường' };
-  }
-
-  // ═══ BƯỚC 9: TẦNG 2 — So sánh giá tổng BĐS ═══
-  const chenhLechTongPct = (askingPrice && estimatedValue)
-    ? +((askingPrice - estimatedValue) / estimatedValue * 100).toFixed(1) : null;
-  const chenhLechTongTien = (askingPrice && estimatedValue)
-    ? +(askingPrice - estimatedValue).toFixed(3) : null;
-
+  // ═══ F. ĐÁNH GIÁ GIÁ CHỦ NHÀ (5 mức) ═══
   let verdictTong;
-  if (chenhLechTongPct === null) {
+  if (chenhLechPhanTram === null) {
     verdictTong = { type:'mid', text:'Chưa đủ dữ liệu' };
-  } else if (chenhLechTongPct <= -5) {
-    verdictTong = { type:'good', text:'🟢 Dưới thị trường' };
-  } else if (chenhLechTongPct <= 5) {
-    verdictTong = { type:'mid', text:'🟡 Phù hợp thị trường' };
-  } else if (chenhLechTongPct <= 20) {
-    verdictTong = { type:'warn', text:'🟠 Cao hơn thị trường' };
+  } else if (chenhLechPhanTram < -10) {
+    verdictTong = { type:'good', text:'🟢 Giá tốt' };
+  } else if (chenhLechPhanTram <= 0) {
+    verdictTong = { type:'good', text:'🟢 Hợp lý' };
+  } else if (chenhLechPhanTram <= 10) {
+    verdictTong = { type:'mid', text:'🟡 Hơi cao' };
+  } else if (chenhLechPhanTram <= 20) {
+    verdictTong = { type:'warn', text:'🟠 Cao' };
   } else {
-    verdictTong = { type:'bad', text:'🔴 Vượt thị trường' };
+    verdictTong = { type:'bad', text:'🔴 Rất cao' };
   }
+  const verdict = verdictTong;
+  const verdictDat = verdictTong;
+  // So sánh đơn giá đất riêng (để tương thích hiển thị cũ)
+  const chenhLechDatPct = (donGiaChuNha && giaTT) ? +((donGiaChuNha - giaTT) / giaTT * 100).toFixed(1) : null;
+  const chenhLechDatTien = (donGiaChuNha && giaTT && area) ? +((donGiaChuNha - giaTT) * area / 1000).toFixed(3) : null;
 
-  // Verdict tổng hợp (dùng cho badge ngoài danh sách)
-  const verdict = chenhLechDatPct !== null ? verdictDat : verdictTong;
-
-  // ═══ BƯỚC 10: Giá đàm phán theo tình huống thực tế ═══
+  // ═══ G. GIÁ ĐÀM PHÁN ═══
   let openingOffer, targetDeal, damPhanLabel, damPhanNote;
-  const chenhPct = chenhLechTongPct || 0;
+  const chenhPct = chenhLechPhanTram || 0;
 
-  if (askingPrice > 0 && estimatedValue > 0 && chenhPct <= 0) {
-    // Chủ bán THẤP hơn hoặc BẰNG ước tính → hàng tốt, chốt nhanh
+  if (askingPrice > 0 && tongGiaTriThiTruong > 0 && chenhPct <= 0) {
     openingOffer = +(askingPrice * 0.97).toFixed(3);
     targetDeal   = +(askingPrice * 0.99).toFixed(3);
     damPhanLabel = '🟢 Hàng tốt — nên chốt nhanh';
-    damPhanNote  = 'Giá chủ đang thấp hơn thị trường. Đừng kéo giá quá nhiều, dễ mất hàng.';
+    damPhanNote  = 'Giá chủ đang thấp hơn hoặc bằng thị trường. Đừng kéo giá quá nhiều, dễ mất hàng.';
   } else if (chenhPct <= 10) {
-    // Cao hơn TT ≤10% → đàm phán nhẹ
-    openingOffer = +(estimatedValue * 0.97).toFixed(3);
-    targetDeal   = +(estimatedValue * 0.99).toFixed(3);
+    openingOffer = +(tongGiaTriThiTruong * 0.97).toFixed(3);
+    targetDeal   = +(tongGiaTriThiTruong * 0.99).toFixed(3);
     damPhanLabel = '🟡 Có thể đàm phán nhẹ';
     damPhanNote  = 'Giá cao hơn thị trường ' + chenhPct + '%. Đề xuất kéo về sát giá trị thực.';
   } else if (chenhPct <= 20) {
-    // Cao hơn TT 10-20% → đàm phán vừa
-    openingOffer = +(estimatedValue * 0.95).toFixed(3);
-    targetDeal   = +(estimatedValue * 0.98).toFixed(3);
+    openingOffer = +(tongGiaTriThiTruong * 0.95).toFixed(3);
+    targetDeal   = +(tongGiaTriThiTruong * 0.98).toFixed(3);
     damPhanLabel = '🟠 Cần đàm phán giảm';
     damPhanNote  = 'Giá cao hơn thị trường ' + chenhPct + '%. Cần kiên trì đàm phán.';
   } else {
-    // Cao hơn TT >20% → khó
-    openingOffer = +(estimatedValue * 0.92).toFixed(3);
-    targetDeal   = +(estimatedValue * 0.96).toFixed(3);
+    openingOffer = +(tongGiaTriThiTruong * 0.92).toFixed(3);
+    targetDeal   = +(tongGiaTriThiTruong * 0.96).toFixed(3);
     damPhanLabel = '🔴 Khó đàm phán';
     damPhanNote  = 'Giá cao hơn thị trường ' + chenhPct + '%. Cần nhiều thời gian hoặc cân nhắc bỏ qua.';
   }
   const suggestedDeal = targetDeal;
 
-  // ═══ BƯỚC 11: Điểm mạnh / Điểm yếu ═══
+  // ═══ H. ĐIỂM MẠNH / ĐIỂM YẾU ═══
   const strengths = [], weaknesses = [];
-  if (p.shape === 'rectangle') strengths.push('Đất vuông vức, dễ thiết kế');
-  if (p.shape === 'flared') strengths.push('Nở hậu - phong thủy tốt');
+  if (p.shape === 'vuong') strengths.push('Đất vuông vức, dễ thiết kế');
+  if (p.shape === 'no_hau') strengths.push('Nở hậu - phong thủy tốt');
   if (p.legal === 'pink_book' || p.legal === 'red_book') strengths.push('Pháp lý rõ ràng ('+legalLabel(p.legal)+')');
   if (width > 4) strengths.push(`Mặt tiền ${width}m rộng, thanh khoản tốt`);
   if (hienTrang >= 90) strengths.push('Nhà gần mới, không cần cải tạo');
   if (p.alleyType === 'mt') strengths.push('Mặt tiền - tiềm năng kinh doanh');
   if (p.alleyType === 'alley1' || p.alleyType === 'alley2') strengths.push('Hẻm xe hơi - tiện lợi, yên tĩnh');
   issueDetails.forEach(d => weaknesses.push(`${d.label} (${d.pct}%)`));
-  if (p.shape === 'taper') weaknesses.push('Tóp hậu - phong thủy không tốt');
-  if (p.shape === 'triangle') weaknesses.push('Đất tam giác - khó thiết kế');
+  if (p.shape === 'top_nang') weaknesses.push('Tóp hậu nặng - phong thủy không tốt');
+  if (p.shape === 'tam_giac') weaknesses.push('Đất tam giác - khó thiết kế');
   if (hienTrang > 0 && hienTrang < 40) weaknesses.push(`Nhà cũ (còn ${hienTrang}%) - cần cải tạo lớn`);
   if (p.legal === 'pending') weaknesses.push('Chưa có sổ - rủi ro pháp lý cao');
   if (width > 0 && width < 3) weaknesses.push('Mặt tiền hẹp - khó thanh khoản');
+  if (dtMismatch) weaknesses.push(`⚠️ DT công nhận + không CN (${dtCheck}m²) không khớp DT thực tế (${area}m²)`);
   if (strengths.length === 0) strengths.push('Vị trí thị trường phản ánh đúng giá trị');
   if (weaknesses.length === 0) weaknesses.push('Không có điểm yếu nghiêm trọng');
 
   return {
-    giaTriDatTT, giaTriLoGioi, giaTriExtra, giaTriDatTongCong, giaTriDatSauLoi,
-    giaTriNhaCoBan, hoanCongValue, giaTriNha, adjSum,
-    furnitureValue, planningValue,
+    // Đất
+    dtCongNhan, dtKhongCongNhan, dtMismatch, dtCheck, heSoQuyHoach,
+    donGiaChuNha, giaDatCoBanChuNha, giaDatCoBanThiTruong,
+    heSoNgoaiVi, heSoHinhDang, shapePct,
+    giaDatChuNhaSauDieuChinh, giaDatThiTruongSauDieuChinh,
+    giaTriDatTT, giaTriDatTongCong, giaTriDatSauLoi,
+    // Nhà
+    giaTriXayDungMoi, heSoHienTrang, giaTriNhaTruocHoanCong,
+    khauTruHoanCong, giaTriNhaSauDieuChinh,
+    giaTriNhaCoBan, hoanCongValue, giaTriNha,
+    // Nội thất
+    giaTriNoiThatGoc, heSoNoiThat, giaTriNoiThatSauKhauHao, furnitureValue,
+    // Tổng
     adjustments, adjSum, estimatedValue, verdict, verdictDat, verdictTong,
+    tongGiaTriChuNha, tongGiaTriThiTruong,
+    chenhLechTien, chenhLechPhanTram,
     chenhLechDatPct, chenhLechDatTien,
     chenhLechTongPct, chenhLechTongTien,
     donGiaRao, giaTT, heSoLoi, totalPenaltyPct, issueDetails,
     openingOffer, targetDeal, suggestedDeal, damPhanLabel, damPhanNote,
     strengths, weaknesses,
     area, sanXD, donGiaXD, hienTrang,
-    loGioiArea, loGioiRate, extraArea, extraRate,
   };
 }
 
@@ -1082,7 +1182,7 @@ async function callGeminiAI(property) {
 Địa chỉ: ${property.address}
 Diện tích: ${property.area}m² (${property.width}m × ${property.length}m) | ${property.floors} tầng | Hướng: ${property.direction||'chưa rõ'}
 Vị trí: ${alleyLabel(property.alleyType)} | Hình dạng: ${shapeLabel(property.shape)} | Pháp lý: ${legalLabel(property.legal)}
-Hiện trạng: ${hienTrangLabel(property.hienTrang||'80')} | Nội thất: ${furnitureLabel(property.furniture||'none')} | Yếu tố ngoại vi: ${(property.issues||[]).map(i=>issueLabel(i)).join(', ')||'không có'}
+Hiện trạng: ${hienTrangLabel(property.hienTrang)} | Nội thất: ${furnitureTypeLabel(property.furnitureType||'khong')} | Yếu tố ngoại vi: ${(property.issues||[]).map(i=>issueLabel(i)).join(', ')||'không có'}
 Giá chủ chào: ${property.askingPrice} tỷ
 Giá đất khu vực (Biggee): ${property.giaTT} tr/m²
 Giá trị BĐS ước tính (hệ thống): ${r2.estimatedValue ? r2.estimatedValue.toFixed(2)+' tỷ (đất '+r2.giaTriDatSauLoi.toFixed(2)+' tỷ + nhà '+r2.giaTriNha.toFixed(2)+' tỷ)' : 'chưa đủ dữ liệu'}
@@ -1301,18 +1401,20 @@ function deleteProperty(id) {
 function updateForm(key, value) {
   state.formData[key] = value;
 
-  // Auto tính DT đất CN = Ngang × Dài (nếu user chưa tự nhập area)
+  // Auto tính DT thực tế = Ngang × Dài (nếu user chưa tự nhập dtThucTe)
   if (key === 'width' || key === 'length') {
     if (!state.formData._areaEdited) {
       const w = parseFloat(state.formData.width)||0;
       const l = parseFloat(state.formData.length)||0;
       if (w && l) {
-        state.formData.area = (w * l).toFixed(1);
-        const el = document.getElementById('input-area');
-        if (el) el.value = state.formData.area;
+        state.formData.dtThucTe = (w * l).toFixed(1);
+        state.formData.area = state.formData.dtThucTe;
+        const el = document.getElementById('input-dtThucTe');
+        if (el) el.value = state.formData.dtThucTe;
       }
     }
   }
+  if (key === 'dtThucTe') { state.formData._areaEdited = true; state.formData.area = value; }
   if (key === 'area') state.formData._areaEdited = true;
 
   // Auto tính DT sàn XD = DT CN × Số tầng (nếu user chưa tự nhập sanXD)
@@ -1510,23 +1612,35 @@ function renderList() {
   const allProps = state.properties;
   const fDistrict = (state.filterDistrict||'').toLowerCase().trim();
   const fBudget = state.filterBudget||'';
-  const fMaxPrice = state.filterMaxPrice||'';
+  const fPriceMin = state.filterPriceMin||'';
+  const fPriceMax = state.filterPriceMax||'';
   const fArea = state.filterArea||'';
   const fAlley = state.filterAlley||'';
   const fDirection = state.filterDirection||'';
   const showPanel = state.showFilterPanel||false;
-  const hasFilter = fDistrict||fBudget||fMaxPrice||fArea||fAlley||fDirection||(state.filterStatus||'');
+  const hasFilter = fDistrict||fBudget||fPriceMin||fPriceMax||fArea||fAlley||fDirection||(state.filterStatus||'');
 
   let filtered = allProps;
   if (fDistrict) filtered = filtered.filter(p => (p.address||'').toLowerCase().includes(fDistrict));
-  if (fMaxPrice) filtered = filtered.filter(p => { const price = parseFloat(p.askingPrice)||0; return price > 0 && price <= parseFloat(fMaxPrice); });
+  if (fPriceMin || fPriceMax) {
+    filtered = filtered.filter(p => {
+      const price = parseFloat(p.askingPrice)||0;
+      if (price <= 0) return false;
+      if (fPriceMin && price < parseFloat(fPriceMin)) return false;
+      if (fPriceMax && price > parseFloat(fPriceMax)) return false;
+      return true;
+    });
+  }
   if (fBudget) {
     filtered = filtered.filter(p => {
       const price = parseFloat(p.askingPrice)||0;
-      if (fBudget==='u5') return price > 0 && price < 5;
-      if (fBudget==='5-10') return price >= 5 && price <= 10;
+      if (fBudget==='nho3') return price > 0 && price < 3;
+      if (fBudget==='3-6') return price >= 3 && price <= 6;
+      if (fBudget==='6-10') return price > 6 && price <= 10;
       if (fBudget==='10-20') return price > 10 && price <= 20;
-      if (fBudget==='o20') return price > 20;
+      if (fBudget==='trieudo') return price > 20 && price <= 50;
+      if (fBudget==='typhu') return price > 50 && price <= 100;
+      if (fBudget==='daitypho') return price > 100 && price <= 10000;
       return true;
     });
   }
@@ -1563,7 +1677,7 @@ function renderList() {
       p.alleyType ? alleyLabel(p.alleyType) : '',
       p.legal ? legalLabel(p.legal) : '',
       p.hienTrang && p.hienTrang !== '80' ? hienTrangLabel(p.hienTrang) : '',
-      p.furnitureDesc ? p.furnitureDesc : '',
+      p.furnitureType && p.furnitureType !== 'khong' ? furnitureTypeLabel(p.furnitureType) : '',
     ].filter(Boolean).join(' · ');
 
     return `
@@ -1635,13 +1749,16 @@ function renderList() {
           style="width:100%;padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;box-sizing:border-box;margin-bottom:10px;font-family:inherit;outline:none;" />
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-          <select onchange="setState({filterBudget:this.value,listPage:1})"
+          <select onchange="setState({filterBudget:this.value,filterPriceMin:'',filterPriceMax:'',listPage:1})"
             style="padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;font-family:inherit;width:100%;">
             <option value="">Phân khúc</option>
-            <option value="u5" ${fBudget==='u5'?'selected':''}>Dưới 5 tỷ</option>
-            <option value="5-10" ${fBudget==='5-10'?'selected':''}>5 – 10 tỷ</option>
-            <option value="10-20" ${fBudget==='10-20'?'selected':''}>10 – 20 tỷ</option>
-            <option value="o20" ${fBudget==='o20'?'selected':''}>Trên 20 tỷ</option>
+            <option value="nho3" ${fBudget==='nho3'?'selected':''}>Nhỏ 3</option>
+            <option value="3-6" ${fBudget==='3-6'?'selected':''}>3-6</option>
+            <option value="6-10" ${fBudget==='6-10'?'selected':''}>6-10</option>
+            <option value="10-20" ${fBudget==='10-20'?'selected':''}>10-20</option>
+            <option value="trieudo" ${fBudget==='trieudo'?'selected':''}>Triệu đô</option>
+            <option value="typhu" ${fBudget==='typhu'?'selected':''}>Tỷ phú</option>
+            <option value="daitypho" ${fBudget==='daitypho'?'selected':''}>Đại tỷ phú</option>
           </select>
           <select onchange="setState({filterArea:this.value,listPage:1})"
             style="padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;font-family:inherit;width:100%;">
@@ -1653,16 +1770,35 @@ function renderList() {
           </select>
         </div>
 
-        <div style="margin-bottom:14px;padding:12px 14px;border:0.6px solid ${state.filterMaxPrice?'#FF1744':'#1a1a1a'};border-radius:14px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <span style="font-size:13px;color:#555;">Giá tối đa</span>
-            <span style="font-size:14px;font-weight:800;color:#FF1744;">${state.filterMaxPrice ? state.filterMaxPrice+' tỷ' : 'Không giới hạn'}</span>
+        ${(() => {
+          const BUDGET_RANGE = {
+            nho3: [1, 3], '3-6': [3, 6], '6-10': [6, 10], '10-20': [10, 20],
+            trieudo: [20, 50], typhu: [50, 100], daitypho: [100, 10000]
+          };
+          const range = BUDGET_RANGE[fBudget];
+          const dispMin = fPriceMin || (range ? range[0] : 1);
+          const dispMax = fPriceMax || (range ? range[1] : 10000);
+          return `
+        <div style="margin-bottom:14px;padding:12px 14px;border:0.6px solid ${(fPriceMin||fPriceMax||fBudget)?'#FF1744':'#1a1a1a'};border-radius:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span style="font-size:13px;color:#555;font-weight:700;">Giá</span>
+            <span id="price-range-display" style="font-size:14px;font-weight:800;color:#FF1744;">${fmtPriceRange(dispMin, dispMax)}</span>
           </div>
-          <input type="range" min="1" max="50" step="0.5" value="${state.filterMaxPrice||50}"
-            oninput="this.previousElementSibling.querySelector('span:last-child').textContent = (this.value>=50?'Không giới hạn':this.value+' tỷ')"
-            onchange="setState({filterMaxPrice: this.value>=50?'':this.value, listPage:1})"
-            style="width:100%;height:4px;accent-color:#FF1744;cursor:pointer;" />
-        </div>
+          <div style="position:relative;height:28px;">
+            <div style="position:absolute;top:11px;left:0;right:0;height:4px;background:#E8E8E8;border-radius:2px;"></div>
+            <div id="price-range-track" style="position:absolute;top:11px;height:4px;background:#FF1744;border-radius:2px;
+              left:${priceToPct(dispMin)}%;right:${100-priceToPct(dispMax)}%;"></div>
+            <input type="range" class="dual-range" min="0" max="1000" step="1" value="${priceToSlider(dispMin)}"
+              oninput="syncPriceSlider(this,'min')"
+              onchange="commitPriceFilter()"
+              style="position:absolute;top:0;left:0;width:100%;height:28px;margin:0;background:transparent;pointer-events:none;z-index:2;" />
+            <input type="range" class="dual-range" min="0" max="1000" step="1" value="${priceToSlider(dispMax)}"
+              oninput="syncPriceSlider(this,'max')"
+              onchange="commitPriceFilter()"
+              style="position:absolute;top:0;left:0;width:100%;height:28px;margin:0;background:transparent;pointer-events:none;z-index:3;" />
+          </div>
+        </div>`;
+        })()}
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
           <select onchange="setState({filterAlley:this.value,listPage:1})"
@@ -1689,7 +1825,7 @@ function renderList() {
             .map(o=>`<option value="${o.v}" ${state.filterStatus===o.v?'selected':''}>${o.l}</option>`).join('')}
         </select>
 
-        ${hasFilter ? `<button onclick="setState({filterDistrict:'',filterBudget:'',filterMaxPrice:'',filterArea:'',filterAlley:'',filterDirection:'',filterStatus:'',listPage:1})"
+        ${hasFilter ? `<button onclick="setState({filterDistrict:'',filterBudget:'',filterPriceMin:'',filterPriceMax:'',filterArea:'',filterAlley:'',filterDirection:'',filterStatus:'',listPage:1})"
           style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #FF1744;background:white;color:#FF1744;font-size:13px;font-weight:700;cursor:pointer;">
           × Xóa tất cả bộ lọc
         </button>` : ''}
@@ -1779,10 +1915,39 @@ function renderForm() {
 
         <div class="field" style="margin-top:20px;">
           <label class="field-label">Diện tích công nhận (m²)</label>
-          <input class="input" type="number" placeholder=""
-            value="${f.area||''}" id="input-area" placeholder="Đất sạch 100%"
-            oninput="updateForm('area', this.value)" />
+          <input class="input" type="number" placeholder="Đất sạch, được công nhận trên sổ"
+            value="${f.dtCongNhan||''}" id="input-dtCongNhan"
+            oninput="updateForm('dtCongNhan', this.value)" />
         </div>
+
+        <div class="row-2" style="margin-top:20px;">
+          <div class="field">
+            <label class="field-label">DT không công nhận (m²)</label>
+            <input class="input" type="number" placeholder="0"
+              value="${f.dtKhongCongNhan||''}" id="input-dtKhongCongNhan"
+              oninput="updateForm('dtKhongCongNhan', this.value)" />
+          </div>
+          <div class="f-select-wrap">
+            <span class="field-label">Tình trạng quy hoạch</span>
+            <select class="input" onchange="updateForm('planning', this.value)">
+              ${[{v:'phu_hop',l:'Phù hợp quy hoạch'},{v:'on_dinh',l:'Không CN, sử dụng ổn định'},{v:'lo_gioi',l:'Vướng lộ giới'},{v:'cong_cong',l:'Quy hoạch công cộng'},{v:'khong_cn',l:'Không được công nhận'}]
+                .map(o=>`<option value="${o.v}" ${(f.planning||'phu_hop')===o.v?'selected':''}>${o.l}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        ${(()=>{
+          const dtTT = parseFloat(f.dtThucTe)||0;
+          const dtCN = parseFloat(f.dtCongNhan)||0;
+          const dtKCN = parseFloat(f.dtKhongCongNhan)||0;
+          if (!dtTT || (!dtCN && !dtKCN)) return '';
+          const sum = +(dtCN + dtKCN).toFixed(2);
+          if (Math.abs(sum - dtTT) > 0.5) {
+            return `<div style="margin-top:8px;padding:8px 12px;background:#FFFBEB;border:1px solid #F59E0B;border-radius:10px;font-size:13px;color:#B45309;">
+              ⚠️ DT công nhận + không CN (${sum}m²) chưa khớp DT thực tế (${dtTT}m²)
+            </div>`;
+          }
+          return '';
+        })()}
 
 
 
@@ -1791,7 +1956,7 @@ function renderForm() {
         <div class="f-select-wrap">
           <span class="field-label">Hình dạng đất</span>
           <select class="input" onchange="updateForm('shape', this.value)">
-            ${[{v:'',l:'Chọn hình dạng'},{v:'rectangle',l:'Vuông vức'},{v:'flared_light',l:'Nở hậu nhẹ'},{v:'flared_nice',l:'Nở hậu đẹp'},{v:'flared_L',l:'Nở hậu L'},{v:'taper_light',l:'Tóp hậu nhẹ'},{v:'taper_mid',l:'Tóp hậu vừa'},{v:'taper_heavy',l:'Tóp hậu nặng'},{v:'xeo',l:'Chặt góc xéo'},{v:'triangle',l:'Tam giác'},{v:'unknown',l:'Không xác định'}]
+            ${[{v:'',l:'Chọn hình dạng'},{v:'vuong',l:'Vuông vức'},{v:'no_hau',l:'Nở hậu'},{v:'top_nhe',l:'Tóp hậu nhẹ'},{v:'top_nang',l:'Tóp hậu nặng'},{v:'chat_goc',l:'Chặt góc'},{v:'tam_giac',l:'Tam giác'}]
               .map(o=>`<option value="${o.v}" ${(f.shape||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
@@ -1809,21 +1974,29 @@ function renderForm() {
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Hiện trạng nhà</span>
           <select class="input" onchange="updateForm('hienTrang', this.value)">
-            ${[{v:'',l:'Chọn hiện trạng'},{v:'100',l:'Xây mới'},{v:'90',l:'Cải tạo mới'},{v:'80',l:'Còn tốt'},{v:'60',l:'Trung bình'},{v:'40',l:'Cũ'},{v:'20',l:'Rất cũ'},{v:'5',l:'Nhà nát'}]
+            ${[{v:'',l:'Chọn hiện trạng'},{v:'100',l:'Xây mới'},{v:'90',l:'Cải tạo mới'},{v:'80',l:'Còn tốt'},{v:'60',l:'Trung bình'},{v:'40',l:'Cũ'},{v:'20',l:'Rất cũ'},{v:'0',l:'Nhà nát'}]
               .map(o=>`<option value="${o.v}" ${String(f.hienTrang||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
 
+        <div class="f-select-wrap" style="margin-top:20px;">
+          <span class="field-label">Loại nội thất</span>
+          <select class="input" onchange="updateForm('furnitureType', this.value)">
+            ${[{v:'khong',l:'Không có nội thất'},{v:'co_ban',l:'Nội thất cơ bản'},{v:'full',l:'Full nội thất'},{v:'cao_cap',l:'Nội thất cao cấp'}]
+              .map(o=>`<option value="${o.v}" ${(f.furnitureType||'khong')===o.v?'selected':''}>${o.l}</option>`).join('')}
+          </select>
+        </div>
+        ${(f.furnitureType && f.furnitureType !== 'khong') ? `
         <div class="row-2" style="margin-top:20px;">
+          ${field('Giá trị nội thất gốc (tỷ)', 'furnitureValue', f.furnitureValue, 'number', 'Vd: 0.3')}
           <div class="f-select-wrap">
-            <span class="field-label">Nội thất</span>
-            <select class="input" onchange="updateForm('furnitureDesc', this.value)">
-              ${[{v:'',l:'— Chọn —'},{v:'Bàn giao trống',l:'Bàn giao trống'},{v:'Nội thất cơ bản',l:'Nội thất cơ bản'},{v:'Full nội thất',l:'Full nội thất'},{v:'Nội thất cao cấp',l:'Nội thất cao cấp'},{v:'Chủ tặng nội thất',l:'Chủ tặng nội thất'}]
-                .map(o=>`<option value="${o.v}" ${(f.furnitureDesc||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
+            <span class="field-label">Tình trạng nội thất</span>
+            <select class="input" onchange="updateForm('furnitureCondition', this.value)">
+              ${[{v:'moi',l:'Mới'},{v:'tot',l:'Tốt'},{v:'trungbinh',l:'Trung bình'},{v:'cu',l:'Cũ'},{v:'ratcu',l:'Rất cũ'}]
+                .map(o=>`<option value="${o.v}" ${(f.furnitureCondition||'tot')===o.v?'selected':''}>${o.l}</option>`).join('')}
             </select>
           </div>
-          ${field('Giá trị (tỷ)', 'furnitureValue', f.furnitureValue, 'number', 'Vd: 0.15')}
-        </div>
+        </div>` : ''}
 
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Hướng cửa chính</span>
@@ -1839,11 +2012,15 @@ function renderForm() {
           <select class="input" onchange="addIssue(this.value); this.value=''">
             <option value="">— Chọn yếu tố —</option>
             ${[
-              {v:'spiritual_temple',l:'Gần chùa'},{v:'spiritual_grave',l:'Gần nghĩa trang/mộ'},
-              {v:'spiritual_shrine',l:'Gần đình/miếu'},{v:'pole',l:'Cột điện/hố ga'},
-              {v:'noise',l:'Tiếng ồn'},{v:'flood',l:'Ngập nước'},
-              {v:'tiny_alley',l:'Hẻm nội bộ'},{v:'dead_end',l:'Hẻm cụt'},
-              {v:'road_hit_light',l:'Đâm đường rất nhẹ'},{v:'road_hit_medium',l:'Đâm đường nhẹ'},{v:'road_hit_heavy',l:'Đâm đường nặng'},{v:'one_way',l:'Đường 1 chiều'}
+              {v:'gan_chua',l:'Gần chùa'},{v:'gan_nha_tho',l:'Gần nhà thờ'},
+              {v:'gan_dinh_mieu',l:'Gần đình/miếu'},{v:'gan_mo',l:'Gần mộ'},
+              {v:'gan_nghia_trang',l:'Gần nghĩa trang'},
+              {v:'tru_dien',l:'Trụ điện trước nhà'},{v:'ho_ga',l:'Hố ga trước cổng'},
+              {v:'ngap',l:'Ngập'},{v:'hem_cut',l:'Hẻm cụt'},
+              {v:'dam_duong',l:'Đâm đường'},{v:'dam_duong_nang',l:'Đâm đường nặng'},
+              {v:'mot_chieu',l:'Đường một chiều'},
+              {v:'gan_nha_may',l:'Gần nhà máy/xưởng'},{v:'gan_trung_chuyen_rac',l:'Gần trạm trung chuyển rác'},
+              {v:'xe_tai_lon',l:'Đường xe tải lớn thường xuyên'}
             ].filter(o=>!(f.issues||[]).includes(o.v))
               .map(o=>`<option value="${o.v}">${o.l}</option>`).join('')}
           </select>
@@ -1965,19 +2142,18 @@ function renderDetail() {
         <div class="section-title">Thông tin chi tiết</div>
         <div class="card">
           ${p.askingPrice ? infoRow('Giá chào', fmtTy(parseFloat(p.askingPrice))) : ''}
-          ${infoRow('Diện tích CN', esc(p.area)+' m²')}
-          ${p.dtThucTe ? infoRow('DT thực tế', esc(p.dtThucTe)+' m²') : ''}
+          ${infoRow('Diện tích thực tế', esc(p.dtThucTe||p.area)+' m²')}
+          ${p.dtCongNhan ? infoRow('DT công nhận', esc(p.dtCongNhan)+' m²') : ''}
+          ${p.dtKhongCongNhan ? infoRow('DT không công nhận', esc(p.dtKhongCongNhan)+' m²') : ''}
           ${infoRow('Mặt tiền × Dài', esc(p.width)+' × '+esc(p.length)+' m')}
-          ${p.loGioiArea ? infoRow('Ranh lộ giới', esc(p.loGioiArea)+'m² (hệ số '+esc(p.loGioiRate||'80')+'%)') : ''}
-          ${p.extraArea ? infoRow('Đất không CN', esc(p.extraArea)+'m² (hệ số '+esc(p.extraRate||'40')+'%)') : ''}
           ${infoRow('Số tầng', esc(p.floors))}
-          ${infoRow('Hiện trạng', hienTrangLabel(p.hienTrang||'80'))}
+          ${infoRow('Hiện trạng', hienTrangLabel(p.hienTrang))}
           ${infoRow('Hướng', esc(p.direction)||'—')}
           ${infoRow('Loại đường/hẻm', alleyLabel(p.alleyType))}
           ${infoRow('Hình dạng', shapeLabel(p.shape))}
-          ${p.furnitureDesc ? infoRow('Nội thất', esc(p.furnitureDesc)) : ''}
+          ${p.furnitureType && p.furnitureType !== 'khong' ? infoRow('Nội thất', furnitureTypeLabel(p.furnitureType)) : ''}
           ${p.hoanCong ? infoRow('Hoàn công', hoanCongLabel(p.hoanCong)) : ''}
-          ${p.planning && p.planning !== 'clear' ? infoRow('Quy hoạch', planningLabel(p.planning)) : ''}
+          ${p.planning && p.planning !== 'phu_hop' ? infoRow('Quy hoạch', planningLabel(p.planning)) : ''}
           ${infoRow('Pháp lý', legalLabel(p.legal))}
           ${p.issues&&p.issues.length>0 ? infoRow('Yếu tố ngoại vi', p.issues.map(i=>issueLabel(i)).join(', ')) : ''}
         </div>
@@ -2058,27 +2234,23 @@ function renderValuation() {
         </div>
         
         <!-- 1. KẾT QUẢ ĐỊNH GIÁ — ĐỌC TRONG 5 GIÂY -->
-        <div class="card" style="border:1.5px solid ${r.chenhLechTongPct !== null && r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct !== null && r.chenhLechTongPct > 20 ? '#FF1744' : '#E8E8E8'};">
+        <div class="card" style="border:1.5px solid ${r.verdictTong.type==='good'?'#2E7D32':r.verdictTong.type==='bad'?'#FF1744':'#E8E8E8'};">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
             <span style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;">📊 KẾT QUẢ ĐỊNH GIÁ</span>
             <span style="font-size:11px;color:#888;">${dateStr}</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-            <span style="font-size:14px;">Giá chủ chào</span>
-            <span style="font-size:18px;font-weight:800;">${fmtTy(parseFloat(p.askingPrice))}</span>
+            <span style="font-size:14px;">Tổng giá trị theo chủ nhà</span>
+            <span style="font-size:18px;font-weight:800;">${fmtTy(r.tongGiaTriChuNha)}</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-            <span style="font-size:14px;">Giá trị thị trường</span>
-            <span style="font-size:18px;font-weight:800;color:#2E7D32;">${fmtTy(r.estimatedValue)}</span>
+            <span style="font-size:14px;">Tổng giá trị theo thị trường</span>
+            <span style="font-size:18px;font-weight:800;color:#2E7D32;">${fmtTy(r.tongGiaTriThiTruong)}</span>
           </div>
-          ${r.chenhLechTongPct !== null ? `
-          <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : r.chenhLechTongPct <= 10 ? '#FFFBEB' : '#FFF5F5'};">
-            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">
-              ${r.chenhLechTongPct <= 0
-                ? `🟢 Giá bán thấp hơn thị trường khoảng ${Math.round(Math.abs(r.chenhLechTongTien)*1000)} triệu đồng (${Math.abs(r.chenhLechTongPct).toFixed(1)}%)`
-                : r.chenhLechTongPct <= 10
-                ? `🟡 Giá bán cao hơn thị trường ${Math.round(r.chenhLechTongTien*1000)} triệu đồng (${r.chenhLechTongPct.toFixed(1)}%)`
-                : `🔴 Giá bán cao hơn thị trường ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct.toFixed(1)}%)`}
+          ${r.chenhLechPhanTram !== null ? `
+          <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:${r.verdictTong.type==='good'?'#F0FFF4':r.verdictTong.type==='mid'?'#FFFBEB':r.verdictTong.type==='warn'?'#FFF5F0':'#FFF5F5'};">
+            <span style="font-size:14px;font-weight:700;color:${r.verdictTong.type==='good'?'#2E7D32':r.verdictTong.type==='mid'?'#B45309':'#FF1744'};">
+              ${r.verdictTong.text} — chênh lệch ${r.chenhLechPhanTram > 0 ? '+' : ''}${r.chenhLechPhanTram}% (${fmtTy(Math.abs(r.chenhLechTien))})
             </span>
           </div>
           ` : '<div style="font-size:13px;color:#888;padding:8px 0;">Nhập đủ dữ liệu để xem kết quả</div>'}
@@ -2116,8 +2288,6 @@ function renderValuation() {
 
         <div class="section-title">PHÂN TÍCH CHI TIẾT</div>
 
-                <!-- 2+3. PHÂN TÍCH GIÁ — cấu trúc mới: NHÀ trước, ĐẤT sau, từng yếu tố riêng dòng -->
-
         <!-- NHÀ -->
         <div class="card">
           <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:14px;">🏠 NHÀ (CÔNG TRÌNH)</div>
@@ -2132,21 +2302,30 @@ function renderValuation() {
             <span style="font-size:13px;font-weight:600;">${r.donGiaXD} tr/m²</span>
           </div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#1a1a1a;">Hiện trạng</span>
-            <span style="font-size:13px;font-weight:600;">${hienTrangLabel(r.hienTrang)}</span>
+            <span style="font-size:13px;color:#1a1a1a;">Giá trị xây dựng mới</span>
+            <span style="font-size:13px;font-weight:600;">${fmtTy(r.giaTriXayDungMoi)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">Hiện trạng (${hienTrangLabel(r.hienTrang)})</span>
+            <span style="font-size:13px;font-weight:600;">×${(r.heSoHienTrang*100).toFixed(0)}%</span>
           </div>
           <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #E8E8E8;">
-            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị nhà gốc</span>
-            <span style="font-size:14px;font-weight:800;">${fmtTy(r.giaTriNhaCoBan)}</span>
+            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị nhà trước hoàn công</span>
+            <span style="font-size:14px;font-weight:800;">${fmtTy(r.giaTriNhaTruocHoanCong)}</span>
           </div>
-          ${r.hoanCongValue > 0 ? `
+          ${r.khauTruHoanCong > 0 ? `
           <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#FF1744;">↳ ${hoanCongLabel(p.hoanCong)} (-${p.hoanCongRate}%)</span>
-            <span style="font-size:13px;font-weight:600;color:#FF1744;">−${fmtTy(r.hoanCongValue)}</span>
+            <span style="font-size:13px;color:#FF1744;">↳ Khấu trừ hoàn công: ${hoanCongLabel(p.hoanCong)} (-${p.hoanCongRate}%)</span>
+            <span style="font-size:13px;font-weight:600;color:#FF1744;">−${fmtTy(r.khauTruHoanCong)}</span>
+          </div>` : ''}
+          ${r.giaTriNoiThatSauKhauHao > 0 ? `
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#2E7D32;">↳ Nội thất sau khấu hao: ${furnitureTypeLabel(p.furnitureType)} (${(r.heSoNoiThat*100).toFixed(0)}%)</span>
+            <span style="font-size:13px;font-weight:600;color:#2E7D32;">+${fmtTy(r.giaTriNoiThatSauKhauHao)}</span>
           </div>` : ''}
           <div style="display:flex;justify-content:space-between;padding:8px 0;margin-top:2px;background:#FAFAFA;border-radius:8px;padding-left:10px;padding-right:10px;">
-            <span style="font-size:13px;font-weight:800;color:#1a1a1a;">Giá trị nhà</span>
-            <span style="font-size:15px;font-weight:800;color:#2E7D32;">${fmtTy(r.giaTriNha)}</span>
+            <span style="font-size:13px;font-weight:800;color:#1a1a1a;">Giá trị nhà sau điều chỉnh</span>
+            <span style="font-size:15px;font-weight:800;color:#2E7D32;">${fmtTy(r.giaTriNhaSauDieuChinh)}</span>
           </div>
         </div>
 
@@ -2155,81 +2334,67 @@ function renderValuation() {
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
             <span style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;">📐 ĐẤT</span>
             <div style="display:flex;gap:16px;">
-              <span style="font-size:10px;font-weight:700;color:#888;min-width:64px;text-align:right;">CHỦ CHÀO</span>
+              <span style="font-size:10px;font-weight:700;color:#888;min-width:64px;text-align:right;">CHỦ NHÀ</span>
               <span style="font-size:10px;font-weight:700;color:#2E7D32;min-width:64px;text-align:right;">THỊ TRƯỜNG</span>
             </div>
           </div>
 
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#1a1a1a;">DT đất công nhận</span>
-            <span style="font-size:13px;font-weight:600;">${p.area} m²</span>
+            <span style="font-size:13px;color:#1a1a1a;">DT công nhận</span>
+            <span style="font-size:13px;font-weight:600;">${r.dtCongNhan} m²</span>
           </div>
+          ${r.dtKhongCongNhan > 0 ? `
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#1a1a1a;">DT không công nhận (${planningLabel(p.planning)}, ${(r.heSoQuyHoach*100).toFixed(0)}%)</span>
+            <span style="font-size:13px;font-weight:600;">${r.dtKhongCongNhan} m²</span>
+          </div>` : ''}
+          ${r.dtMismatch ? `
+          <div style="padding:6px 0;font-size:12px;color:#B45309;">⚠️ DT công nhận + không CN (${r.dtCheck}m²) chưa khớp DT thực tế</div>` : ''}
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
             <span style="font-size:13px;color:#1a1a1a;">Đơn giá đất</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:64px;">${r.donGiaRao > 0 ? r.donGiaRao.toFixed(0)+' tr/m²' : '—'}</span>
+            <span style="font-size:13px;font-weight:600;text-align:right;min-width:64px;">${r.donGiaChuNha > 0 ? r.donGiaChuNha.toFixed(0)+' tr/m²' : '—'}</span>
             <span style="font-size:13px;font-weight:600;color:#2E7D32;text-align:right;min-width:64px;">${r.giaTT} tr/m²</span>
           </div>
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:6px 0;border-bottom:1px solid #E8E8E8;">
-            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá trị đất gốc</span>
-            <span style="font-size:14px;font-weight:800;text-align:right;min-width:64px;">${r.donGiaRao > 0 ? fmtTy(+(r.donGiaRao * parseFloat(p.area||0) / 1000).toFixed(3)) : '—'}</span>
-            <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:64px;">${fmtTy(r.giaTriDatTT)}</span>
+            <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Giá đất cơ bản</span>
+            <span style="font-size:14px;font-weight:800;text-align:right;min-width:64px;">${r.giaDatCoBanChuNha > 0 ? fmtTy(r.giaDatCoBanChuNha) : '—'}</span>
+            <span style="font-size:14px;font-weight:800;color:#2E7D32;text-align:right;min-width:64px;">${fmtTy(r.giaDatCoBanThiTruong)}</span>
           </div>
 
-          ${r.issueDetails && r.issueDetails.length > 0 ? r.issueDetails.map(iss => `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:#FF1744;">↳ ${iss.label} (${iss.pct}%)</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:64px;color:#ccc;">—</span>
-            <span style="font-size:13px;font-weight:600;color:#FF1744;text-align:right;min-width:64px;">−${fmtTy(Math.abs(r.giaTriDatTT * Math.abs(iss.pct)/100))}</span>
-          </div>`).join('') : ''}
-
-          ${r.adjSum !== 0 ? `
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:5px 0;border-bottom:1px solid #f5f5f5;">
-            <span style="font-size:13px;color:${r.adjSum>0?'#2E7D32':'#FF1744'};">↳ Hình dạng: ${shapeLabel(p.shape)}</span>
-            <span style="font-size:13px;font-weight:600;text-align:right;min-width:64px;color:#ccc;">—</span>
-            <span style="font-size:13px;font-weight:600;color:${r.adjSum>0?'#2E7D32':'#FF1744'};text-align:right;min-width:64px;">${r.adjSum>0?'+':'−'}${fmtTy(Math.abs(r.adjSum))}</span>
+          ${r.issueDetails && r.issueDetails.length > 0 ? `
+          <div style="padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:#FF1744;">↳ Hệ số ngoại vi: ${r.issueDetails.map(i=>i.label+' ('+i.pct+'%)').join(', ')}</span>
+          </div>` : ''}
+          ${r.shapePct !== 0 ? `
+          <div style="padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:13px;color:${r.shapePct>0?'#2E7D32':'#FF1744'};">↳ Hệ số hình dạng: ${shapeLabel(p.shape)} (${r.shapePct>0?'+':''}${r.shapePct}%)</span>
           </div>` : ''}
 
           <div style="display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:8px 0;margin-top:2px;background:#FAFAFA;border-radius:8px;padding-left:10px;padding-right:10px;">
-            <span style="font-size:13px;font-weight:800;color:#1a1a1a;">Giá trị đất</span>
-            <span style="font-size:15px;font-weight:800;text-align:right;min-width:64px;">${r.donGiaRao > 0 ? fmtTy(+(r.donGiaRao * parseFloat(p.area||0) / 1000).toFixed(3)) : '—'}</span>
-            <span style="font-size:15px;font-weight:800;color:#2E7D32;text-align:right;min-width:64px;">${fmtTy(r.giaTriDatSauLoi)}</span>
+            <span style="font-size:13px;font-weight:800;color:#1a1a1a;">Giá đất sau điều chỉnh</span>
+            <span style="font-size:15px;font-weight:800;text-align:right;min-width:64px;">${r.giaDatChuNhaSauDieuChinh > 0 ? fmtTy(r.giaDatChuNhaSauDieuChinh) : '—'}</span>
+            <span style="font-size:15px;font-weight:800;color:#2E7D32;text-align:right;min-width:64px;">${fmtTy(r.giaDatThiTruongSauDieuChinh)}</span>
           </div>
         </div>
 
-        ${r.furnitureValue > 0 ? `
-        <!-- NỘI THẤT -->
-        <div class="card">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:10px;">🛋 NỘI THẤT</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:13px;color:#1a1a1a;">${esc(p.furnitureDesc)||'Nội thất'}</span>
-            <span style="font-size:15px;font-weight:800;color:#2E7D32;">+${fmtTy(r.furnitureValue)}</span>
-          </div>
-        </div>` : ''}
-
         <!-- TỔNG GIÁ TRỊ -->
-        <div class="card" style="border:1.5px solid ${r.chenhLechTongPct !== null && r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct !== null && r.chenhLechTongPct > 20 ? '#FF1744' : '#E8E8E8'};">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:14px;">⚖️ TỔNG GIÁ TRỊ</div>
+        <div class="card" style="border:1.5px solid ${r.verdictTong.type==='good'?'#2E7D32':r.verdictTong.type==='bad'?'#FF1744':'#E8E8E8'};">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:14px;">⚖️ TỔNG GIÁ TRỊ TÀI SẢN</div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-            <span style="font-size:14px;">Chủ chào</span>
-            <span style="font-size:18px;font-weight:800;">${fmtTy(parseFloat(p.askingPrice))}</span>
+            <span style="font-size:14px;">Theo chủ nhà (đất + nhà)</span>
+            <span style="font-size:18px;font-weight:800;">${fmtTy(r.tongGiaTriChuNha)}</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-            <span style="font-size:14px;">Thị trường (đất + nhà${r.furnitureValue>0?' + nội thất':''})</span>
-            <span style="font-size:18px;font-weight:800;color:#2E7D32;">${fmtTy(r.estimatedValue)}</span>
+            <span style="font-size:14px;">Theo thị trường (đất + nhà)</span>
+            <span style="font-size:18px;font-weight:800;color:#2E7D32;">${fmtTy(r.tongGiaTriThiTruong)}</span>
           </div>
-          ${r.chenhLechTongPct !== null ? `
-          <div style="margin-top:10px;padding:10px 14px;border-radius:10px;background:${r.chenhLechTongPct <= 0 ? '#F0FFF4' : r.chenhLechTongPct <= 10 ? '#FFFBEB' : '#FFF5F5'};">
-            <span style="font-size:14px;font-weight:700;color:${r.chenhLechTongPct <= 0 ? '#2E7D32' : r.chenhLechTongPct <= 10 ? '#B45309' : '#FF1744'};">
-              ${r.chenhLechTongPct <= 0
-                ? `🟢 Giá bán thấp hơn TT ${fmtTy(Math.abs(r.chenhLechTongTien))} (${Math.abs(r.chenhLechTongPct).toFixed(1)}%)`
-                : r.chenhLechTongPct <= 10
-                ? `🟡 Giá bán cao hơn TT ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct.toFixed(1)}%)`
-                : `🔴 Giá bán cao hơn TT ${fmtTy(r.chenhLechTongTien)} (${r.chenhLechTongPct.toFixed(1)}%)`}
+          ${r.chenhLechPhanTram !== null ? `
+          <div style="margin-top:10px;padding:10px 14px;border-radius:10px;background:${r.verdictTong.type==='good'?'#F0FFF4':r.verdictTong.type==='mid'?'#FFFBEB':r.verdictTong.type==='warn'?'#FFF5F0':'#FFF5F5'};">
+            <span style="font-size:14px;font-weight:700;color:${r.verdictTong.type==='good'?'#2E7D32':r.verdictTong.type==='mid'?'#B45309':'#FF1744'};">
+              ${r.verdictTong.text} — chênh lệch ${r.chenhLechPhanTram > 0 ? '+' : ''}${r.chenhLechPhanTram}% (${fmtTy(Math.abs(r.chenhLechTien))})
             </span>
           </div>` : ''}
         </div>
-
-
 
         <div class="disclaimer">
           ⚠️ Kết quả mang tính tham khảo, dựa trên dữ liệu nhập vào và quy chuẩn ngành.
@@ -2470,14 +2635,14 @@ Trả về JSON với các trường sau (để trống "" nếu không có thô
   "floors": "số tầng (chỉ số)",
   "direction": "hướng cửa chính (một trong: Đông, Tây, Nam, Bắc, Đông Nam, Đông Bắc, Tây Nam, Tây Bắc)",
   "alleyType": "loại đường (một trong: mt=mặt tiền, alley1=hẻm>6m, alley2=hẻm3-5m, alley3=hẻm3gác<3m, alley4=hẻmxemáy<2m)",
-  "shape": "hình dạng (một trong: rectangle=vuông vức, flared=nở hậu, L=chữL, taper=tóp hậu, xeo=xéo méo, triangle=tam giác)",
+  "shape": "hình dạng (một trong: vuong=vuông vức, no_hau=nở hậu, top_nhe=tóp hậu nhẹ, top_nang=tóp hậu nặng, chat_goc=chặt góc, tam_giac=tam giác)",
   "legal": "pháp lý (một trong: pink_book=sổ hồng, red_book=sổ đỏ, co_owned=đồng sở hữu, pending=chờ sổ)",
   "askingPrice": "giá bán (chỉ số tỷ, ví dụ 9 hoặc 9.5)",
-  "hienTrang": "hiện trạng nhà (một trong: 100=xây mới, 90=cải tạo mới, 80=còn tốt, 60=trung bình, 40=cũ, 20=rất cũ, 5=nhà nát)",
-  "loGioiArea": "diện tích ranh lộ giới m² nếu có (chỉ số, để trống nếu không có)",
-  "extraArea": "diện tích đất không CN m² nếu có (chỉ số, để trống nếu không có)",
-  "furniture": "nội thất (một trong: none=không có, basic=cơ bản, full=đầy đủ, luxury=cao cấp)",
-  "planning": "quy hoạch (một trong: clear=không vướng, road=dính lộ giới, public=đất công, other=quy hoạch khác)"
+  "hienTrang": "hiện trạng nhà (một trong: 100=xây mới, 90=cải tạo mới, 80=còn tốt, 60=trung bình, 40=cũ, 20=rất cũ, 0=nhà nát)",
+  "dtCongNhan": "diện tích công nhận m² nếu có (chỉ số, để trống nếu không có)",
+  "dtKhongCongNhan": "diện tích không công nhận m² nếu có (chỉ số, để trống nếu không có)",
+  "furnitureType": "loại nội thất (một trong: khong=không có, co_ban=cơ bản, full=full, cao_cap=cao cấp)",
+  "planning": "tình trạng quy hoạch (một trong: phu_hop=phù hợp quy hoạch, on_dinh=không CN sử dụng ổn định, lo_gioi=vướng lộ giới, cong_cong=quy hoạch công cộng, khong_cn=không công nhận)"
 }`;
 
     const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
@@ -2500,15 +2665,15 @@ Trả về JSON với các trường sau (để trống "" nếu không có thô
     if (extracted.area && !f.area) updated.area = extracted.area;
     if (extracted.floors && !f.floors) updated.floors = extracted.floors;
     if (extracted.direction && !f.direction) updated.direction = extracted.direction;
-    if (extracted.alleyType && f.alleyType === 'mt') updated.alleyType = extracted.alleyType;
-    if (extracted.shape && f.shape === 'rectangle') updated.shape = extracted.shape;
-    if (extracted.legal && f.legal === 'pink_book') updated.legal = extracted.legal;
+    if (extracted.alleyType && !f.alleyType) updated.alleyType = extracted.alleyType;
+    if (extracted.shape && !f.shape) updated.shape = extracted.shape;
+    if (extracted.legal && !f.legal) updated.legal = extracted.legal;
     if (extracted.askingPrice && !f.askingPrice) updated.askingPrice = extracted.askingPrice;
-    if (extracted.hienTrang && f.hienTrang === '80') updated.hienTrang = extracted.hienTrang;
-    if (extracted.loGioiArea && !f.loGioiArea) updated.loGioiArea = extracted.loGioiArea;
-    if (extracted.extraArea && !f.extraArea) updated.extraArea = extracted.extraArea;
-    if (extracted.furniture && f.furniture === 'none') updated.furniture = extracted.furniture;
-    if (extracted.planning && f.planning === 'clear') updated.planning = extracted.planning;
+    if (extracted.hienTrang && !f.hienTrang) updated.hienTrang = extracted.hienTrang;
+    if (extracted.dtCongNhan && !f.dtCongNhan) updated.dtCongNhan = extracted.dtCongNhan;
+    if (extracted.dtKhongCongNhan && !f.dtKhongCongNhan) updated.dtKhongCongNhan = extracted.dtKhongCongNhan;
+    if (extracted.furnitureType && (!f.furnitureType || f.furnitureType === 'khong')) updated.furnitureType = extracted.furnitureType;
+    if (extracted.planning && (!f.planning || f.planning === 'phu_hop')) updated.planning = extracted.planning;
 
     // Auto tính dtThucTe = width × length
     if (updated.width && updated.length) {
