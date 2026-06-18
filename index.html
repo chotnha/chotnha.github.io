@@ -811,6 +811,7 @@ let state = {
   customerPage: 1,
   filterCustomerStatus: '',
   showSendModal: null,
+  showAppointmentModal: null,
   showLogout: false,
   listFilter: 'all',
   listPage: 1,
@@ -2759,8 +2760,13 @@ function emptyCustomer() {
     direction: '', alleyType: '', hienTrang: '',
     priority: '', exclude: '',
     notes: '',
+    appointments: [],
     status: 'watching', createdAt: Date.now()
   };
+}
+
+function appointmentTypeLabel(t) {
+  return { xem_nha:'Xem nhà', tiep_khach:'Tiếp khách', dam_phan:'Đàm phán', cong_chung:'Công chứng', khac:'Khác' }[t] || t;
 }
 
 function statusLabel(s) {
@@ -2861,6 +2867,47 @@ async function addSentHistory(customerId, propertyId, feedback, note) {
   state.customers = newCustomers;
   await saveCustomersToFirestore(newCustomers);
   setState({ showSendModal: null, sendModalSearch: '' });
+}
+
+async function addAppointment(customerId, type, datetime, location, note) {
+  if (!datetime) { alert('Vui lòng chọn thời gian hẹn'); return; }
+  const customer = state.customers.find(c => c.id === customerId);
+  if (!customer) return;
+  const entry = { id: Date.now().toString(), type, datetime, location: location||'', note: note||'' };
+  const newAppointments = [...(customer.appointments || []), entry].sort((a,b) => new Date(a.datetime) - new Date(b.datetime));
+  const updated = { ...customer, appointments: newAppointments };
+  const newCustomers = state.customers.map(c => c.id === customerId ? updated : c);
+  state.customers = newCustomers;
+  await saveCustomersToFirestore(newCustomers);
+  setState({ showAppointmentModal: null });
+}
+
+async function deleteAppointment(customerId, appointmentId) {
+  const customer = state.customers.find(c => c.id === customerId);
+  if (!customer) return;
+  const newAppointments = (customer.appointments || []).filter(a => a.id !== appointmentId);
+  const updated = { ...customer, appointments: newAppointments };
+  const newCustomers = state.customers.map(c => c.id === customerId ? updated : c);
+  state.customers = newCustomers;
+  await saveCustomersToFirestore(newCustomers);
+  render();
+}
+
+function copyAppointmentToZalo(customerId, appointmentId) {
+  const customer = state.customers.find(c => c.id === customerId);
+  if (!customer) return;
+  const a = (customer.appointments || []).find(x => x.id === appointmentId);
+  if (!a) return;
+  const d = new Date(a.datetime);
+  const timeStr = d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}) + ' ngày ' + d.toLocaleDateString('vi-VN');
+  let msg = `Lịch hẹn ${appointmentTypeLabel(a.type).toLowerCase()}: ${timeStr}`;
+  if (a.location) msg += ` tại ${a.location}`;
+  if (a.note) msg += `\n${a.note}`;
+  navigator.clipboard.writeText(msg).then(() => {
+    alert('Đã copy lịch hẹn, dán vào Zalo để gửi khách');
+  }).catch(() => {
+    alert('Không copy được, vui lòng thử lại');
+  });
 }
 
 function openSendModal(customerId) { setState({ showSendModal: customerId }); }
@@ -3182,6 +3229,68 @@ function renderCustomerDetail() {
           <div class="notes-text">${esc(c.notes)}</div>
         </div>` : ''}
       </div>` : ''}
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#FF1744;">LỊCH HẸN</div>
+          <button onclick="setState({showAppointmentModal:'${c.id}'})"
+            style="font-size:12px;font-weight:700;color:#FF1744;background:none;border:1.5px solid #FF1744;border-radius:20px;padding:3px 12px;cursor:pointer;">+ Thêm</button>
+        </div>
+        ${c.appointments && c.appointments.length > 0 ? c.appointments.map(a => {
+          const d = new Date(a.datetime);
+          const timeStr = isNaN(d) ? '' : d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}) + ' · ' + d.toLocaleDateString('vi-VN');
+          return `
+        <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+            <div style="flex:1;padding-right:8px;">
+              <span style="font-size:14px;color:#000000;font-weight:700;">${appointmentTypeLabel(a.type)}</span>
+              <span style="font-size:14px;color:#000000;"> · ${timeStr}</span>
+            </div>
+            <div style="display:flex;gap:10px;flex-shrink:0;">
+              <button onclick="copyAppointmentToZalo('${c.id}','${a.id}')" style="background:none;border:none;color:#FF1744;font-size:12px;font-weight:700;cursor:pointer;padding:0;">Copy</button>
+              <button onclick="deleteAppointment('${c.id}','${a.id}')" style="background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:0;line-height:1;">×</button>
+            </div>
+          </div>
+          ${a.location || a.note ? `<div style="font-size:12px;color:#888;">${a.location ? esc(a.location) : ''}${a.location && a.note ? ' · ' : ''}${a.note ? esc(a.note) : ''}</div>` : ''}
+        </div>`;
+        }).join('') : '<div style="font-size:14px;color:#000000;padding:4px 0;">Chưa có lịch hẹn nào</div>'}
+
+        ${state.showAppointmentModal === c.id ? `
+        <div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:flex-end;">
+          <div style="background:white;width:100%;border-radius:20px 20px 0 0;padding:20px 16px 40px;max-height:85vh;overflow-y:auto;">
+            <div style="font-size:15px;font-weight:700;margin-bottom:16px;">Thêm lịch hẹn</div>
+
+            <div class="f-select-wrap">
+              <span class="field-label">Loại lịch</span>
+              <select class="input" id="appt-type-${c.id}">
+                ${[{v:'xem_nha',l:'Xem nhà'},{v:'tiep_khach',l:'Tiếp khách'},{v:'dam_phan',l:'Đàm phán'},{v:'cong_chung',l:'Công chứng'},{v:'khac',l:'Khác'}]
+                  .map(o=>`<option value="${o.v}">${o.l}</option>`).join('')}
+              </select>
+            </div>
+
+            <div class="field" style="margin-top:16px;">
+              <label class="field-label">Thời gian</label>
+              <input class="input" style="margin-top:8px;" type="datetime-local" id="appt-time-${c.id}">
+            </div>
+
+            <div class="field" style="margin-top:16px;">
+              <label class="field-label">Địa điểm (không bắt buộc)</label>
+              <input class="input" style="margin-top:8px;" type="text" id="appt-loc-${c.id}" placeholder="Vd: 123 Lê Văn Sỹ, Q.3">
+            </div>
+
+            <div class="field" style="margin-top:16px;">
+              <label class="field-label">Ghi chú (không bắt buộc)</label>
+              <input class="input" style="margin-top:8px;" type="text" id="appt-note-${c.id}" placeholder="Vd: nhớ mang hợp đồng mẫu">
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:20px;">
+              <button onclick="setState({showAppointmentModal:null})" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:14px;font-weight:600;cursor:pointer;">Hủy</button>
+              <button onclick="addAppointment('${c.id}', document.getElementById('appt-type-${c.id}').value, document.getElementById('appt-time-${c.id}').value, document.getElementById('appt-loc-${c.id}').value, document.getElementById('appt-note-${c.id}').value)"
+                style="flex:1;padding:12px;border-radius:12px;border:none;background:#FF1744;color:white;font-size:14px;font-weight:700;cursor:pointer;">Lưu lịch hẹn</button>
+            </div>
+          </div>
+        </div>` : ''}
+      </div>
 
       <div class="card" style="margin-bottom:16px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
