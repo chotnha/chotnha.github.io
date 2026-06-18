@@ -141,21 +141,21 @@ body {
 input[type="range"].dual-range::-webkit-slider-thumb {
   pointer-events: auto;
   -webkit-appearance: none;
-  width: 22px; height: 22px;
+  width: 16px; height: 16px;
   border-radius: 50%;
   background: #FF1744;
-  border: 3px solid white;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   cursor: pointer;
-  margin-top: 3px;
+  margin-top: 0px;
 }
 input[type="range"].dual-range::-moz-range-thumb {
   pointer-events: auto;
-  width: 22px; height: 22px;
+  width: 16px; height: 16px;
   border-radius: 50%;
   background: #FF1744;
-  border: 3px solid white;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   cursor: pointer;
 }
 
@@ -402,7 +402,7 @@ input[type="range"].dual-range::-moz-range-thumb {
   padding: 22px 20px;
   margin-bottom: 18px;
   border: 1px solid #eee;
-  border-left: 4px solid #FF1744;
+  border-left: 1.5px solid #FF1744;
 }
 .hero-detail-label { font-size: 10px; font-weight: 800; color: #FF1744; letter-spacing: 2px; }
 .hero-detail-addr { font-size: 15px; font-weight: 700; margin: 6px 0; letter-spacing: -0.3px; color: #1a1a1a; }
@@ -424,13 +424,13 @@ input[type="range"].dual-range::-moz-range-thumb {
   display: flex; justify-content: space-between; align-items: center;
   padding: 11px 0;
   border-bottom: 1px solid #E8E8E8;
-  font-size: 15px;
+  font-size: 14px;
   gap: 10px;
 }
 .info-row:last-child { border-bottom: none; }
 .info-lbl { color: #000000; flex-shrink: 0; }
-.info-val { font-weight: 600; text-align: right; }
-.notes-text { font-size: 13px; line-height: 1.6; color: #000000; white-space: pre-wrap; word-break: break-word; }
+.info-val { font-weight: 400; color: #000000; text-align: right; }
+.notes-text { font-size: 14px; line-height: 1.6; color: #000000; white-space: pre-wrap; word-break: break-word; }
 
 /* ===== Valuation Report ===== */
 .report-hero {
@@ -439,7 +439,7 @@ input[type="range"].dual-range::-moz-range-thumb {
   padding: 22px;
   margin-bottom: 14px;
   border: 1px solid #eee;
-  border-left: 4px solid #FF1744;
+  border-left: 1.5px solid #FF1744;
 }
 .report-stamp { font-size: 10px; font-weight: 800; color: #FF1744; letter-spacing: 2px; margin-bottom: 8px; }
 .report-addr { font-size: 15px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
@@ -512,7 +512,7 @@ input[type="range"].dual-range::-moz-range-thumb {
 .ai-hero {
   background: #FFFFFF; color: #1a1a1a;
   border-radius: 16px; padding: 22px 20px; margin-bottom: 14px;
-  border: 1px solid #eee; border-left: 4px solid #FF1744;
+  border: 1px solid #eee; border-left: 1.5px solid #FF1744;
 }
 .ai-badge {
   display: inline-flex; align-items: center; gap: 6px;
@@ -876,6 +876,15 @@ function fmtPriceRange(min, max) {
   if (lo <= PRICE_MIN) return 'Đến ' + fmtPriceLabel(hi);
   return fmtPriceLabel(lo) + ' — ' + fmtPriceLabel(hi);
 }
+// Nâng z-index của input đang được kéo lên trên cùng, hạ input còn lại xuống
+// để tránh bị "kẹt" khi 2 thumb ở gần/trùng vị trí
+function raisePriceThumb(el) {
+  const container = el.parentElement;
+  container.querySelectorAll('input[type="range"].dual-range').forEach(inp => {
+    inp.style.zIndex = (inp === el) ? '5' : '1';
+  });
+}
+
 function syncPriceSlider(el, which) {
   const inputs = el.parentElement.querySelectorAll('input[type="range"]');
   const minInput = inputs[0], maxInput = inputs[1];
@@ -1806,21 +1815,23 @@ function renderList() {
           return `
         <div style="margin-bottom:14px;padding:12px 14px;border:0.6px solid ${(fPriceMin||fPriceMax||fBudget)?'#FF1744':'#1a1a1a'};border-radius:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <span style="font-size:13px;color:#555;font-weight:700;">Giá</span>
+            <span style="font-size:13px;color:#555;font-weight:700;">Giá <span style="font-weight:800;color:#FF1744;">${PRICE_MAX.toLocaleString('en-US')} tỷ</span></span>
             <span id="price-range-display" style="font-size:14px;font-weight:800;color:#FF1744;">${fmtPriceRange(dispMin, dispMax)}</span>
           </div>
-          <div style="position:relative;height:28px;">
-            <div style="position:absolute;top:11px;left:0;right:0;height:4px;background:#E8E8E8;border-radius:2px;"></div>
-            <div id="price-range-track" style="position:absolute;top:11px;height:4px;background:#FF1744;border-radius:2px;
+          <div style="position:relative;height:20px;">
+            <div style="position:absolute;top:8px;left:0;right:0;height:3px;background:#E8E8E8;border-radius:2px;"></div>
+            <div id="price-range-track" style="position:absolute;top:8px;height:3px;background:#2E7D32;border-radius:2px;
               left:${priceToPct(dispMin)}%;right:${100-priceToPct(dispMax)}%;"></div>
             <input type="range" class="dual-range" min="0" max="1000" step="1" value="${priceToSlider(dispMin)}"
               oninput="syncPriceSlider(this,'min')"
               onchange="commitPriceFilter()"
-              style="position:absolute;top:0;left:0;width:100%;height:28px;margin:0;background:transparent;pointer-events:none;z-index:2;" />
+              onmousedown="raisePriceThumb(this)" ontouchstart="raisePriceThumb(this)"
+              style="position:absolute;top:0;left:0;width:100%;height:20px;margin:0;background:transparent;pointer-events:none;z-index:2;" />
             <input type="range" class="dual-range" min="0" max="1000" step="1" value="${priceToSlider(dispMax)}"
               oninput="syncPriceSlider(this,'max')"
               onchange="commitPriceFilter()"
-              style="position:absolute;top:0;left:0;width:100%;height:28px;margin:0;background:transparent;pointer-events:none;z-index:3;" />
+              onmousedown="raisePriceThumb(this)" ontouchstart="raisePriceThumb(this)"
+              style="position:absolute;top:0;left:0;width:100%;height:20px;margin:0;background:transparent;pointer-events:none;z-index:3;" />
           </div>
         </div>`;
         })()}
@@ -2119,11 +2130,6 @@ function renderDetail() {
   const p = state.properties.find(x => x.id === state.currentId);
   if (!p) { setTimeout(()=>nav('list'), 0); return ''; }
   
-  const r = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
-  const estimatedVal = r ? r.estimatedValue : null;
-  const valued = p.askingPrice && estimatedVal;
-  const diff = valued ? ((parseFloat(p.askingPrice) - estimatedVal) / estimatedVal * 100) : null;
-  
   return `
     <div class="screen">
       <div class="topbar">
@@ -2140,34 +2146,11 @@ function renderDetail() {
             <span>${esc(p.width)}×${esc(p.length)}m</span><span>·</span>
             <span>${esc(p.floors)} tầng</span>
           </div>
-          ${valued ? `
-            <div class="hero-prices">
-              <div class="hero-price-item">
-                <div class="hero-price-lbl">Giá bán</div>
-                <div class="hero-price-val" style="color:#FF1744;">${fmtTy(parseFloat(p.askingPrice))}</div>
-              </div>
-              <div class="hero-price-divider"></div>
-              <div class="hero-price-item">
-                <div class="hero-price-lbl">Giá thị trường</div>
-                <div class="hero-price-val" style="color:#2E7D32;">${fmtTy(estimatedVal)}</div>
-              </div>
-              <div class="hero-price-divider"></div>
-              <div class="hero-price-item">
-                <div class="hero-price-lbl">Chênh lệch</div>
-                <div class="hero-price-val ${diff>5?'red':diff<-5?'green':''}">${diff !== null ? (diff>0?'+':'') + diff.toFixed(1)+'%' : '—'}</div>
-              </div>
-            </div>
-          ` : p.askingPrice ? `
-            <div style="margin-top:10px;padding-top:10px;border-top:1px solid #E8E8E8;">
-              <span style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Giá bán</span>
-              <div style="font-size:16px;font-weight:800;color:#FF1744;margin-top:2px;">${fmtTy(parseFloat(p.askingPrice))}</div>
-            </div>
-          ` : ''}
         </div>
         
         <div class="section-title">Thông tin chi tiết</div>
-        <div class="card">
-          ${p.askingPrice ? infoRow('Giá chào', fmtTy(parseFloat(p.askingPrice))) : ''}
+        <div class="card" style="background:linear-gradient(165deg,#fff 0%,#FFFBF0 100%);border:1.5px solid #F5E3B3;">
+          ${p.askingPrice ? infoRow('Giá bán', fmtTy(parseFloat(p.askingPrice))) : ''}
           ${infoRow('Diện tích thực tế', esc(p.dtThucTe||p.area)+' m²')}
           ${p.dtCongNhan ? infoRow('DT công nhận', esc(p.dtCongNhan)+' m²') : ''}
           ${p.dtKhongCongNhan ? infoRow('DT không công nhận', esc(p.dtKhongCongNhan)+' m²') : ''}
@@ -2245,7 +2228,27 @@ function renderValuation() {
   const r = calculateValuation(p);
   const dateStr = new Date().toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' });
   const vColor = r.verdictTong.type==='good'?'#2E7D32':r.verdictTong.type==='bad'?'#FF1744':r.verdictTong.type==='warn'?'#E65100':'#B45309';
-  const vBg = r.verdictTong.type==='good'?'#F0FFF4':r.verdictTong.type==='warn'?'#FFF5F0':r.verdictTong.type==='bad'?'#FFF5F5':'#FFFBEB';
+  const hasResult = r.chenhLechPhanTram !== null;
+
+  // Dòng dữ liệu chuẩn: label trái 14px, value phải, có border-bottom ngăn dòng
+  const row = (label, value, opts={}) => `
+    <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;${opts.noBorder?'':'border-bottom:1px solid #f0f0f0;'}">
+      <span style="font-size:14px;color:#1a1a1a;">${label}</span>
+      <span style="font-size:${opts.size||16}px;font-weight:700;color:${opts.color||'#1a1a1a'};">${value}</span>
+    </div>`;
+  // Dòng phụ nhỏ, không border, màu xám — dùng cho ghi chú dưới 1 dòng chính
+  const subRow = (label, value) => `
+    <div style="display:flex;justify-content:space-between;padding:2px 0 8px;">
+      <span style="font-size:12px;color:#888;">↳ ${label}</span>
+      <span style="font-size:12px;font-weight:600;color:#888;">${value}</span>
+    </div>`;
+  // Dòng kết quả cuối card — nổi bật nhất, tách biệt bằng border-top
+  const finalRow = (label, value, color) => `
+    <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;margin-top:4px;border-top:1px solid #f0f0f0;">
+      <span style="font-size:14px;font-weight:700;color:#1a1a1a;">${label}</span>
+      <span style="font-size:20px;font-weight:800;color:${color};">${value}</span>
+    </div>`;
+  const sectionLabel = (text) => `<div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:#FF1744;margin-bottom:14px;">${text}</div>`;
 
   return `
     <div class="screen">
@@ -2255,83 +2258,79 @@ function renderValuation() {
         <div class="topbar-spacer"></div>
       </div>
       <div class="content-pad">
-        <div class="report-hero">
-          <div class="report-stamp">BÁO CÁO ĐỊNH GIÁ</div>
-          <div class="report-addr">${esc(p.address)}</div>
-          <div class="report-date">${dateStr}</div>
-        </div>
 
-        <!-- KẾT LUẬN — đọc trong 5 giây -->
-        <div class="card" style="border:1.5px solid ${vColor};">
-          ${r.chenhLechPhanTram !== null ? `
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-            <span style="font-size:16px;font-weight:800;color:${vColor};">${r.verdictTong.text}</span>
-          </div>
-
-          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;">
-            <span style="font-size:13px;color:#888;">Chủ chào</span>
-            <span style="font-size:16px;font-weight:700;color:#1a1a1a;">${fmtTy(parseFloat(p.askingPrice))}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #f0f0f0;">
-            <span style="font-size:13px;color:#888;">Giá trị thị trường</span>
-            <span style="font-size:22px;font-weight:800;color:#1a1a1a;">${fmtTy(r.tongGiaTriThiTruong)}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 0 4px;">
-            <span style="font-size:13px;color:#888;">Chênh lệch</span>
-            <span style="font-size:15px;font-weight:700;color:${vColor};">
-              ${r.chenhLechPhanTram > 0 ? '+' : ''}${fmtTy(Math.abs(r.chenhLechTien))} (${r.chenhLechPhanTram > 0 ? '+' : ''}${r.chenhLechPhanTram}%)
-            </span>
-          </div>
-
-          <div style="margin-top:14px;padding:12px 14px;border-radius:10px;background:${vBg};">
-            <div style="font-size:11px;font-weight:700;color:${vColor};letter-spacing:0.5px;margin-bottom:4px;">💬 ĐỀ XUẤT TRẢ GIÁ</div>
-            <span style="font-size:17px;font-weight:800;color:${vColor};">${fmtTy(r.openingOffer)} – ${fmtTy(r.targetDeal)}</span>
-          </div>
-          ` : '<div style="font-size:13px;color:#888;padding:8px 0;">Nhập đủ dữ liệu để xem kết quả</div>'}
-        </div>
-
-        ${r.chenhLechPhanTram !== null ? `
-        <!-- ĐẤT / NHÀ — 2 cột song song, dạng công thức rút gọn -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
-
-          <div class="card" style="padding:14px;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:0.8px;color:#FF1744;margin-bottom:10px;">📐 ĐẤT</div>
-            <div style="font-size:12px;color:#888;margin-bottom:2px;">${r.dtCongNhan}${r.dtKhongCongNhan>0?'+'+r.dtKhongCongNhan:''} m² × ${r.giaTT} tr/m²</div>
-            ${r.issueDetails.length>0 || r.shapePct!==0 ? `<div style="font-size:12px;color:#888;margin-bottom:6px;">
-              ${[...r.issueDetails.map(i=>i.pct+'% '+i.label), r.shapePct!==0?(r.shapePct>0?'+':'')+r.shapePct+'% '+shapeLabel(p.shape):''].filter(Boolean).join(', ')}
-            </div>` : '<div style="margin-bottom:6px;"></div>'}
-            <div style="font-size:19px;font-weight:800;color:#1a1a1a;">${fmtTy(r.giaDatThiTruongSauDieuChinh)}</div>
-          </div>
-
-          <div class="card" style="padding:14px;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:0.8px;color:#FF1744;margin-bottom:10px;">🏠 NHÀ</div>
-            <div style="font-size:12px;color:#888;margin-bottom:2px;">${r.sanXD} m² × ${r.donGiaXD} tr/m² × ${hienTrangLabel(r.hienTrang)}</div>
-            <div style="font-size:12px;color:#888;margin-bottom:6px;">
-              ${[r.khauTruHoanCong>0?'−hoàn công':'', r.giaTriNoiThatSauKhauHao>0?'+nội thất':''].filter(Boolean).join(', ')||'&nbsp;'}
+        <!-- HERO -->
+        <div class="ai-hero">
+          <div class="ai-badge">ĐỊNH GIÁ</div>
+          <div class="ai-title">${hasResult ? r.verdictTong.text : 'Chưa đủ dữ liệu'}</div>
+          <div class="ai-desc">${esc(p.address)} · ${dateStr}</div>
+          ${hasResult ? `
+          <div class="hero-prices">
+            <div class="hero-price-item">
+              <div class="hero-price-lbl">Giá bán</div>
+              <div class="hero-price-val" style="color:#FF1744;">${fmtTy(parseFloat(p.askingPrice))}</div>
             </div>
-            <div style="font-size:19px;font-weight:800;color:#1a1a1a;">${fmtTy(r.giaTriNhaSauDieuChinh)}</div>
+            <div class="hero-price-divider"></div>
+            <div class="hero-price-item">
+              <div class="hero-price-lbl">Giá thị trường</div>
+              <div class="hero-price-val" style="color:#2E7D32;">${fmtTy(r.tongGiaTriThiTruong)}</div>
+            </div>
+            <div class="hero-price-divider"></div>
+            <div class="hero-price-item">
+              <div class="hero-price-lbl">Chênh lệch</div>
+              <div class="hero-price-val ${r.chenhLechPhanTram>5?'red':r.chenhLechPhanTram<-5?'green':''}">${(r.chenhLechPhanTram>0?'+':'')+r.chenhLechPhanTram}%</div>
+            </div>
           </div>
-
+          ` : ''}
         </div>
 
-        <!-- ĐỐI CHIẾU ĐƠN GIÁ ĐẤT — bảng duy nhất -->
-        <div class="card" style="margin-top:10px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:0.8px;color:#FF1744;margin-bottom:10px;">ĐỐI CHIẾU ĐƠN GIÁ ĐẤT</div>
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:12px;padding:4px 0;">
-            <span style="font-size:12px;color:#888;"></span>
-            <span style="font-size:11px;font-weight:700;color:#888;text-align:right;min-width:70px;">Chủ rao</span>
-            <span style="font-size:11px;font-weight:700;color:#2E7D32;text-align:right;min-width:70px;">Thị trường</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:12px;padding:8px 0;border-top:1px solid #f0f0f0;">
-            <span style="font-size:13px;color:#1a1a1a;">Đơn giá đất</span>
-            <span style="font-size:14px;font-weight:700;text-align:right;min-width:70px;">${r.donGiaChuNha > 0 ? r.donGiaChuNha.toFixed(0)+' tr' : '—'}</span>
-            <span style="font-size:14px;font-weight:700;color:#2E7D32;text-align:right;min-width:70px;">${r.giaTT} tr</span>
-          </div>
-          ${r.dtKhongCongNhan > 0 ? `
-          <div style="padding-top:6px;font-size:11px;color:#aaa;">DT chưa CN ${r.dtKhongCongNhan}m² (${planningLabel(p.planning)}, ${(r.heSoQuyHoach*100).toFixed(0)}%) → DT quy đổi ${r.dtQuyDoi}m²</div>` : ''}
-          ${r.dtMismatch ? `<div style="padding-top:6px;font-size:12px;color:#B45309;">⚠️ DT công nhận + chưa CN (${r.dtCheck}m²) chưa khớp DT thực tế</div>` : ''}
+        ${hasResult ? `
+
+        <!-- KẾT LUẬN -->
+        <div class="card">
+          ${sectionLabel('KẾT LUẬN')}
+          ${row('Giá chủ chào', fmtTy(parseFloat(p.askingPrice)))}
+          ${row('Giá trị thị trường', fmtTy(r.tongGiaTriThiTruong), {size:20, color:'#1a1a1a'})}
+          ${finalRow('Chênh lệch', (r.chenhLechPhanTram>0?'+':'')+fmtTy(Math.abs(r.chenhLechTien))+' ('+(r.chenhLechPhanTram>0?'+':'')+r.chenhLechPhanTram+'%)', vColor)}
         </div>
-        ` : ''}
+
+        <!-- GIÁ TRỊ ĐẤT -->
+        <div class="card">
+          ${sectionLabel('GIÁ TRỊ ĐẤT')}
+          ${row('Diện tích đất', r.dtCongNhan + (r.dtKhongCongNhan>0?' + '+r.dtKhongCongNhan+' (chưa CN)':'') + ' m²', {size:15})}
+          ${row('Đơn giá thị trường', r.giaTT + ' tr/m²', {size:15})}
+          ${r.donGiaChuNha > 0 ? subRow('Chủ rao tương đương', r.donGiaChuNha.toFixed(0)+' tr/m²') : ''}
+          ${row('Giá trị đất cơ bản', fmtTy(r.giaDatCoBanThiTruong), {size:15})}
+          ${r.issueDetails.map(i => row('Điều chỉnh: '+i.label, (i.pct>0?'+':'')+i.pct+'%', {size:14, color: i.pct<0?'#FF1744':'#2E7D32'})).join('')}
+          ${r.shapePct !== 0 ? row('Điều chỉnh: '+shapeLabel(p.shape), (r.shapePct>0?'+':'')+r.shapePct+'%', {size:14, color: r.shapePct<0?'#FF1744':'#2E7D32'}) : ''}
+          ${finalRow('Giá trị đất sau điều chỉnh', fmtTy(r.giaDatThiTruongSauDieuChinh), '#2E7D32')}
+          ${r.dtMismatch ? `<div style="margin-top:10px;font-size:12px;color:#B45309;">⚠️ DT công nhận + chưa CN (${r.dtCheck}m²) chưa khớp DT thực tế</div>` : ''}
+        </div>
+
+        <!-- GIÁ TRỊ NHÀ -->
+        <div class="card">
+          ${sectionLabel('GIÁ TRỊ NHÀ')}
+          ${row('Diện tích sàn xây dựng', r.sanXD + ' m²', {size:15})}
+          ${row('Đơn giá xây dựng', r.donGiaXD + ' tr/m²', {size:15})}
+          ${row('Giá trị xây dựng mới', fmtTy(r.giaTriXayDungMoi), {size:15})}
+          ${row('Hiện trạng ('+hienTrangLabel(r.hienTrang)+')', '×'+(r.heSoHienTrang*100).toFixed(0)+'%', {size:15})}
+          ${r.khauTruHoanCong > 0 ? row('Khấu trừ hoàn công', '−'+fmtTy(r.khauTruHoanCong), {size:14, color:'#FF1744'}) : ''}
+          ${r.giaTriNoiThatSauKhauHao > 0 ? row('Nội thất sau khấu hao', '+'+fmtTy(r.giaTriNoiThatSauKhauHao), {size:14, color:'#2E7D32'}) : ''}
+          ${finalRow('Giá trị nhà sau điều chỉnh', fmtTy(r.giaTriNhaSauDieuChinh), '#2E7D32')}
+        </div>
+
+        <!-- ĐỀ XUẤT TRẢ GIÁ -->
+        <div class="card" style="border:1px solid #eee;border-left:1.5px solid #FF1744;">
+          ${sectionLabel('ĐỀ XUẤT TRẢ GIÁ')}
+          ${row('Giá mở đầu', fmtTy(r.openingOffer), {size:16})}
+          ${finalRow('Giá mục tiêu', fmtTy(r.targetDeal), '#FF1744')}
+        </div>
+
+        ` : `
+        <div class="card" style="text-align:center;padding:24px;">
+          <div style="font-size:14px;color:#555;">Nhập đủ dữ liệu để xem kết quả định giá</div>
+        </div>
+        `}
 
         <div class="disclaimer">
           ⚠️ Kết quả mang tính tham khảo, dựa trên dữ liệu nhập vào và quy chuẩn ngành.
@@ -2390,44 +2389,44 @@ function renderAI() {
               <div style="font-size:11px;color:#888;">${new Date().toLocaleDateString('vi-VN')}</div>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-              <span style="font-size:14px;color:#1a1a1a;">Giá chủ chào</span>
-              <span style="font-size:18px;font-weight:800;color:#1a1a1a;">${esc(p.askingPrice)} tỷ</span>
+              <span style="font-size:14px;color:#000000;">Giá chủ chào</span>
+              <span style="font-size:14px;color:#000000;">${esc(p.askingPrice)} tỷ</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-              <span style="font-size:14px;color:#1a1a1a;">Giá thẩm định</span>
-              <span style="font-size:18px;font-weight:800;color:#2E7D32;">${esc(state.aiResult.summary.valuationRange||'')}</span>
+              <span style="font-size:14px;color:#000000;">Giá thẩm định</span>
+              <span style="font-size:14px;color:#000000;">${esc(state.aiResult.summary.valuationRange||'')}</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-              <span style="font-size:14px;color:#1a1a1a;">Thanh khoản</span>
-              <span style="font-size:14px;font-weight:700;color:#1a1a1a;">${esc(state.aiResult.summary.liquidity||'')}</span>
+              <span style="font-size:14px;color:#000000;">Thanh khoản</span>
+              <span style="font-size:14px;color:#000000;">${esc(state.aiResult.summary.liquidity||'')}</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;">
-              <span style="font-size:14px;color:#1a1a1a;">Khuyến nghị</span>
-              <span style="font-size:14px;font-weight:800;color:${(state.aiResult.summary.verdict||'').includes('Nên')?'#2E7D32':(state.aiResult.summary.verdict||'').includes('Không')?'#FF1744':'#B45309'};">${esc(state.aiResult.summary.verdict||'')}</span>
+              <span style="font-size:14px;color:#000000;">Khuyến nghị</span>
+              <span style="font-size:14px;color:#000000;">${esc(state.aiResult.summary.verdict||'')}</span>
             </div>
-            <div style="font-size:14px;color:#1a1a1a;line-height:1.6;padding-top:12px;border-top:1px solid #f0f0f0;margin-top:4px;">${esc(state.aiResult.summary.quickNote||'')}</div>
+            <div style="font-size:14px;color:#000000;line-height:1.6;padding-top:12px;border-top:1px solid #f0f0f0;margin-top:4px;">${esc(state.aiResult.summary.quickNote||'')}</div>
           </div>
 
           <!-- 2. CHIẾN LƯỢC ĐÀM PHÁN -->
           ${state.aiResult.negotiation ? `
-          <div class="card" style="background:#FFFFFF;color:#1a1a1a;border:1px solid #eee;border-left:4px solid #FF1744;">
+          <div class="card" style="background:#FFFFFF;color:#1a1a1a;border:1px solid #eee;border-left:1.5px solid #FF1744;">
             <div style="font-size:10px;font-weight:800;color:#FF1744;letter-spacing:2px;margin-bottom:12px;">CHIẾN LƯỢC ĐÀM PHÁN</div>
-            <div style="font-size:14px;color:#1a1a1a;line-height:1.6;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #F0F0F0;">${esc(state.aiResult.negotiation.strategy||'')}</div>
+            <div style="font-size:14px;color:#000000;line-height:1.6;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #F0F0F0;">${esc(state.aiResult.negotiation.strategy||'')}</div>
             <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
-              <span style="font-size:14px;color:#555;">Mở đàm phán</span>
-              <span style="font-size:16px;font-weight:800;color:#FF1744;">${esc(state.aiResult.negotiation.openingOffer||'')}</span>
+              <span style="font-size:14px;color:#000000;">Mở đàm phán</span>
+              <span style="font-size:14px;color:#000000;">${esc(state.aiResult.negotiation.openingOffer||'')}</span>
             </div>
             <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
-              <span style="font-size:14px;color:#555;">Giá mục tiêu</span>
-              <span style="font-size:16px;font-weight:800;">${esc(state.aiResult.negotiation.targetPrice||'')}</span>
+              <span style="font-size:14px;color:#000000;">Giá mục tiêu</span>
+              <span style="font-size:14px;color:#000000;">${esc(state.aiResult.negotiation.targetPrice||'')}</span>
             </div>
             <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;">
-              <span style="font-size:14px;color:#555;">Không mua cao hơn</span>
-              <span style="font-size:14px;font-weight:700;color:#FF1744;">${esc(state.aiResult.negotiation.redLine||'')}</span>
+              <span style="font-size:14px;color:#000000;">Không mua cao hơn</span>
+              <span style="font-size:14px;color:#000000;">${esc(state.aiResult.negotiation.redLine||'')}</span>
             </div>
             <div style="padding:10px 0 4px;">
               <div style="font-size:12px;opacity:0.5;margin-bottom:6px;">TÂM LÝ CHỦ NHÀ</div>
-              <div style="font-size:14px;color:rgba(255,255,255,0.8);line-height:1.6;">${esc(state.aiResult.negotiation.sellerPsychology||'')}</div>
+              <div style="font-size:14px;color:#000000;line-height:1.6;">${esc(state.aiResult.negotiation.sellerPsychology||'')}</div>
             </div>
           </div>
           ` : ''}
@@ -2437,33 +2436,33 @@ function renderAI() {
           <div class="card">
             <div class="card-header">📊 Bối cảnh thị trường</div>
             <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-              <span style="font-size:14px;color:#1a1a1a;">Khoảng giá khu vực</span>
-              <span style="font-size:14px;font-weight:700;color:#1a1a1a;">${esc(state.aiResult.marketContext.priceRange||'')}</span>
+              <span style="font-size:14px;color:#000000;">Khoảng giá khu vực</span>
+              <span style="font-size:14px;color:#000000;">${esc(state.aiResult.marketContext.priceRange||'')}</span>
             </div>
             <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-              <span style="font-size:14px;color:#1a1a1a;">Xu hướng</span>
-              <span style="font-size:14px;font-weight:700;color:${(state.aiResult.marketContext.trend||'').includes('Tăng')?'#2E7D32':(state.aiResult.marketContext.trend||'').includes('Giảm')?'#FF1744':'#1a1a1a'};">${esc(state.aiResult.marketContext.trend||'')}</span>
+              <span style="font-size:14px;color:#000000;">Xu hướng</span>
+              <span style="font-size:14px;color:#000000;">${esc(state.aiResult.marketContext.trend||'')}</span>
             </div>
             ${state.aiResult.marketContext.comparables ? `
             <div style="padding:8px 0;">
               <div style="font-size:12px;color:#888;margin-bottom:6px;">CĂN TƯƠNG ĐƯƠNG</div>
-              <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(state.aiResult.marketContext.comparables)}</div>
+              <div style="font-size:14px;color:#000000;line-height:1.6;">${esc(state.aiResult.marketContext.comparables)}</div>
             </div>` : ''}
           </div>
           ` : ''}
 
-          <!-- 4. RỦI RO & ĐIỂM BÁN -->
+          <!-- 4. ĐIỂM MẠNH & LƯU Ý -->
           ${(state.aiResult.risks && state.aiResult.risks.length > 0) || (state.aiResult.sellingPoints && state.aiResult.sellingPoints.length > 0) ? `
           <div class="card">
-            <div class="card-header">💎 Điểm mạnh & ⚠️ Rủi ro</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
-              <div style="padding-right:12px;border-right:1px solid #E8E8E8;">
-                ${(state.aiResult.sellingPoints||[]).map(function(s){ return `<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f8f8f8;"><span style="color:#2E7D32;flex-shrink:0;">✓</span><span style="color:#1a1a1a;">${esc(s)}</span></div>`; }).join('')}
-              </div>
-              <div style="padding-left:12px;">
-                ${(state.aiResult.risks||[]).map(function(r){ return `<div style="display:flex;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f8f8f8;"><span style="color:#FF1744;flex-shrink:0;">!</span><span style="color:#1a1a1a;">${esc(r)}</span></div>`; }).join('')}
-              </div>
-            </div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:#FF1744;margin-bottom:14px;">ĐIỂM MẠNH & LƯU Ý</div>
+            ${(state.aiResult.sellingPoints && state.aiResult.sellingPoints.length > 0) ? `
+            <div style="font-size:12px;color:#888;margin-bottom:8px;">ĐIỂM MẠNH</div>
+            ${state.aiResult.sellingPoints.map(function(s){ return `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;"><span style="color:#000000;flex-shrink:0;font-size:14px;">✓</span><span style="font-size:14px;color:#000000;line-height:1.5;">${esc(s)}</span></div>`; }).join('')}
+            ` : ''}
+            ${(state.aiResult.risks && state.aiResult.risks.length > 0) ? `
+            <div style="font-size:12px;color:#888;margin-bottom:8px;margin-top:${(state.aiResult.sellingPoints && state.aiResult.sellingPoints.length > 0)?'16px':'0'};">LƯU Ý</div>
+            ${state.aiResult.risks.map(function(r){ return `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;"><span style="color:#000000;flex-shrink:0;font-size:14px;">!</span><span style="font-size:14px;color:#000000;line-height:1.5;">${esc(r)}</span></div>`; }).join('')}
+            ` : ''}
           </div>
           ` : ''}
 
@@ -2472,20 +2471,20 @@ function renderAI() {
           <div class="card" style="border:1px solid #E8E8E8;">
             <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#FF1744;margin-bottom:12px;">KẾT LUẬN CHUYÊN GIA</div>
             <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-              <span style="font-size:14px;color:#1a1a1a;">Thời điểm quyết định</span>
-              <span style="font-size:14px;font-weight:800;color:${(state.aiResult.conclusion.timeToDecide||'').includes('Khẩn')?'#FF1744':'#1a1a1a'};">${esc(state.aiResult.conclusion.timeToDecide||'')}</span>
+              <span style="font-size:14px;color:#000000;">Thời điểm quyết định</span>
+              <span style="font-size:14px;color:#000000;">${esc(state.aiResult.conclusion.timeToDecide||'')}</span>
             </div>
             ${state.aiResult.conclusion.reason ? `
             <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">
-              <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(state.aiResult.conclusion.reason)}</div>
+              <div style="font-size:14px;color:#000000;line-height:1.6;">${esc(state.aiResult.conclusion.reason)}</div>
             </div>` : ''}
             <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">
               <div style="font-size:12px;color:#888;margin-bottom:4px;">CHO KHÁCH MUA Ở</div>
-              <div style="font-size:14px;color:#1a1a1a;line-height:1.5;">${esc(state.aiResult.conclusion.forBuyer||'')}</div>
+              <div style="font-size:14px;color:#000000;line-height:1.5;">${esc(state.aiResult.conclusion.forBuyer||'')}</div>
             </div>
             <div style="padding:8px 0;">
               <div style="font-size:12px;color:#888;margin-bottom:4px;">CHO NHÀ ĐẦU TƯ</div>
-              <div style="font-size:14px;color:#1a1a1a;line-height:1.5;">${esc(state.aiResult.conclusion.forInvestor||'')}</div>
+              <div style="font-size:14px;color:#000000;line-height:1.5;">${esc(state.aiResult.conclusion.forInvestor||'')}</div>
             </div>
           </div>
           ` : ''}
@@ -3118,47 +3117,49 @@ function renderCustomerDetail() {
     </div>
     <div class="content-pad" style="padding-top:16px;">
 
-      <div class="card" style="background:#FFFFFF;color:#1a1a1a;border:1px solid #eee;border-left:4px solid #FF1744;margin-bottom:16px;">
-        <div style="font-size:10px;font-weight:800;color:#FF1744;letter-spacing:2px;margin-bottom:12px;">KHÁCH HÀNG</div>
-        <div style="font-size:20px;font-weight:800;margin-bottom:6px;color:#1a1a1a;">${esc(c.name)}</div>
-        <div style="display:flex;gap:16px;flex-wrap:wrap;">
-          ${c.phone ? `<a href="tel:${esc(c.phone)}" style="font-size:14px;color:#FF1744;font-weight:600;text-decoration:none;">📞 ${esc(c.phone)}</a>` : ''}
-          <div style="font-size:14px;font-weight:700;color:${statusColor(c.status)};">${statusLabel(c.status)}</div>
+      <div class="card" style="background:#FFFFFF;color:#1a1a1a;border:1px solid #eee;border-left:1.5px solid #FF1744;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span style="font-size:10px;font-weight:800;color:#FF1744;letter-spacing:2px;">KHÁCH HÀNG</span>
+          <span style="font-size:12px;font-weight:700;color:${statusColor(c.status)};">${statusLabel(c.status)}</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:15px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px;">${esc(c.name)}</span>
+          ${c.phone ? `<a href="tel:${esc(c.phone)}" style="font-size:12px;color:#FF1744;text-decoration:none;">· 📞 ${esc(c.phone)}</a>` : ''}
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:16px;">
-        ${c.district ? `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
-          <span style="font-size:14px;color:#888;">Quận / Khu vực</span>
-          <span style="font-size:14px;font-weight:700;">${esc(c.district)}</span>
+      <div class="card" style="margin-bottom:16px;background:linear-gradient(165deg,#fff 0%,#F0F8FF 100%);border:1.5px solid #C8E0F5;">
+        ${c.district ? `<div class="info-row">
+          <span class="info-lbl">Quận / Khu vực</span>
+          <span class="info-val">${esc(c.district)}</span>
         </div>` : ''}
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
-          <span style="font-size:14px;color:#888;">Ngân sách tối đa</span>
-          <span style="font-size:14px;font-weight:700;">${c.budgetMax ? c.budgetMax+' tỷ' : '—'}</span>
+        <div class="info-row">
+          <span class="info-lbl">Ngân sách tối đa</span>
+          <span class="info-val">${c.budgetMax ? c.budgetMax+' tỷ' : '—'}</span>
         </div>
-        ${c.minArea ? `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
-          <span style="font-size:14px;color:#888;">Diện tích tối thiểu</span>
-          <span style="font-size:14px;font-weight:700;">${esc(c.minArea)} m²</span>
+        ${c.minArea ? `<div class="info-row">
+          <span class="info-lbl">Diện tích tối thiểu</span>
+          <span class="info-val">${esc(c.minArea)} m²</span>
         </div>` : ''}
-        ${c.minWidth ? `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
-          <span style="font-size:14px;color:#888;">Ngang tối thiểu</span>
-          <span style="font-size:14px;font-weight:700;">${esc(c.minWidth)} m</span>
+        ${c.minWidth ? `<div class="info-row">
+          <span class="info-lbl">Ngang tối thiểu</span>
+          <span class="info-val">${esc(c.minWidth)} m</span>
         </div>` : ''}
-        ${c.direction ? `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
-          <span style="font-size:14px;color:#888;">Hướng cửa chính</span>
-          <span style="font-size:14px;font-weight:700;">${esc(c.direction)}</span>
+        ${c.direction ? `<div class="info-row">
+          <span class="info-lbl">Hướng cửa chính</span>
+          <span class="info-val">${esc(c.direction)}</span>
         </div>` : ''}
-        ${c.alleyType ? `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
-          <span style="font-size:14px;color:#888;">Loại đường / hẻm</span>
-          <span style="font-size:14px;font-weight:700;">${alleyLabel(c.alleyType)}</span>
+        ${c.alleyType ? `<div class="info-row">
+          <span class="info-lbl">Loại đường / hẻm</span>
+          <span class="info-val">${alleyLabel(c.alleyType)}</span>
         </div>` : ''}
-        ${c.hienTrang ? `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;">
-          <span style="font-size:14px;color:#888;">Hiện trạng nhà</span>
-          <span style="font-size:14px;font-weight:700;">${hienTrangLabel(c.hienTrang)}</span>
+        ${c.hienTrang ? `<div class="info-row">
+          <span class="info-lbl">Hiện trạng nhà</span>
+          <span class="info-val">${hienTrangLabel(c.hienTrang)}</span>
         </div>` : ''}
-        ${c.notes ? `<div style="padding:8px 0;">
+        ${c.notes ? `<div style="padding:14px 0 2px;border-top:1px solid #E8E8E8;margin-top:2px;">
           <div style="font-size:12px;color:#888;margin-bottom:4px;">YÊU CẦU KHÁC</div>
-          <div style="font-size:14px;color:#1a1a1a;line-height:1.6;white-space:pre-wrap;">${esc(c.notes)}</div>
+          <div class="notes-text">${esc(c.notes)}</div>
         </div>` : ''}
       </div>
 
@@ -3171,11 +3172,11 @@ function renderCustomerDetail() {
         ${c.sentHistory && c.sentHistory.length > 0 ? c.sentHistory.map((h, idx) => `
         <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
-            <div style="font-size:13px;font-weight:600;color:#1a1a1a;flex:1;padding-right:8px;">${esc(h.address||'')}</div>
+            <div style="font-size:14px;color:#000000;flex:1;padding-right:8px;">${esc(h.address||'')}</div>
             <button onclick="deleteSentHistory('${c.id}',${idx})" style="background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;">×</button>
           </div>
           <div style="font-size:12px;color:#888;">${h.date||''}${h.note ? ' · '+esc(h.note) : ''}</div>
-        </div>`).join('') : '<div style="font-size:13px;color:#888;padding:4px 0;">Chưa ghi nhà nào</div>'}
+        </div>`).join('') : '<div style="font-size:14px;color:#000000;padding:4px 0;">Chưa ghi nhà nào</div>'}
 
         ${state.showSendModal === c.id ? `
         <div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:flex-end;">
@@ -3211,8 +3212,8 @@ function renderCustomerDetail() {
         ${c.viewHistory.map(h => `
         <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
-            <div style="font-size:13px;font-weight:600;color:#1a1a1a;flex:1;padding-right:8px;">${esc(h.address||'')}</div>
-            <span style="font-size:11px;font-weight:700;color:${feedbackColor(h.feedback)};white-space:nowrap;">${feedbackLabel(h.feedback)}</span>
+            <div style="font-size:14px;color:#000000;flex:1;padding-right:8px;">${esc(h.address||'')}</div>
+            <span style="font-size:14px;color:#000000;white-space:nowrap;">${feedbackLabel(h.feedback)}</span>
           </div>
           <div style="font-size:12px;color:#888;">${h.date||''}${h.note ? ' · '+esc(h.note) : ''}</div>
         </div>
@@ -3257,7 +3258,7 @@ function renderCustomerMatch() {
       ` : result ? `
 
         ${result.summary ? `
-        <div class="card" style="background:#FFFFFF;color:#1a1a1a;border:1px solid #eee;border-left:4px solid #FF1744;margin-bottom:16px;">
+        <div class="card" style="background:#FFFFFF;color:#1a1a1a;border:1px solid #eee;border-left:1.5px solid #FF1744;margin-bottom:16px;">
           <div style="font-size:10px;font-weight:800;color:#FF1744;letter-spacing:2px;margin-bottom:12px;">NHẬN XÉT TỔNG QUAN</div>
           <div style="font-size:14px;color:#1a1a1a;line-height:1.6;">${esc(result.summary)}</div>
         </div>` : ''}
