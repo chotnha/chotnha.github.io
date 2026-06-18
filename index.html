@@ -811,7 +811,6 @@ let state = {
   customerPage: 1,
   filterCustomerStatus: '',
   showSendModal: null,
-  showViewModal: null,
   showLogout: false,
   listFilter: 'all',
   listPage: 1,
@@ -2206,31 +2205,6 @@ function renderDetail() {
           </button>
         </div>
       </div>
-
-      ${state.showViewModal === p.id ? `
-      <div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:flex-end;">
-        <div style="background:white;width:100%;border-radius:20px 20px 0 0;padding:20px 16px 40px;">
-          <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Ghi khách đã xem nhà</div>
-          <div style="font-size:13px;color:#888;margin-bottom:12px;">Chọn khách hàng:</div>
-          <div style="max-height:200px;overflow-y:auto;margin-bottom:16px;">
-            ${state.customers.length === 0 ? '<div style="color:#888;font-size:13px;padding:8px 0;">Chưa có khách hàng nào</div>' :
-            state.customers.map(c => `
-              <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
-                <div style="font-size:14px;font-weight:600;margin-bottom:8px;">${esc(c.name)}</div>
-                <div style="display:flex;gap:8px;">
-                  ${['liked','pending','rejected'].map(fb => `
-                    <button onclick="addViewHistory('${c.id}','${p.id}','${fb}','');closeViewModal();"
-                      style="flex:1;padding:8px 4px;border-radius:8px;border:1.5px solid ${feedbackColor(fb)};background:white;color:${feedbackColor(fb)};font-size:12px;font-weight:700;cursor:pointer;">
-                      ${feedbackLabel(fb)}
-                    </button>
-                  `).join('')}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-          <button onclick="closeViewModal()" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #E8E8E8;background:white;color:#1a1a1a;font-size:14px;font-weight:600;cursor:pointer;">Đóng</button>
-        </div>
-      </div>` : ''}
     </div>`;
 }
 
@@ -2781,7 +2755,7 @@ function emptyCustomer() {
   return {
     name: '', phone: '',
     district: '', budgetMax: '',
-    minArea: '', minWidth: '',
+    purpose: '', minArea: '', minWidth: '', bedrooms: '',
     direction: '', alleyType: '', hienTrang: '',
     priority: '', exclude: '',
     notes: '',
@@ -2796,7 +2770,7 @@ function statusColor(s) {
   return { hot:'#FF1744', watching:'#B45309', cold:'#1565C0', closed:'#2E7D32' }[s] || '#888';
 }
 function purposeLabel(s) {
-  return { buy_live:'Mua ở', invest:'Đầu tư', both:'Mua ở + Đầu tư' }[s] || s;
+  return { mua_o:'Mua ở', o_cho_thue:'Ở kết hợp cho thuê', cho_thue:'Cho thuê', dau_tu:'Đầu tư', tich_san:'Tích sản', chua_ro:'Chưa rõ' }[s] || s;
 }
 
 async 
@@ -2848,13 +2822,6 @@ function editCustomer(id) {
   if (c) nav('customer-form', { currentCustomerId: id, customerForm: { ...c } });
 }
 
-function feedbackLabel(f) {
-  return { liked:'👍 Thích', pending:'🤔 Chưa quyết', rejected:'👎 Không phù hợp' }[f] || f;
-}
-function feedbackColor(f) {
-  return { liked:'#2E7D32', pending:'#B45309', rejected:'#FF1744' }[f] || '#888';
-}
-
 async function updateCustomerStatus(customerId, newStatus) {
   const customer = state.customers.find(c => c.id === customerId);
   if (!customer) return;
@@ -2899,37 +2866,6 @@ async function addSentHistory(customerId, propertyId, feedback, note) {
 function openSendModal(customerId) { setState({ showSendModal: customerId }); }
 function closeSendModal() { setState({ showSendModal: null }); }
 
-async function addViewHistory(customerId, propertyId, feedback, note) {
-  const customer = state.customers.find(c => c.id === customerId);
-  const property = state.properties.find(p => p.id === propertyId);
-  if (!customer || !property) return;
-  const user = firebase.auth().currentUser;
-  if (!user) return;
-
-  const entry = {
-    propertyId,
-    address: property.address,
-    date: new Date().toLocaleDateString('vi-VN'),
-    feedback,
-    note: note || ''
-  };
-
-  const newHistory = [entry, ...(customer.viewHistory || [])];
-  const updated = { ...customer, viewHistory: newHistory };
-  
-  await saveCustomersToFirestore(state.customers.map(c => c.id === customerId ? updated : c));
-  state.customers = state.customers.map(c => c.id === customerId ? updated : c);
-  render();
-}
-
-function openViewHistoryModal(customerId) {
-  setState({ showViewModal: customerId });
-}
-
-function closeViewModal() {
-  setState({ showViewModal: null });
-}
-
 function openCustomer(id) {
   nav('customer-detail', { currentCustomerId: id });
 }
@@ -2953,7 +2889,7 @@ async function matchCustomerAI(customerId) {
   const propList = state.properties.slice(0, 15).map((p, i) => {
     const r = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
     return `Căn ${i+1}: ${p.address}
-  Giá: ${p.askingPrice} tỷ | DT: ${p.area}m² | ${p.floors} tầng
+  Giá: ${p.askingPrice||'chưa rõ'} tỷ | DT: ${p.area||'?'}m² | ${p.floors||'?'} tầng
   Vị trí: ${alleyLabel(p.alleyType)} | Hướng: ${p.direction||'chưa rõ'}
   Pháp lý: ${legalLabel(p.legal)} | Hình dạng: ${shapeLabel(p.shape)}
   Giá trị TT ước tính: ${r ? r.estimatedValue.toFixed(2)+' tỷ' : 'chưa tính'}
@@ -2962,12 +2898,20 @@ async function matchCustomerAI(customerId) {
 
   const prompt = `Bạn là môi giới BĐS kỳ cựu. Hãy phân tích và ghép khách với nhà phù hợp nhất.
 
-THÔNG TIN KHÁCH HÀNG:
+TIÊU CHÍ TÌM NHÀ CỦA KHÁCH:
 Tên: ${customer.name}
-Ngân sách: ${customer.budgetMin||'?'} – ${customer.budgetMax||'?'} tỷ
-Khu vực muốn: ${customer.areas||'chưa rõ'}
-Mục đích: ${purposeLabel(customer.purpose)}
-Ghi chú nhu cầu: ${customer.notes||'không có'}
+Quận / Khu vực mong muốn: ${customer.district||'chưa rõ'}
+Ngân sách tối đa: ${customer.budgetMax ? customer.budgetMax+' tỷ' : 'chưa rõ'}
+Nhu cầu: ${purposeLabel(customer.purpose)||'chưa rõ'}
+Diện tích tối thiểu: ${customer.minArea ? customer.minArea+' m²' : 'không yêu cầu'}
+Ngang tối thiểu: ${customer.minWidth ? customer.minWidth+' m' : 'không yêu cầu'}
+Số phòng ngủ: ${customer.bedrooms || 'không yêu cầu'}
+Hướng nhà: ${customer.direction || 'không yêu cầu'}
+Loại đường / hẻm: ${customer.alleyType ? alleyLabel(customer.alleyType) : 'không yêu cầu'}
+Hiện trạng nhà: ${customer.hienTrang ? hienTrangLabel(customer.hienTrang) : 'không yêu cầu'}
+Ưu tiên: ${customer.priority || 'không có'}
+Loại trừ (tránh): ${customer.exclude || 'không có'}
+Ghi chú thêm: ${customer.notes||'không có'}
 
 DANH SÁCH NHÀ HIỆN CÓ:
 ${propList}
@@ -3095,10 +3039,20 @@ function renderCustomerForm() {
       ${cfield('Quận / Khu vực', 'district', f.district, 'text', 'Vd: Phú Nhuận, Bình Thạnh')}
       ${cfield('Ngân sách tối đa (tỷ)', 'budgetMax', f.budgetMax, 'number', '10')}
 
+      <div class="f-select-wrap" style="margin-top:20px;">
+        <span class="field-label">Nhu cầu</span>
+        <select class="input" onchange="updateCustomerForm('purpose', this.value)">
+          ${[{v:'',l:'Chọn'},{v:'mua_o',l:'Mua ở'},{v:'o_cho_thue',l:'Ở kết hợp cho thuê'},{v:'cho_thue',l:'Cho thuê'},{v:'dau_tu',l:'Đầu tư'},{v:'tich_san',l:'Tích sản'},{v:'chua_ro',l:'Chưa rõ'}]
+            .map(o=>`<option value="${o.v}" ${(f.purpose||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
+        </select>
+      </div>
+
       <div class="row-2" style="margin-top:20px;">
         ${cfield('Diện tích tối thiểu (m²)', 'minArea', f.minArea, 'number', '40')}
         ${cfield('Ngang tối thiểu (m)', 'minWidth', f.minWidth, 'number', '4')}
       </div>
+
+      ${cfield('Số phòng ngủ', 'bedrooms', f.bedrooms, 'number', '3')}
 
       <div class="f-select-wrap" style="margin-top:20px;">
         <span class="field-label">Hướng nhà</span>
@@ -3159,7 +3113,7 @@ function renderCustomerDetail() {
   return `<div class="screen">
     <div class="topbar">
       <button class="topbar-back" onclick="nav('customers')">‹</button>
-      <div class="topbar-title">Chi tiết khách hàng</div>
+      <div class="topbar-title">Tiêu chí tìm nhà</div>
       <button onclick="deleteCustomer('${c.id}')" style="background:none;border:none;cursor:pointer;padding:4px 8px;font-size:18px;">🗑</button>
     </div>
     <div class="content-pad" style="padding-top:16px;">
@@ -3184,6 +3138,10 @@ function renderCustomerDetail() {
           <span class="info-lbl">Ngân sách tối đa</span>
           <span class="info-val">${c.budgetMax ? c.budgetMax+' tỷ' : '—'}</span>
         </div>
+        ${c.purpose ? `<div class="info-row">
+          <span class="info-lbl">Nhu cầu</span>
+          <span class="info-val">${purposeLabel(c.purpose)}</span>
+        </div>` : ''}
         ${c.minArea ? `<div class="info-row">
           <span class="info-lbl">Diện tích tối thiểu</span>
           <span class="info-val">${esc(c.minArea)} m²</span>
@@ -3191,6 +3149,10 @@ function renderCustomerDetail() {
         ${c.minWidth ? `<div class="info-row">
           <span class="info-lbl">Ngang tối thiểu</span>
           <span class="info-val">${esc(c.minWidth)} m</span>
+        </div>` : ''}
+        ${c.bedrooms ? `<div class="info-row">
+          <span class="info-lbl">Số phòng ngủ</span>
+          <span class="info-val">${esc(c.bedrooms)}</span>
         </div>` : ''}
         ${c.direction ? `<div class="info-row">
           <span class="info-lbl">Hướng nhà</span>
@@ -3206,22 +3168,26 @@ function renderCustomerDetail() {
         </div>` : ''}
       </div>
 
-      ${(c.priority || c.exclude) ? `<div class="card" style="margin-bottom:16px;">
-        ${c.priority ? `<div style="${c.exclude?'padding-bottom:14px;border-bottom:1px solid #E8E8E8;margin-bottom:14px;':''}">
+      ${(c.priority || c.exclude || c.notes) ? `<div class="card" style="margin-bottom:16px;">
+        ${c.priority ? `<div style="${(c.exclude||c.notes)?'padding-bottom:14px;border-bottom:1px solid #E8E8E8;margin-bottom:14px;':''}">
           <div style="font-size:12px;color:#000000;margin-bottom:4px;">ƯU TIÊN</div>
           <div class="notes-text">${esc(c.priority)}</div>
         </div>` : ''}
-        ${c.exclude ? `<div>
+        ${c.exclude ? `<div style="${c.notes?'padding-bottom:14px;border-bottom:1px solid #E8E8E8;margin-bottom:14px;':''}">
           <div style="font-size:12px;color:#000000;margin-bottom:4px;">LOẠI TRỪ</div>
           <div class="notes-text">${esc(c.exclude)}</div>
+        </div>` : ''}
+        ${c.notes ? `<div>
+          <div style="font-size:12px;color:#000000;margin-bottom:4px;">GHI CHÚ THÊM</div>
+          <div class="notes-text">${esc(c.notes)}</div>
         </div>` : ''}
       </div>` : ''}
 
       <div class="card" style="margin-bottom:16px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#FF1744;">NHÀ ĐÃ GỬI</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#FF1744;">ĐÃ GHIM</div>
           <button onclick="openSendModal('${c.id}')"
-            style="font-size:12px;font-weight:700;color:#FF1744;background:none;border:1.5px solid #FF1744;border-radius:20px;padding:3px 12px;cursor:pointer;">+ Ghi</button>
+            style="font-size:12px;font-weight:700;color:#FF1744;background:none;border:1.5px solid #FF1744;border-radius:20px;padding:3px 12px;cursor:pointer;">+ Ghim</button>
         </div>
         ${c.sentHistory && c.sentHistory.length > 0 ? c.sentHistory.map((h, idx) => `
         <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
@@ -3230,12 +3196,12 @@ function renderCustomerDetail() {
             <button onclick="deleteSentHistory('${c.id}',${idx})" style="background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;">×</button>
           </div>
           <div style="font-size:12px;color:#888;">${h.date||''}${h.note ? ' · '+esc(h.note) : ''}</div>
-        </div>`).join('') : '<div style="font-size:14px;color:#000000;padding:4px 0;">Chưa ghi nhà nào</div>'}
+        </div>`).join('') : '<div style="font-size:14px;color:#000000;padding:4px 0;">Chưa ghim nhà nào</div>'}
 
         ${state.showSendModal === c.id ? `
         <div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:flex-end;">
           <div style="background:white;width:100%;border-radius:20px 20px 0 0;padding:20px 16px 40px;max-height:85vh;display:flex;flex-direction:column;">
-            <div style="font-size:15px;font-weight:700;margin-bottom:12px;">Ghi nhà đã gửi khách xem</div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:12px;">Ghim nhà cho khách</div>
             <input class="input" type="text" placeholder="Tìm theo địa chỉ..." value="${state.sendModalSearch||''}"
               list="address-suggestions-modal"
               oninput="setState({sendModalSearch:this.value})" style="margin-bottom:12px;flex-shrink:0;" />
@@ -3251,7 +3217,7 @@ function renderCustomerDetail() {
                 <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
                   <div style="font-size:13px;font-weight:600;margin-bottom:8px;">${esc(pr.address)}</div>
                   <div style="display:flex;gap:6px;">
-                    <input type="text" id="note-${pr.id}" placeholder="Ghi chú (vd: khách thích, hẻm hơi nhỏ...)"
+                    <input type="text" id="note-${pr.id}" placeholder="Ghi chú (vd: đã xem, thích, chưa xem...)"
                       style="flex:1;padding:8px 10px;border:1px solid #E8E8E8;border-radius:8px;font-size:12px;font-family:inherit;" />
                     <button onclick="addSentHistory('${c.id}','${pr.id}','', document.getElementById('note-${pr.id}').value)"
                       style="padding:8px 14px;border-radius:8px;border:1.5px solid #FF1744;background:#FF1744;color:white;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Lưu</button>
@@ -3263,25 +3229,6 @@ function renderCustomerDetail() {
           </div>
         </div>` : ''}
       </div>
-
-      ${c.viewHistory && c.viewHistory.length > 0 ? `
-      <div class="card" style="margin-bottom:16px;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#FF1744;margin-bottom:12px;">LỊCH SỬ XEM NHÀ</div>
-        ${c.viewHistory.map(h => `
-        <div style="padding:10px 0;border-bottom:1px solid #f5f5f5;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
-            <div style="font-size:14px;color:#000000;flex:1;padding-right:8px;">${esc(h.address||'')}</div>
-            <span style="font-size:14px;color:#000000;white-space:nowrap;">${feedbackLabel(h.feedback)}</span>
-          </div>
-          <div style="font-size:12px;color:#888;">${h.date||''}${h.note ? ' · '+esc(h.note) : ''}</div>
-        </div>
-        `).join('')}
-      </div>` : ''}
-
-      ${c.notes ? `<div class="card" style="margin-bottom:16px;">
-        <div style="font-size:12px;color:#000000;margin-bottom:4px;">GHI CHÚ THÊM</div>
-        <div class="notes-text">${esc(c.notes)}</div>
-      </div>` : ''}
 
     </div>
     <div class="bottom-bar">
@@ -3309,7 +3256,7 @@ function renderCustomerMatch() {
       <div class="card" style="margin-bottom:16px;">
         <div style="font-size:11px;color:#888;margin-bottom:4px;">ĐANG TÌM CHO</div>
         <div style="font-size:16px;font-weight:800;">${esc(c.name)}</div>
-        <div style="font-size:13px;color:#555;margin-top:2px;">${c.budgetMin}–${c.budgetMax} tỷ · ${esc(c.areas||'')} · ${purposeLabel(c.purpose)}</div>
+        <div style="font-size:13px;color:#555;margin-top:2px;">${c.budgetMax ? 'Tối đa '+c.budgetMax+' tỷ' : 'Chưa rõ ngân sách'}${c.district ? ' · '+esc(c.district) : ''}${c.purpose ? ' · '+purposeLabel(c.purpose) : ''}</div>
       </div>
 
       ${loading ? `
