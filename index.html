@@ -141,17 +141,17 @@ body {
 input[type="range"].dual-range::-webkit-slider-thumb {
   pointer-events: auto;
   -webkit-appearance: none;
-  width: 16px; height: 16px;
+  width: 10px; height: 10px;
   border-radius: 50%;
   background: #FF1744;
   border: 2px solid white;
   box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   cursor: pointer;
-  margin-top: 0px;
+  margin-top: 3px;
 }
 input[type="range"].dual-range::-moz-range-thumb {
   pointer-events: auto;
-  width: 16px; height: 16px;
+  width: 10px; height: 10px;
   border-radius: 50%;
   background: #FF1744;
   border: 2px solid white;
@@ -917,7 +917,7 @@ function commitPriceFilter() {
 function emptyForm() {
   return {
     address: '', propStatus: '', width: '', length: '', dtThucTe: '', area: '', floors: '', sanXD: '',
-    dtCongNhan: '', dtKhongCongNhan: '', planning: 'phu_hop',
+    dtCongNhan: '', dtKhongCongNhan: '', planning: '',
     askingPrice: '', giaTT: '', donGiaXD: '7', hienTrang: '',
     furnitureType: 'khong', furnitureValue: '', furnitureCondition: 'tot',
     hoanCong: '', hoanCongRate: '',
@@ -970,6 +970,20 @@ function issueLabel(v) {
   return m[v] || legacy[v] || v;
 }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// Tạo danh sách gợi ý địa chỉ (datalist) từ địa chỉ các hồ sơ hiện có
+// Tách theo dấu phẩy (số nhà+đường / quận), bỏ trùng, bỏ chuỗi quá ngắn
+function addressSuggestions() {
+  const set = new Set();
+  (state.properties || []).forEach(p => {
+    if (!p.address) return;
+    p.address.split(',').forEach(part => {
+      const t = part.trim();
+      if (t.length >= 3) set.add(t);
+    });
+  });
+  return Array.from(set).sort();
+}
 
 // ============== VALUATION CALCULATION ==============
 function calculateValuation(p) {
@@ -1102,13 +1116,13 @@ function calculateValuation(p) {
   } else if (chenhLechPhanTram < -10) {
     verdictTong = { type:'good', text:'🟢 Giá tốt' };
   } else if (chenhLechPhanTram <= 0) {
-    verdictTong = { type:'good', text:'🟢 Hợp lý' };
+    verdictTong = { type:'good', text:'🟢 Giá hợp lý' };
   } else if (chenhLechPhanTram <= 10) {
-    verdictTong = { type:'mid', text:'🟡 Hơi cao' };
+    verdictTong = { type:'mid', text:'🟡 Giá hơi cao' };
   } else if (chenhLechPhanTram <= 20) {
-    verdictTong = { type:'warn', text:'🟠 Cao' };
+    verdictTong = { type:'warn', text:'🟠 Giá cao' };
   } else {
-    verdictTong = { type:'bad', text:'🔴 Rất cao' };
+    verdictTong = { type:'bad', text:'🔴 Giá rất cao' };
   }
   const verdict = verdictTong;
   const verdictDat = verdictTong;
@@ -1600,9 +1614,9 @@ function renderHome() {
         </div>
         ${currentUser ? `
         <div class="hero-kpi">
-          <span class="hero-kpi-item">${state.properties.length} hồ sơ</span>
+          <span class="hero-kpi-item" onclick="nav('list')" style="cursor:pointer;">${state.properties.length} hồ sơ</span>
           <span class="hero-kpi-dot">·</span>
-          <span class="hero-kpi-item">${state.customers.length} khách hàng</span>
+          <span class="hero-kpi-item" onclick="nav('customers')" style="cursor:pointer;">${state.customers.length} khách hàng</span>
         </div>` : ''}
       </div>
 
@@ -1778,9 +1792,13 @@ function renderList() {
         <input type="text" placeholder="Tìm theo quận / địa chỉ..."
           id="search-district"
           value="${fDistrict}"
+          list="address-suggestions"
           onchange="setState({filterDistrict:this.value,listPage:1})"
           onkeydown="if(event.key==='Enter'){setState({filterDistrict:this.value,listPage:1});this.blur();}"
           style="width:100%;padding:12px 14px;border:0.6px solid #1a1a1a;border-radius:14px;font-size:15px;background:white;box-sizing:border-box;margin-bottom:10px;font-family:inherit;outline:none;" />
+        <datalist id="address-suggestions">
+          ${addressSuggestions().map(s => `<option value="${esc(s)}">`).join('')}
+        </datalist>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
           <select onchange="setState({filterBudget:this.value,filterPriceMin:'',filterPriceMax:'',listPage:1})"
@@ -1813,25 +1831,25 @@ function renderList() {
           const dispMin = fPriceMin || (range ? range[0] : 1);
           const dispMax = fPriceMax || (range ? range[1] : 10000);
           return `
-        <div style="margin-bottom:14px;padding:12px 14px;border:0.6px solid ${(fPriceMin||fPriceMax||fBudget)?'#FF1744':'#1a1a1a'};border-radius:14px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <span style="font-size:13px;color:#555;font-weight:700;">Giá <span style="font-weight:800;color:#FF1744;">${PRICE_MAX.toLocaleString('en-US')} tỷ</span></span>
-            <span id="price-range-display" style="font-size:14px;font-weight:800;color:#FF1744;">${fmtPriceRange(dispMin, dispMax)}</span>
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+            <span style="font-size:13px;color:#555;font-weight:700;">Giá</span>
+            <span id="price-range-display" style="font-size:13px;color:#1a1a1a;">${fmtPriceRange(dispMin, dispMax)}</span>
           </div>
-          <div style="position:relative;height:20px;">
-            <div style="position:absolute;top:8px;left:0;right:0;height:3px;background:#E8E8E8;border-radius:2px;"></div>
-            <div id="price-range-track" style="position:absolute;top:8px;height:3px;background:#2E7D32;border-radius:2px;
+          <div style="position:relative;height:16px;">
+            <div style="position:absolute;top:7.25px;left:0;right:0;height:1.5px;background:#E8E8E8;border-radius:1px;"></div>
+            <div id="price-range-track" style="position:absolute;top:7.25px;height:1.5px;background:#2E7D32;border-radius:1px;
               left:${priceToPct(dispMin)}%;right:${100-priceToPct(dispMax)}%;"></div>
             <input type="range" class="dual-range" min="0" max="1000" step="1" value="${priceToSlider(dispMin)}"
               oninput="syncPriceSlider(this,'min')"
               onchange="commitPriceFilter()"
               onmousedown="raisePriceThumb(this)" ontouchstart="raisePriceThumb(this)"
-              style="position:absolute;top:0;left:0;width:100%;height:20px;margin:0;background:transparent;pointer-events:none;z-index:2;" />
+              style="position:absolute;top:0;left:0;width:100%;height:16px;margin:0;background:transparent;pointer-events:none;z-index:2;" />
             <input type="range" class="dual-range" min="0" max="1000" step="1" value="${priceToSlider(dispMax)}"
               oninput="syncPriceSlider(this,'max')"
               onchange="commitPriceFilter()"
               onmousedown="raisePriceThumb(this)" ontouchstart="raisePriceThumb(this)"
-              style="position:absolute;top:0;left:0;width:100%;height:20px;margin:0;background:transparent;pointer-events:none;z-index:3;" />
+              style="position:absolute;top:0;left:0;width:100%;height:16px;margin:0;background:transparent;pointer-events:none;z-index:3;" />
           </div>
         </div>`;
         })()}
@@ -1861,18 +1879,14 @@ function renderList() {
             .map(o=>`<option value="${o.v}" ${state.filterStatus===o.v?'selected':''}>${o.l}</option>`).join('')}
         </select>
 
-        ${hasFilter ? `<button onclick="setState({filterDistrict:'',filterBudget:'',filterPriceMin:'',filterPriceMax:'',filterArea:'',filterAlley:'',filterDirection:'',filterStatus:'',listPage:1})"
-          style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #FF1744;background:white;color:#FF1744;font-size:13px;font-weight:700;cursor:pointer;">
-          × Xóa tất cả bộ lọc
-        </button>` : ''}
       </div>` : ''}
 
-      <div style="display:flex;gap:8px;padding:10px 16px;background:#fff;border-bottom:1px solid #E8E8E8;overflow-x:auto;">
-        <button onclick="setState({listFilter:'all',listPage:1})" style="padding:6px 14px;border-radius:20px;border:1.5px solid ${filter==='all'?'#FF1744':'#E8E8E8'};background:${filter==='all'?'#FF1744':'white'};color:${filter==='all'?'white':'#1a1a1a'};font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">
-          Tất cả (${allProps.length})
-        </button>
-        
-        ${hasFilter ? `<span style="padding:6px 10px;border-radius:20px;background:#FFF5F5;color:#FF1744;font-size:12px;font-weight:600;flex-shrink:0;">Tìm thấy ${filtered.length} hồ sơ</span>` : ''}
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#fff;border-bottom:1px solid #E8E8E8;">
+        <span style="font-size:14px;color:#1a1a1a;">${hasFilter ? allProps.length+'/'+filtered.length : allProps.length}</span>
+        ${hasFilter ? `<button onclick="setState({filterDistrict:'',filterBudget:'',filterPriceMin:'',filterPriceMax:'',filterArea:'',filterAlley:'',filterDirection:'',filterStatus:'',listPage:1})"
+          style="background:none;border:none;color:#1a1a1a;font-size:13px;font-weight:600;cursor:pointer;padding:0;">
+          Xóa lọc
+        </button>` : ''}
       </div>
       <div class="content-pad" style="padding-top:12px;">
         ${filtered.length === 0 ? `
@@ -1981,8 +1995,8 @@ function renderForm() {
         <div class="f-select-wrap" style="margin-top:20px;">
           <span class="field-label">Tình trạng quy hoạch</span>
           <select class="input" onchange="updateForm('planning', this.value)">
-            ${[{v:'phu_hop',l:'Phù hợp quy hoạch'},{v:'on_dinh',l:'Không CN, sử dụng ổn định'},{v:'lo_gioi',l:'Vướng lộ giới'},{v:'cong_cong',l:'Quy hoạch công cộng'},{v:'khong_cn',l:'Không được công nhận'}]
-              .map(o=>`<option value="${o.v}" ${(f.planning||'phu_hop')===o.v?'selected':''}>${o.l}</option>`).join('')}
+            ${[{v:'',l:'Chọn tình trạng quy hoạch'},{v:'phu_hop',l:'Phù hợp quy hoạch'},{v:'on_dinh',l:'Không CN, sử dụng ổn định'},{v:'lo_gioi',l:'Vướng lộ giới'},{v:'cong_cong',l:'Quy hoạch công cộng'},{v:'khong_cn',l:'Không được công nhận'}]
+              .map(o=>`<option value="${o.v}" ${(f.planning||'')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
         </div>
 
@@ -2018,7 +2032,7 @@ function renderForm() {
 
         <div class="f-select-wrap">
           <span class="field-label">Nội thất</span>
-          <select class="input" onchange="updateForm('furnitureType', this.value)">
+          <select class="input" onchange="updateFormRender('furnitureType', this.value)">
             ${[{v:'khong',l:'Không có nội thất'},{v:'co_ban',l:'Nội thất cơ bản'},{v:'full',l:'Full nội thất'},{v:'cao_cap',l:'Nội thất cao cấp'}]
               .map(o=>`<option value="${o.v}" ${(f.furnitureType||'khong')===o.v?'selected':''}>${o.l}</option>`).join('')}
           </select>
@@ -2051,7 +2065,7 @@ function renderForm() {
           <select class="input" onchange="addIssue(this.value); this.value=''">
             <option value="">— Chọn yếu tố —</option>
             ${[
-              {v:'gan_chua',l:'Gần chùa'},{v:'gan_nha_tho',l:'Gần nhà thờ'},
+              {v:'gan_chua',l:'Gần chùa'},
               {v:'gan_dinh_mieu',l:'Gần đình/miếu'},{v:'gan_mo',l:'Gần mộ'},
               {v:'gan_nghia_trang',l:'Gần nghĩa trang'},
               {v:'tru_dien',l:'Trụ điện trước nhà'},{v:'ho_ga',l:'Hố ga trước cổng'},
@@ -2233,20 +2247,20 @@ function renderValuation() {
   // Dòng dữ liệu chuẩn: label trái 14px, value phải, có border-bottom ngăn dòng
   const row = (label, value, opts={}) => `
     <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;${opts.noBorder?'':'border-bottom:1px solid #f0f0f0;'}">
-      <span style="font-size:14px;color:#1a1a1a;">${label}</span>
-      <span style="font-size:${opts.size||16}px;font-weight:700;color:${opts.color||'#1a1a1a'};">${value}</span>
+      <span style="font-size:14px;color:#000000;">${label}</span>
+      <span style="font-size:14px;color:#000000;">${value}</span>
     </div>`;
   // Dòng phụ nhỏ, không border, màu xám — dùng cho ghi chú dưới 1 dòng chính
   const subRow = (label, value) => `
     <div style="display:flex;justify-content:space-between;padding:2px 0 8px;">
       <span style="font-size:12px;color:#888;">↳ ${label}</span>
-      <span style="font-size:12px;font-weight:600;color:#888;">${value}</span>
+      <span style="font-size:12px;color:#888;">${value}</span>
     </div>`;
-  // Dòng kết quả cuối card — nổi bật nhất, tách biệt bằng border-top
+  // Dòng kết quả cuối card — tách biệt bằng border-top, vẫn đồng nhất font/màu theo yêu cầu
   const finalRow = (label, value, color) => `
     <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;margin-top:4px;border-top:1px solid #f0f0f0;">
-      <span style="font-size:14px;font-weight:700;color:#1a1a1a;">${label}</span>
-      <span style="font-size:20px;font-weight:800;color:${color};">${value}</span>
+      <span style="font-size:14px;color:#000000;">${label}</span>
+      <span style="font-size:14px;color:#000000;">${value}</span>
     </div>`;
   const sectionLabel = (text) => `<div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:#FF1744;margin-bottom:14px;">${text}</div>`;
 
@@ -2260,10 +2274,14 @@ function renderValuation() {
       <div class="content-pad">
 
         <!-- HERO -->
-        <div class="ai-hero">
-          <div class="ai-badge">ĐỊNH GIÁ</div>
-          <div class="ai-title">${hasResult ? r.verdictTong.text : 'Chưa đủ dữ liệu'}</div>
-          <div class="ai-desc">${esc(p.address)} · ${dateStr}</div>
+        <div class="hero-detail">
+          <div class="hero-detail-label">PHÂN TÍCH ĐỊNH GIÁ</div>
+          <div class="hero-detail-addr">${esc(p.address)}</div>
+          <div class="hero-detail-meta">
+            <span>${esc(p.area)}m²</span><span>·</span>
+            <span>${esc(p.width)}×${esc(p.length)}m</span><span>·</span>
+            <span>${esc(p.floors)} tầng</span>
+          </div>
           ${hasResult ? `
           <div class="hero-prices">
             <div class="hero-price-item">
@@ -2290,19 +2308,20 @@ function renderValuation() {
         <div class="card">
           ${sectionLabel('KẾT LUẬN')}
           ${row('Giá chủ chào', fmtTy(parseFloat(p.askingPrice)))}
-          ${row('Giá trị thị trường', fmtTy(r.tongGiaTriThiTruong), {size:20, color:'#1a1a1a'})}
-          ${finalRow('Chênh lệch', (r.chenhLechPhanTram>0?'+':'')+fmtTy(Math.abs(r.chenhLechTien))+' ('+(r.chenhLechPhanTram>0?'+':'')+r.chenhLechPhanTram+'%)', vColor)}
+          ${row('Giá trị thị trường', fmtTy(r.tongGiaTriThiTruong))}
+          ${row('Biên độ giá', (r.chenhLechPhanTram>0?'+':'')+fmtTy(Math.abs(r.chenhLechTien))+' ('+(r.chenhLechPhanTram>0?'+':'')+r.chenhLechPhanTram+'%)')}
+          ${finalRow('Nhận định', r.verdictTong.text, vColor)}
         </div>
 
         <!-- GIÁ TRỊ ĐẤT -->
         <div class="card">
           ${sectionLabel('GIÁ TRỊ ĐẤT')}
-          ${row('Diện tích đất', r.dtCongNhan + (r.dtKhongCongNhan>0?' + '+r.dtKhongCongNhan+' (chưa CN)':'') + ' m²', {size:15})}
-          ${row('Đơn giá thị trường', r.giaTT + ' tr/m²', {size:15})}
+          ${row('Diện tích đất', r.dtCongNhan + (r.dtKhongCongNhan>0?' + '+r.dtKhongCongNhan+' (chưa CN)':'') + ' m²')}
+          ${row('Đơn giá thị trường', r.giaTT + ' tr/m²')}
           ${r.donGiaChuNha > 0 ? subRow('Chủ rao tương đương', r.donGiaChuNha.toFixed(0)+' tr/m²') : ''}
-          ${row('Giá trị đất cơ bản', fmtTy(r.giaDatCoBanThiTruong), {size:15})}
-          ${r.issueDetails.map(i => row('Điều chỉnh: '+i.label, (i.pct>0?'+':'')+i.pct+'%', {size:14, color: i.pct<0?'#FF1744':'#2E7D32'})).join('')}
-          ${r.shapePct !== 0 ? row('Điều chỉnh: '+shapeLabel(p.shape), (r.shapePct>0?'+':'')+r.shapePct+'%', {size:14, color: r.shapePct<0?'#FF1744':'#2E7D32'}) : ''}
+          ${row('Giá trị đất cơ bản', fmtTy(r.giaDatCoBanThiTruong))}
+          ${r.issueDetails.map(i => row('Điều chỉnh: '+i.label, (i.pct>0?'+':'')+i.pct+'%')).join('')}
+          ${r.shapePct !== 0 ? row('Điều chỉnh: '+shapeLabel(p.shape), (r.shapePct>0?'+':'')+r.shapePct+'%') : ''}
           ${finalRow('Giá trị đất sau điều chỉnh', fmtTy(r.giaDatThiTruongSauDieuChinh), '#2E7D32')}
           ${r.dtMismatch ? `<div style="margin-top:10px;font-size:12px;color:#B45309;">⚠️ DT công nhận + chưa CN (${r.dtCheck}m²) chưa khớp DT thực tế</div>` : ''}
         </div>
@@ -2310,19 +2329,19 @@ function renderValuation() {
         <!-- GIÁ TRỊ NHÀ -->
         <div class="card">
           ${sectionLabel('GIÁ TRỊ NHÀ')}
-          ${row('Diện tích sàn xây dựng', r.sanXD + ' m²', {size:15})}
-          ${row('Đơn giá xây dựng', r.donGiaXD + ' tr/m²', {size:15})}
-          ${row('Giá trị xây dựng mới', fmtTy(r.giaTriXayDungMoi), {size:15})}
-          ${row('Hiện trạng ('+hienTrangLabel(r.hienTrang)+')', '×'+(r.heSoHienTrang*100).toFixed(0)+'%', {size:15})}
-          ${r.khauTruHoanCong > 0 ? row('Khấu trừ hoàn công', '−'+fmtTy(r.khauTruHoanCong), {size:14, color:'#FF1744'}) : ''}
-          ${r.giaTriNoiThatSauKhauHao > 0 ? row('Nội thất sau khấu hao', '+'+fmtTy(r.giaTriNoiThatSauKhauHao), {size:14, color:'#2E7D32'}) : ''}
+          ${row('Diện tích sàn xây dựng', r.sanXD + ' m²')}
+          ${row('Đơn giá xây dựng', r.donGiaXD + ' tr/m²')}
+          ${row('Giá trị xây dựng mới', fmtTy(r.giaTriXayDungMoi))}
+          ${row('Hiện trạng ('+hienTrangLabel(r.hienTrang)+')', '×'+(r.heSoHienTrang*100).toFixed(0)+'%')}
+          ${r.khauTruHoanCong > 0 ? row('Khấu trừ hoàn công', '−'+fmtTy(r.khauTruHoanCong)) : ''}
+          ${r.giaTriNoiThatSauKhauHao > 0 ? row('Nội thất sau khấu hao', '+'+fmtTy(r.giaTriNoiThatSauKhauHao)) : ''}
           ${finalRow('Giá trị nhà sau điều chỉnh', fmtTy(r.giaTriNhaSauDieuChinh), '#2E7D32')}
         </div>
 
         <!-- ĐỀ XUẤT TRẢ GIÁ -->
         <div class="card" style="border:1px solid #eee;border-left:1.5px solid #FF1744;">
           ${sectionLabel('ĐỀ XUẤT TRẢ GIÁ')}
-          ${row('Giá mở đầu', fmtTy(r.openingOffer), {size:16})}
+          ${row('Giá mở đầu', fmtTy(r.openingOffer))}
           ${finalRow('Giá mục tiêu', fmtTy(r.targetDeal), '#FF1744')}
         </div>
 
@@ -2357,10 +2376,14 @@ function renderAI() {
         <div class="topbar-spacer"></div>
       </div>
       <div class="content-pad">
-        <div class="ai-hero">
-          <div class="ai-badge">+AI ANALYSIS</div>
-          <div class="ai-title">Chiến lược chuyên sâu</div>
-          <div class="ai-desc">${esc(p.address)}</div>
+        <div class="hero-detail">
+          <div class="hero-detail-label">+AI ANALYSIS</div>
+          <div class="hero-detail-addr">${esc(p.address)}</div>
+          <div class="hero-detail-meta">
+            <span>${esc(p.area)}m²</span><span>·</span>
+            <span>${esc(p.width)}×${esc(p.length)}m</span><span>·</span>
+            <span>${esc(p.floors)} tầng</span>
+          </div>
         </div>
         
         ${state.aiLoading ? `
@@ -2425,7 +2448,7 @@ function renderAI() {
               <span style="font-size:14px;color:#000000;">${esc(state.aiResult.negotiation.redLine||'')}</span>
             </div>
             <div style="padding:10px 0 4px;">
-              <div style="font-size:12px;opacity:0.5;margin-bottom:6px;">TÂM LÝ CHỦ NHÀ</div>
+              <div style="font-size:12px;color:#000000;margin-bottom:6px;">TÂM LÝ CHỦ NHÀ</div>
               <div style="font-size:14px;color:#000000;line-height:1.6;">${esc(state.aiResult.negotiation.sellerPsychology||'')}</div>
             </div>
           </div>
@@ -2445,7 +2468,7 @@ function renderAI() {
             </div>
             ${state.aiResult.marketContext.comparables ? `
             <div style="padding:8px 0;">
-              <div style="font-size:12px;color:#888;margin-bottom:6px;">CĂN TƯƠNG ĐƯƠNG</div>
+              <div style="font-size:12px;color:#000000;margin-bottom:6px;">CĂN TƯƠNG ĐƯƠNG</div>
               <div style="font-size:14px;color:#000000;line-height:1.6;">${esc(state.aiResult.marketContext.comparables)}</div>
             </div>` : ''}
           </div>
@@ -2456,11 +2479,11 @@ function renderAI() {
           <div class="card">
             <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:#FF1744;margin-bottom:14px;">ĐIỂM MẠNH & LƯU Ý</div>
             ${(state.aiResult.sellingPoints && state.aiResult.sellingPoints.length > 0) ? `
-            <div style="font-size:12px;color:#888;margin-bottom:8px;">ĐIỂM MẠNH</div>
+            <div style="font-size:12px;color:#000000;margin-bottom:8px;">ĐIỂM MẠNH</div>
             ${state.aiResult.sellingPoints.map(function(s){ return `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;"><span style="color:#000000;flex-shrink:0;font-size:14px;">✓</span><span style="font-size:14px;color:#000000;line-height:1.5;">${esc(s)}</span></div>`; }).join('')}
             ` : ''}
             ${(state.aiResult.risks && state.aiResult.risks.length > 0) ? `
-            <div style="font-size:12px;color:#888;margin-bottom:8px;margin-top:${(state.aiResult.sellingPoints && state.aiResult.sellingPoints.length > 0)?'16px':'0'};">LƯU Ý</div>
+            <div style="font-size:12px;color:#000000;margin-bottom:8px;margin-top:${(state.aiResult.sellingPoints && state.aiResult.sellingPoints.length > 0)?'16px':'0'};">LƯU Ý</div>
             ${state.aiResult.risks.map(function(r){ return `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;"><span style="color:#000000;flex-shrink:0;font-size:14px;">!</span><span style="font-size:14px;color:#000000;line-height:1.5;">${esc(r)}</span></div>`; }).join('')}
             ` : ''}
           </div>
@@ -2479,11 +2502,11 @@ function renderAI() {
               <div style="font-size:14px;color:#000000;line-height:1.6;">${esc(state.aiResult.conclusion.reason)}</div>
             </div>` : ''}
             <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">
-              <div style="font-size:12px;color:#888;margin-bottom:4px;">CHO KHÁCH MUA Ở</div>
+              <div style="font-size:12px;color:#000000;margin-bottom:4px;">CHO KHÁCH MUA Ở</div>
               <div style="font-size:14px;color:#000000;line-height:1.5;">${esc(state.aiResult.conclusion.forBuyer||'')}</div>
             </div>
             <div style="padding:8px 0;">
-              <div style="font-size:12px;color:#888;margin-bottom:4px;">CHO NHÀ ĐẦU TƯ</div>
+              <div style="font-size:12px;color:#000000;margin-bottom:4px;">CHO NHÀ ĐẦU TƯ</div>
               <div style="font-size:14px;color:#000000;line-height:1.5;">${esc(state.aiResult.conclusion.forInvestor||'')}</div>
             </div>
           </div>
@@ -2681,7 +2704,6 @@ Lưu ý: huong_cua_chinh một trong (Đông, Tây, Nam, Bắc, Đông Nam, Đô
     if (extracted.yeu_to_ngoai_vi && extracted.yeu_to_ngoai_vi.length > 0) {
       const ISSUE_KEYWORDS = [
         { kw: ['chùa'], code: 'gan_chua' },
-        { kw: ['nhà thờ'], code: 'gan_nha_tho' },
         { kw: ['đình', 'miếu'], code: 'gan_dinh_mieu' },
         { kw: ['mộ'], code: 'gan_mo' },
         { kw: ['nghĩa trang'], code: 'gan_nghia_trang' },
@@ -2765,7 +2787,7 @@ function emptyCustomer() {
 }
 
 function statusLabel(s) {
-  return { hot:'🔥 Nóng', watching:'👀 Đang xem', cold:'❄️ Lạnh', closed:'✅ Đã chốt' }[s] || s;
+  return { hot:'🔥 Nóng', watching:'👀 Tham khảo', cold:'❄️ Lạnh', closed:'✅ Đã chốt' }[s] || s;
 }
 function statusColor(s) {
   return { hot:'#FF1744', watching:'#B45309', cold:'#1565C0', closed:'#2E7D32' }[s] || '#888';
@@ -3085,7 +3107,7 @@ function renderCustomerForm() {
       <div class="f-select-wrap" style="margin-top:20px;">
         <span class="field-label">Trạng thái</span>
         <select class="input" onchange="updateCustomerForm('status', this.value)">
-          ${[{v:'hot',l:'🔥 Nóng — Cần mua gấp'},{v:'watching',l:'👀 Đang xem — Chưa quyết'},{v:'cold',l:'❄️ Lạnh — Chưa cần ngay'},{v:'closed',l:'✅ Đã chốt'}]
+          ${[{v:'hot',l:'🔥 Nóng — Cần mua gấp'},{v:'watching',l:'👀 Tham khảo — Chưa quyết'},{v:'cold',l:'❄️ Lạnh — Chưa cần ngay'},{v:'closed',l:'✅ Đã chốt'}]
             .map(o=>`<option value="${o.v}" ${f.status===o.v?'selected':''}>${o.l}</option>`).join('')}
         </select>
       </div>
@@ -3183,7 +3205,11 @@ function renderCustomerDetail() {
           <div style="background:white;width:100%;border-radius:20px 20px 0 0;padding:20px 16px 40px;max-height:85vh;display:flex;flex-direction:column;">
             <div style="font-size:15px;font-weight:700;margin-bottom:12px;">Ghi nhà đã gửi khách xem</div>
             <input class="input" type="text" placeholder="Tìm theo địa chỉ..." value="${state.sendModalSearch||''}"
+              list="address-suggestions-modal"
               oninput="setState({sendModalSearch:this.value})" style="margin-bottom:12px;flex-shrink:0;" />
+            <datalist id="address-suggestions-modal">
+              ${addressSuggestions().map(s => `<option value="${esc(s)}">`).join('')}
+            </datalist>
             <div style="overflow-y:auto;margin-bottom:16px;flex:1;">
               ${(() => {
                 const q = (state.sendModalSearch||'').toLowerCase().trim();
