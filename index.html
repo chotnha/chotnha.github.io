@@ -886,16 +886,18 @@ function raisePriceThumb(el) {
 }
 
 function syncPriceSlider(el, which) {
-  const inputs = el.parentElement.querySelectorAll('input[type="range"]');
+  const container = el.parentElement;
+  const inputs = container.querySelectorAll('input[type="range"]');
   const minInput = inputs[0], maxInput = inputs[1];
   let minVal = parseInt(minInput.value), maxVal = parseInt(maxInput.value);
   if (which === 'min' && minVal > maxVal) { minInput.value = maxVal; minVal = maxVal; }
   if (which === 'max' && maxVal < minVal) { maxInput.value = minVal; maxVal = minVal; }
   const priceMin = sliderToPrice(minVal);
   const priceMax = sliderToPrice(maxVal);
-  const display = el.closest('div[style*="border-radius:14px"]').querySelector('#price-range-display');
+  const wrap = container.parentElement;
+  const display = wrap.querySelector('#price-range-display');
   if (display) display.textContent = fmtPriceRange(priceMin, priceMax);
-  const track = el.closest('div[style*="border-radius:14px"]').querySelector('#price-range-track');
+  const track = container.querySelector('#price-range-track');
   if (track) {
     track.style.left = priceToPct(priceMin) + '%';
     track.style.right = (100 - priceToPct(priceMax)) + '%';
@@ -1837,8 +1839,8 @@ function renderList() {
             <span id="price-range-display" style="font-size:13px;color:#1a1a1a;">${fmtPriceRange(dispMin, dispMax)}</span>
           </div>
           <div style="position:relative;height:16px;">
-            <div style="position:absolute;top:7.25px;left:0;right:0;height:1.5px;background:#E8E8E8;border-radius:1px;"></div>
-            <div id="price-range-track" style="position:absolute;top:7.25px;height:1.5px;background:#2E7D32;border-radius:1px;
+            <div style="position:absolute;top:7.25px;left:0;right:0;height:1.5px;background:#FFE0E0;border-radius:1px;"></div>
+            <div id="price-range-track" style="position:absolute;top:7.25px;height:1.5px;background:#FF1744;border-radius:1px;
               left:${priceToPct(dispMin)}%;right:${100-priceToPct(dispMax)}%;"></div>
             <input type="range" class="dual-range" min="0" max="1000" step="1" value="${priceToSlider(dispMin)}"
               oninput="syncPriceSlider(this,'min')"
@@ -2781,6 +2783,7 @@ function emptyCustomer() {
     district: '', budgetMax: '',
     minArea: '', minWidth: '',
     direction: '', alleyType: '', hienTrang: '',
+    priority: '', exclude: '',
     notes: '',
     status: 'watching', createdAt: Date.now()
   };
@@ -2850,6 +2853,17 @@ function feedbackLabel(f) {
 }
 function feedbackColor(f) {
   return { liked:'#2E7D32', pending:'#B45309', rejected:'#FF1744' }[f] || '#888';
+}
+
+async function updateCustomerStatus(customerId, newStatus) {
+  const customer = state.customers.find(c => c.id === customerId);
+  if (!customer) return;
+  const updated = { ...customer, status: newStatus };
+  const newCustomers = state.customers.map(c => c.id === customerId ? updated : c);
+  state.customers = newCustomers;
+  state.showCustomerStatusMenu = null;
+  await saveCustomersToFirestore(newCustomers);
+  render();
 }
 
 async function deleteSentHistory(customerId, idx) {
@@ -3007,17 +3021,26 @@ function renderCustomers() {
       style="padding:5px 12px;border-radius:20px;border:1.5px solid ${active?'#FF1744':'#E8E8E8'};background:${active?'#FF1744':'white'};color:${active?'white':'#1a1a1a'};font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">${label}</button>`;
   }).join('');
 
+  const STATUS_OPTIONS = [{v:'hot',l:'🔥 Nóng'},{v:'watching',l:'👀 Tham khảo'},{v:'cold',l:'❄️ Lạnh'},{v:'closed',l:'✅ Đã chốt'}];
+
   const cards = paged.map(c => `
-    <div class="card" style="margin-bottom:12px;cursor:pointer;" onclick="openCustomer('${c.id}')">
+    <div class="card" style="margin-bottom:12px;cursor:pointer;position:relative;" onclick="openCustomer('${c.id}')">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div style="flex:1;">
           <div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:4px;">${esc(c.name)}</div>
-          <div style="font-size:13px;color:#555;margin-bottom:4px;">${esc(c.phone||'')}${c.phone && c.budgetMax ? ' · ' : ''}${c.budgetMax ? 'Tối đa '+c.budgetMax+' tỷ' : ''}</div>
-          <div style="font-size:12px;color:#888;">${esc(c.district||'')}${c.district && c.minArea ? ' · ' : ''}${c.minArea ? 'DT ≥ '+c.minArea+'m²' : ''}${c.alleyType ? ' · '+alleyLabel(c.alleyType) : ''}</div>
+          <div style="font-size:13px;color:#1a1a1a;margin-bottom:4px;">${esc(c.phone||'')}${c.phone && c.budgetMax ? ' · ' : ''}${c.budgetMax ? 'Tối đa '+c.budgetMax+' tỷ' : ''}</div>
+          <div style="font-size:12px;color:#1a1a1a;">${esc(c.district||'')}${c.district && c.minArea ? ' · ' : ''}${c.minArea ? 'DT ≥ '+c.minArea+'m²' : ''}${c.alleyType ? ' · '+alleyLabel(c.alleyType) : ''}</div>
         </div>
-        <div style="font-size:12px;font-weight:700;color:${statusColor(c.status)};white-space:nowrap;margin-left:8px;">${statusLabel(c.status)}</div>
+        <div style="position:relative;flex-shrink:0;margin-left:8px;">
+          <button onclick="event.stopPropagation();setState({showCustomerStatusMenu: state.showCustomerStatusMenu==='${c.id}'?null:'${c.id}'})"
+            style="background:none;border:none;font-size:12px;font-weight:700;color:${statusColor(c.status)};white-space:nowrap;cursor:pointer;padding:0;">${statusLabel(c.status)} ▾</button>
+          ${state.showCustomerStatusMenu === c.id ? `
+          <div onclick="event.stopPropagation()" style="position:absolute;top:22px;right:0;background:white;border:1px solid #E8E8E8;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.12);z-index:10;min-width:140px;overflow:hidden;">
+            ${STATUS_OPTIONS.map(o => `<div onclick="updateCustomerStatus('${c.id}','${o.v}')" style="padding:10px 14px;font-size:13px;color:${o.v===c.status?statusColor(o.v):'#1a1a1a'};font-weight:${o.v===c.status?'700':'400'};cursor:pointer;border-bottom:1px solid #f5f5f5;">${o.l}</div>`).join('')}
+          </div>` : ''}
+        </div>
       </div>
-      ${c.notes ? `<div style="font-size:12px;color:#888;margin-top:8px;padding-top:8px;border-top:1px solid #f5f5f5;">${esc(c.notes.substring(0,80))}${c.notes.length>80?'...':''}</div>` : ''}
+      ${c.notes ? `<div style="font-size:12px;color:#1a1a1a;margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">${esc(c.notes.substring(0,80))}${c.notes.length>80?'...':''}</div>` : ''}
     </div>
   `).join('');
 
@@ -3037,10 +3060,10 @@ function renderCustomers() {
     <div style="display:flex;gap:8px;padding:10px 16px;border-bottom:1px solid #E8E8E8;overflow-x:auto;">${statusBtns}</div>
     <div class="content-pad" style="padding-top:16px;">
       ${filtered.length === 0 ? `
-        <div style="text-align:center;padding:60px 20px;color:#888;">
+        <div class="empty-state">
           <div style="font-size:40px;margin-bottom:12px;">👥</div>
-          <div style="font-size:16px;font-weight:600;margin-bottom:8px;">${fStatus ? 'Không có khách ở trạng thái này' : 'Chưa có khách hàng'}</div>
-          <div style="font-size:14px;">Bấm + để thêm khách hàng mới</div>
+          <div style="font-size:16px;font-weight:600;margin-bottom:8px;color:#1a1a1a;">${fStatus ? 'Không có khách ở trạng thái này' : 'Chưa có khách hàng'}</div>
+          <div style="font-size:14px;color:#1a1a1a;">Bấm + để thêm khách hàng mới</div>
         </div>
       ` : cards + pagination}
     </div>
@@ -3078,7 +3101,7 @@ function renderCustomerForm() {
       </div>
 
       <div class="f-select-wrap" style="margin-top:20px;">
-        <span class="field-label">Hướng cửa chính</span>
+        <span class="field-label">Hướng nhà</span>
         <select class="input" onchange="updateCustomerForm('direction', this.value)">
           <option value="">— Không yêu cầu —</option>
           ${['Đông','Tây','Nam','Bắc','Đông Nam','Đông Bắc','Tây Nam','Tây Bắc']
@@ -3104,17 +3127,19 @@ function renderCustomerForm() {
         </select>
       </div>
 
-      <div class="f-select-wrap" style="margin-top:20px;">
-        <span class="field-label">Trạng thái</span>
-        <select class="input" onchange="updateCustomerForm('status', this.value)">
-          ${[{v:'hot',l:'🔥 Nóng — Cần mua gấp'},{v:'watching',l:'👀 Tham khảo — Chưa quyết'},{v:'cold',l:'❄️ Lạnh — Chưa cần ngay'},{v:'closed',l:'✅ Đã chốt'}]
-            .map(o=>`<option value="${o.v}" ${f.status===o.v?'selected':''}>${o.l}</option>`).join('')}
-        </select>
+      <div style="margin-top:20px;">
+        <label class="field-label">Ưu tiên</label>
+        <textarea class="textarea" style="margin-top:8px;min-height:90px;" placeholder="Vd: Gần trường học, có sân để xe..." oninput="updateCustomerForm('priority', this.value)">${esc(f.priority||'')}</textarea>
       </div>
 
       <div style="margin-top:20px;">
-        <label class="field-label">Yêu cầu khác</label>
-        <textarea class="textarea" style="margin-top:8px;min-height:180px;" placeholder="Vd: Cần đậu xe trong nhà, gần trường, không ở gần chùa..." oninput="updateCustomerForm('notes', this.value)">${esc(f.notes||'')}</textarea>
+        <label class="field-label">Loại trừ</label>
+        <textarea class="textarea" style="margin-top:8px;min-height:90px;" placeholder="Vd: Không gần chùa, không nhà hẻm cụt..." oninput="updateCustomerForm('exclude', this.value)">${esc(f.exclude||'')}</textarea>
+      </div>
+
+      <div style="margin-top:20px;">
+        <label class="field-label">Ghi chú thêm</label>
+        <textarea class="textarea" style="margin-top:8px;min-height:140px;" placeholder="Vd: Cần đậu xe trong nhà, gần trường, không ở gần chùa..." oninput="updateCustomerForm('notes', this.value)">${esc(f.notes||'')}</textarea>
       </div>
 
     </div>
@@ -3168,7 +3193,7 @@ function renderCustomerDetail() {
           <span class="info-val">${esc(c.minWidth)} m</span>
         </div>` : ''}
         ${c.direction ? `<div class="info-row">
-          <span class="info-lbl">Hướng cửa chính</span>
+          <span class="info-lbl">Hướng nhà</span>
           <span class="info-val">${esc(c.direction)}</span>
         </div>` : ''}
         ${c.alleyType ? `<div class="info-row">
@@ -3179,11 +3204,18 @@ function renderCustomerDetail() {
           <span class="info-lbl">Hiện trạng nhà</span>
           <span class="info-val">${hienTrangLabel(c.hienTrang)}</span>
         </div>` : ''}
-        ${c.notes ? `<div style="padding:14px 0 2px;border-top:1px solid #E8E8E8;margin-top:2px;">
-          <div style="font-size:12px;color:#888;margin-bottom:4px;">YÊU CẦU KHÁC</div>
-          <div class="notes-text">${esc(c.notes)}</div>
-        </div>` : ''}
       </div>
+
+      ${(c.priority || c.exclude) ? `<div class="card" style="margin-bottom:16px;">
+        ${c.priority ? `<div style="${c.exclude?'padding-bottom:14px;border-bottom:1px solid #E8E8E8;margin-bottom:14px;':''}">
+          <div style="font-size:12px;color:#000000;margin-bottom:4px;">ƯU TIÊN</div>
+          <div class="notes-text">${esc(c.priority)}</div>
+        </div>` : ''}
+        ${c.exclude ? `<div>
+          <div style="font-size:12px;color:#000000;margin-bottom:4px;">LOẠI TRỪ</div>
+          <div class="notes-text">${esc(c.exclude)}</div>
+        </div>` : ''}
+      </div>` : ''}
 
       <div class="card" style="margin-bottom:16px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -3244,6 +3276,11 @@ function renderCustomerDetail() {
           <div style="font-size:12px;color:#888;">${h.date||''}${h.note ? ' · '+esc(h.note) : ''}</div>
         </div>
         `).join('')}
+      </div>` : ''}
+
+      ${c.notes ? `<div class="card" style="margin-bottom:16px;">
+        <div style="font-size:12px;color:#000000;margin-bottom:4px;">GHI CHÚ THÊM</div>
+        <div class="notes-text">${esc(c.notes)}</div>
       </div>` : ''}
 
     </div>
