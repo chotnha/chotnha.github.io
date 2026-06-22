@@ -701,7 +701,9 @@ select.input:invalid, select.input option[value=""] {
 </head>
 <body>
 
-<div id="app"></div>
+<div id="app">
+  <div class="loading-screen"><div class="spinner"></div><div style="font-size:14px;color:#888;">Đang tải...</div></div>
+</div>
 
 
 <!-- Firebase SDK -->
@@ -825,8 +827,10 @@ async function setUserApproval(uid, status) {
 auth.onAuthStateChanged(async function(user) {
   if (user) {
     currentUser = user;
-    state.authLoading = false;
+    state.authLoading = true;
+    render();
     const status = await checkAndSetupApproval(user);
+    state.authLoading = false;
     if (status === 'approved') {
       state.screen = 'home';
       listenToFirestore();
@@ -1142,14 +1146,17 @@ function calculateValuation(p) {
   const adjSum = adjustments.reduce((s,a)=>s+a.value, 0);
 
   // ═══ D. TỔNG GIÁ TRỊ TÀI SẢN ═══
-  const tongGiaTriChuNha = +(giaDatChuNhaSauDieuChinh + giaTriNhaSauDieuChinh).toFixed(3);
+  // tongGiaTriChuNha chỉ có ý nghĩa khi có askingPrice thật; nếu không, giaDatChuNhaSauDieuChinh được suy ngược từ 0 → vô nghĩa
+  const tongGiaTriChuNha = askingPrice > 0 ? +(giaDatChuNhaSauDieuChinh + giaTriNhaSauDieuChinh).toFixed(3) : null;
   const tongGiaTriThiTruong = +(giaDatThiTruongSauDieuChinh + giaTriNhaSauDieuChinh).toFixed(3);
   // Tương thích tên cũ
   const estimatedValue = tongGiaTriThiTruong;
 
   // ═══ E. CHÊNH LỆCH ═══
-  const chenhLechTien = +(tongGiaTriChuNha - tongGiaTriThiTruong).toFixed(3);
-  const chenhLechPhanTram = (tongGiaTriChuNha && tongGiaTriThiTruong)
+  // Chỉ tính khi có askingPrice thật (>0); nếu không nhập, các giá trị "theo Chủ nhà" đều vô nghĩa
+  const coGiaChao = askingPrice > 0;
+  const chenhLechTien = coGiaChao ? +(tongGiaTriChuNha - tongGiaTriThiTruong).toFixed(3) : null;
+  const chenhLechPhanTram = (coGiaChao && tongGiaTriThiTruong)
     ? +((tongGiaTriChuNha / tongGiaTriThiTruong - 1) * 100).toFixed(1) : null;
   // Tương thích tên cũ
   const chenhLechTongPct = chenhLechPhanTram;
@@ -1157,7 +1164,9 @@ function calculateValuation(p) {
 
   // ═══ F. ĐÁNH GIÁ GIÁ CHỦ NHÀ (5 mức) ═══
   let verdictTong;
-  if (chenhLechPhanTram === null) {
+  if (!coGiaChao) {
+    verdictTong = { type:'mid', text:'Chưa nhập giá chủ chào' };
+  } else if (chenhLechPhanTram === null) {
     verdictTong = { type:'mid', text:'Chưa đủ dữ liệu' };
   } else if (chenhLechPhanTram < -10) {
     verdictTong = { type:'good', text:'🟢 Giá tốt' };
@@ -1173,14 +1182,20 @@ function calculateValuation(p) {
   const verdict = verdictTong;
   const verdictDat = verdictTong;
   // So sánh đơn giá đất riêng (để tương thích hiển thị cũ)
-  const chenhLechDatPct = (donGiaChuNha && giaTT) ? +((donGiaChuNha - giaTT) / giaTT * 100).toFixed(1) : null;
-  const chenhLechDatTien = (donGiaChuNha && giaTT && area) ? +((donGiaChuNha - giaTT) * area / 1000).toFixed(3) : null;
+  const chenhLechDatPct = (coGiaChao && donGiaChuNha && giaTT) ? +((donGiaChuNha - giaTT) / giaTT * 100).toFixed(1) : null;
+  const chenhLechDatTien = (coGiaChao && donGiaChuNha && giaTT && area) ? +((donGiaChuNha - giaTT) * area / 1000).toFixed(3) : null;
 
   // ═══ G. GIÁ ĐÀM PHÁN ═══
+  // Không có giá chủ chào → không có gì để đàm phán, chỉ đề xuất giá bán dựa trên thị trường
   let openingOffer, targetDeal, damPhanLabel, damPhanNote;
   const chenhPct = chenhLechPhanTram || 0;
 
-  if (askingPrice > 0 && tongGiaTriThiTruong > 0 && chenhPct <= 0) {
+  if (!coGiaChao) {
+    openingOffer = null;
+    targetDeal = null;
+    damPhanLabel = '💡 Giá đề xuất bán';
+    damPhanNote = 'Chưa nhập giá chủ chào — đây là mức giá đề xuất dựa trên giá trị thị trường thực tế của tài sản.';
+  } else if (askingPrice > 0 && tongGiaTriThiTruong > 0 && chenhPct <= 0) {
     openingOffer = +(askingPrice * 0.97).toFixed(3);
     targetDeal   = +(askingPrice * 0.99).toFixed(3);
     damPhanLabel = '🟢 Hàng tốt — nên chốt nhanh';
@@ -1237,7 +1252,7 @@ function calculateValuation(p) {
     giaTriNoiThatGoc, heSoNoiThat, giaTriNoiThatSauKhauHao, furnitureValue,
     // Tổng
     adjustments, adjSum, estimatedValue, verdict, verdictDat, verdictTong,
-    tongGiaTriChuNha, tongGiaTriThiTruong,
+    tongGiaTriChuNha, tongGiaTriThiTruong, coGiaChao,
     chenhLechTien, chenhLechPhanTram,
     chenhLechDatPct, chenhLechDatTien,
     chenhLechTongPct, chenhLechTongTien,
@@ -1260,18 +1275,21 @@ async function callGeminiAI(property) {
 
   try {
     const r2 = calculateValuation(property);
-    const prompt = `Bạn là môi giới BĐS kỳ cựu 20 năm tại TP.HCM, am hiểu thị trường từng quận, từng hẻm. Bạn đang hỗ trợ đồng nghiệp phân tích một căn nhà để tư vấn khách mua. Hãy phân tích như một người trong nghề — thực tế, cụ thể, có thể áp dụng ngay.
 
-=== THÔNG TIN CĂN NHÀ ===
-Địa chỉ: ${property.address}
+    const thongTinCanNha = `Địa chỉ: ${property.address}
 Diện tích: ${property.area}m² (${property.width}m × ${property.length}m) | ${property.floors} tầng | Hướng: ${property.direction||'chưa rõ'}
 Vị trí: ${alleyLabel(property.alleyType)} | Hình dạng: ${shapeLabel(property.shape)} | Pháp lý: ${legalLabel(property.legal)}
 Hiện trạng: ${hienTrangLabel(property.hienTrang)} | Nội thất: ${furnitureTypeLabel(property.furnitureType||'khong')} | Yếu tố ngoại vi: ${(property.issues||[]).map(i=>issueLabel(i)).join(', ')||'không có'}
+Mô tả thực địa: ${property.notes||'không có'}`;
+
+    const prompt = r2.coGiaChao ? `Bạn là môi giới BĐS kỳ cựu 20 năm tại TP.HCM, am hiểu thị trường từng quận, từng hẻm. Bạn đang hỗ trợ đồng nghiệp phân tích một căn nhà để tư vấn khách mua. Hãy phân tích như một người trong nghề — thực tế, cụ thể, có thể áp dụng ngay.
+
+=== THÔNG TIN CĂN NHÀ ===
+${thongTinCanNha}
 Giá chủ chào: ${property.askingPrice} tỷ
 Giá đất khu vực (Biggee): ${property.giaTT} tr/m²
 Giá trị BĐS ước tính (hệ thống): ${r2.estimatedValue ? r2.estimatedValue.toFixed(2)+' tỷ (đất '+r2.giaTriDatSauLoi.toFixed(2)+' tỷ + nhà '+r2.giaTriNha.toFixed(2)+' tỷ)' : 'chưa đủ dữ liệu'}
 Đơn giá đất chủ đang tính: ${r2.donGiaRao} tr/m² (TT: ${property.giaTT} tr/m²)
-Mô tả thực địa: ${property.notes||'không có'}
 
 === YÊU CẦU PHÂN TÍCH ===
 Trả về JSON thuần, không markdown, không backtick:
@@ -1316,6 +1334,58 @@ NGUYÊN TẮC:
 - Số liệu cụ thể, không nói chung chung
 - Nói thẳng như đồng nghiệp nói với nhau, không hoa mỹ
 - openingOffer và targetPrice phải hợp lý với tâm lý chủ nhà
+- CHỈ trả về JSON thuần` : `Bạn là môi giới BĐS kỳ cựu 20 năm tại TP.HCM, am hiểu thị trường từng quận, từng hẻm. Đồng nghiệp đang nhờ bạn TƯ VẤN MỨC GIÁ NÊN CHÀO BÁN cho một căn nhà — CHƯA có giá chào từ chủ nhà, và bạn KHÔNG được tự bịa ra giá chủ chào hay tâm lý chủ nhà vì không có thông tin đó. Hãy phân tích như một người trong nghề — thực tế, cụ thể, có thể áp dụng ngay.
+
+=== THÔNG TIN CĂN NHÀ ===
+${thongTinCanNha}
+Giá đất khu vực (Biggee): ${property.giaTT ? property.giaTT+' tr/m²' : 'CHƯA CÓ — đây là dữ liệu quan trọng nhất còn thiếu'}
+Giá trị BĐS ước tính theo thị trường (hệ thống tính toán): ${(r2.tongGiaTriThiTruong && property.giaTT) ? r2.tongGiaTriThiTruong.toFixed(2)+' tỷ (đất '+r2.giaDatThiTruongSauDieuChinh.toFixed(2)+' tỷ + nhà '+r2.giaTriNha.toFixed(2)+' tỷ)' : 'KHÔNG TÍNH ĐƯỢC — thiếu giá đất khu vực, hệ thống chỉ tính được phần giá trị xây dựng ('+r2.giaTriNha.toFixed(2)+' tỷ), chưa gồm giá đất (chiếm phần lớn giá trị BĐS tại TP.HCM)'}
+
+=== YÊU CẦU PHÂN TÍCH ===
+Trả về JSON thuần, không markdown, không backtick:
+
+{
+  "summary": {
+    "verdict": "Định giá hoàn tất",
+    "quickNote": "1-2 câu nhận định thực tế về giá trị căn nhà này dựa trên đặc điểm và mô tả thực địa",
+    "liquidity": "Tốt / Trung bình / Thấp",
+    "valuationRange": "X.X – X.X tỷ"
+  },
+  "negotiation": {
+    "strategy": "Gợi ý chiến lược chào bán: nên rao giá nào, có nên để dư địa đàm phán cho khách mua không (1-2 câu)",
+    "openingOffer": "X.X tỷ (mức giá CHÀO BÁN đề xuất, có dư địa đàm phán)",
+    "targetPrice": "X.X tỷ (mức giá CHỐT BÁN kỳ vọng, sát giá trị thực)",
+    "redLine": "X.X tỷ (giá sàn không nên bán dưới mức này)",
+    "sellerPsychology": "Không áp dụng — chưa có giá chào từ chủ nhà"
+  },
+  "marketContext": {
+    "priceRange": "XXX–XXX triệu/m²",
+    "trend": "Tăng / Ổn định / Giảm",
+    "comparables": "1-2 căn tương đương khu vực và mức giá thực tế"
+  },
+  "risks": [
+    "Rủi ro cụ thể 1",
+    "Rủi ro cụ thể 2"
+  ],
+  "sellingPoints": [
+    "Điểm mạnh cụ thể để thuyết phục khách mua 1",
+    "Điểm mạnh cụ thể 2"
+  ],
+  "conclusion": {
+    "forBuyer": "Khuyến nghị ngắn gọn cho khách mua ở (nếu căn này được rao đúng giá đề xuất)",
+    "forInvestor": "Khuyến nghị cho nhà đầu tư",
+    "timeToDecide": "Khẩn cấp / Bình thường / Có thể chờ",
+    "reason": "Lý do cụ thể"
+  }
+}
+
+NGUYÊN TẮC:
+- TUYỆT ĐỐI không bịa ra giá chủ chào hay tâm lý chủ nhà — chưa có thông tin đó
+- Nếu phần "Giá trị BĐS ước tính" ghi KHÔNG TÍNH ĐƯỢC (thiếu giá đất khu vực): dựa vào kiến thức của bạn về giá đất thực tế tại khu vực/quận này (theo địa chỉ) để tự ước tính đơn giá đất hợp lý, rồi cộng với giá trị xây dựng đã cho để ra valuationRange — và phải ghi rõ trong quickNote rằng đây là ước tính dựa trên kiến thức thị trường chung, broker nên xác minh lại giá đất thực tế khu vực trước khi chào giá chính thức
+- openingOffer/targetPrice/redLine là 3 mức giá BÁN đề xuất, KHÔNG phải giá đàm phán mua
+- Dựa vào mô tả thực địa là nguồn quan trọng nhất để đánh giá điểm mạnh/yếu thực tế
+- Số liệu cụ thể, không nói chung chung
+- Nói thẳng như đồng nghiệp nói với nhau, không hoa mỹ
 - CHỈ trả về JSON thuần`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`, {
@@ -1891,7 +1961,7 @@ function renderList() {
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
 
   const cardsHtml = paged.map(p => {
-    const rCard = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
+    const rCard = p.giaTT ? calculateValuation(p) : null;
     const estCard = rCard ? rCard.estimatedValue : null;
     const valued = p.askingPrice && estCard;
     const diff = valued ? ((parseFloat(p.askingPrice) - estCard) / estCard * 100) : null;
@@ -1929,6 +1999,10 @@ function renderList() {
         </div>` : p.askingPrice ? `
         <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #f0f0f0;">
           <span style="color:#888;font-size:13px;">Giá bán: </span><span style="font-size:14px;font-weight:700;color:#FF1744;">${fmtTy(parseFloat(p.askingPrice))}</span>
+          <span style="font-size:11px;font-weight:700;color:${propStatusColor(p.propStatus||'active')};">${propStatusLabel(p.propStatus||'active')}</span>
+        </div>` : estCard ? `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #f0f0f0;">
+          <span style="color:#888;font-size:13px;">Giá đề xuất bán: </span><span style="font-size:14px;font-weight:700;color:#2E7D32;">${fmtTy(estCard)}</span>
           <span style="font-size:11px;font-weight:700;color:${propStatusColor(p.propStatus||'active')};">${propStatusLabel(p.propStatus||'active')}</span>
         </div>` : `
         <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #f0f0f0;">
@@ -2124,7 +2198,7 @@ function renderForm() {
 
         <div style="height:1px;background:#E8E8E8;margin:24px 0;"></div>
 
-        ${field('Giá chào (tỷ)', 'askingPrice', f.askingPrice, 'number', '9.5')}
+        ${field('Giá chào (tỷ) — không bắt buộc', 'askingPrice', f.askingPrice, 'number', '9.5')}
 
         <div class="row-2" style="margin-top:20px;">
           ${field('Giá đất thị trường (tr/m²)', 'giaTT', f.giaTT, 'number', '200')}
@@ -2397,7 +2471,7 @@ function renderValuation() {
   const r = calculateValuation(p);
   const dateStr = new Date().toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' });
   const vColor = r.verdictTong.type==='good'?'#2E7D32':r.verdictTong.type==='bad'?'#FF1744':r.verdictTong.type==='warn'?'#E65100':'#B45309';
-  const hasResult = r.chenhLechPhanTram !== null;
+  const hasResult = r.tongGiaTriThiTruong > 0;
 
   // Dòng dữ liệu chuẩn: label trái 14px, value phải, có border-bottom ngăn dòng
   const row = (label, value, opts={}) => `
@@ -2439,6 +2513,7 @@ function renderValuation() {
           </div>
           ${hasResult ? `
           <div class="hero-prices">
+            ${r.coGiaChao ? `
             <div class="hero-price-item">
               <div class="hero-price-lbl">Giá bán</div>
               <div class="hero-price-val" style="color:#FF1744;">${fmtTy(parseFloat(p.askingPrice))}</div>
@@ -2453,6 +2528,12 @@ function renderValuation() {
               <div class="hero-price-lbl">Chênh lệch</div>
               <div class="hero-price-val ${r.chenhLechPhanTram>5?'red':r.chenhLechPhanTram<-5?'green':''}">${(r.chenhLechPhanTram>0?'+':'')+r.chenhLechPhanTram}%</div>
             </div>
+            ` : `
+            <div class="hero-price-item">
+              <div class="hero-price-lbl">Giá đề xuất bán</div>
+              <div class="hero-price-val" style="color:#2E7D32;">${fmtTy(r.tongGiaTriThiTruong)}</div>
+            </div>
+            `}
           </div>
           ` : ''}
         </div>
@@ -2462,9 +2543,9 @@ function renderValuation() {
         <!-- KẾT LUẬN -->
         <div class="card">
           ${sectionLabel('KẾT LUẬN')}
-          ${row('Giá chủ chào', fmtTy(parseFloat(p.askingPrice)))}
+          ${r.coGiaChao ? row('Giá chủ chào', fmtTy(parseFloat(p.askingPrice))) : ''}
           ${row('Giá trị thị trường', fmtTy(r.tongGiaTriThiTruong))}
-          ${row('Biên độ giá', (r.chenhLechPhanTram>0?'+':'')+fmtTy(Math.abs(r.chenhLechTien))+' ('+(r.chenhLechPhanTram>0?'+':'')+r.chenhLechPhanTram+'%)')}
+          ${r.coGiaChao ? row('Biên độ giá', (r.chenhLechPhanTram>0?'+':'')+fmtTy(Math.abs(r.chenhLechTien))+' ('+(r.chenhLechPhanTram>0?'+':'')+r.chenhLechPhanTram+'%)') : ''}
           ${finalRow('Nhận định', r.verdictTong.text, vColor)}
         </div>
 
@@ -2493,11 +2574,17 @@ function renderValuation() {
           ${finalRow('Giá trị nhà sau điều chỉnh', fmtTy(r.giaTriNhaSauDieuChinh), '#2E7D32')}
         </div>
 
-        <!-- ĐỀ XUẤT TRẢ GIÁ -->
+        <!-- ĐỀ XUẤT TRẢ GIÁ / ĐỀ XUẤT BÁN -->
         <div class="card" style="border:1px solid #eee;border-left:1.5px solid #FF1744;">
+          ${r.coGiaChao ? `
           ${sectionLabel('ĐỀ XUẤT TRẢ GIÁ')}
           ${row('Giá mở đầu', fmtTy(r.openingOffer))}
           ${finalRow('Giá mục tiêu', fmtTy(r.targetDeal), '#FF1744')}
+          ` : `
+          ${sectionLabel('ĐỀ XUẤT GIÁ BÁN')}
+          ${finalRow('Giá đề xuất', fmtTy(r.tongGiaTriThiTruong), '#FF1744')}
+          <div style="font-size:12px;color:#888;margin-top:10px;">${esc(r.damPhanNote)}</div>
+          `}
         </div>
 
         ` : `
@@ -2974,6 +3061,15 @@ function statusLabel(s) {
 function statusColor(s) {
   return { hot:'#FF1744', watching:'#B45309', cold:'#1565C0', closed:'#2E7D32' }[s] || '#888';
 }
+// Danh sách quận/huyện TP.HCM (tên cũ quen thuộc) — loại Củ Chi, Cần Giờ theo yêu cầu
+const HCM_DISTRICTS = [
+  'Quận 1', 'Quận 3', 'Quận 4', 'Quận 5', 'Quận 6', 'Quận 7', 'Quận 8',
+  'Quận 10', 'Quận 11', 'Quận 12',
+  'Quận Bình Thạnh', 'Quận Phú Nhuận', 'Quận Gò Vấp', 'Quận Tân Bình', 'Quận Tân Phú', 'Quận Bình Tân',
+  'TP Thủ Đức',
+  'Huyện Bình Chánh', 'Huyện Hóc Môn', 'Huyện Nhà Bè'
+];
+
 function purposeLabel(s) {
   return { mua_o:'Mua ở', o_cho_thue:'Ở kết hợp cho thuê', cho_thue:'Cho thuê', dau_tu:'Đầu tư', tich_san:'Tích sản', chua_ro:'Chưa rõ' }[s] || s;
 }
@@ -3130,15 +3226,42 @@ async function matchCustomerAI(customerId) {
   const apiKey = getApiKey();
   if (!apiKey) { setState({ showApiModal: true }); return; }
 
-  nav('customer-match', { currentCustomerId: customerId, matchResult: null, matchLoading: true });
+  nav('customer-match', { currentCustomerId: customerId, matchResult: null, matchLoading: true, matchCandidateCount: null });
 
-  const propList = state.properties.slice(0, 15).map((p, i) => {
-    const r = (p.askingPrice && p.giaTT) ? calculateValuation(p) : null;
+  // Lọc thô bằng code trước khi gửi AI: loại nhà rõ ràng không phù hợp
+  // (sai quận hẳn, hoặc vượt ngân sách quá 20%) — phần còn lại gửi TOÀN BỘ cho AI, không cắt theo số đếm
+  const budgetMax = parseFloat(customer.budgetMax) || 0;
+  const districtKw = (customer.district || '').toLowerCase().trim();
+
+  const eligible = state.properties.filter(p => {
+    // Lọc ngân sách: chỉ loại khi CÓ giá rõ ràng (chào hoặc thị trường) và vượt quá 20%
+    if (budgetMax > 0) {
+      const r = p.giaTT ? calculateValuation(p) : null;
+      const gia = parseFloat(p.askingPrice) || (r ? r.tongGiaTriThiTruong : 0);
+      if (gia > 0 && gia > budgetMax * 1.2) return false;
+    }
+    // Lọc quận: chỉ loại khi khách có yêu cầu quận RÕ RÀNG và địa chỉ nhà CÓ ghi nhận
+    // nhưng hoàn toàn không chứa từ khóa đó — mơ hồ thì vẫn giữ lại để AI tự xét
+    if (districtKw && p.address) {
+      const addr = p.address.toLowerCase();
+      if (!addr.includes(districtKw)) return false;
+    }
+    return true;
+  });
+
+  // Nếu lọc quá tay làm mất hết kết quả, fallback dùng toàn bộ để không chặn người dùng
+  const candidateList = eligible.length > 0 ? eligible : state.properties;
+  state.matchCandidateCount = candidateList.length;
+  render();
+
+  const propList = candidateList.map((p, i) => {
+    const r = p.giaTT ? calculateValuation(p) : null;
+    const giaTriTT = r ? r.tongGiaTriThiTruong : null;
     return `Căn ${i+1}: ${p.address}
-  Giá: ${p.askingPrice||'chưa rõ'} tỷ | DT: ${p.area||'?'}m² | ${p.floors||'?'} tầng
+  Giá chào: ${p.askingPrice||'chưa rõ'} tỷ | DT: ${p.area||'?'}m² | ${p.floors||'?'} tầng
   Vị trí: ${alleyLabel(p.alleyType)} | Hướng: ${p.direction||'chưa rõ'}
   Pháp lý: ${legalLabel(p.legal)} | Hình dạng: ${shapeLabel(p.shape)}
-  Giá trị TT ước tính: ${r ? r.estimatedValue.toFixed(2)+' tỷ' : 'chưa tính'}
+  Giá trị thị trường ước tính: ${giaTriTT ? giaTriTT.toFixed(2)+' tỷ' : 'chưa tính (thiếu giá đất khu vực)'}
   Mô tả: ${p.notes||'không có'}`;
   }).join('\n\n');
 
@@ -3159,10 +3282,19 @@ Hiện trạng nhà: ${customer.hienTrang ? hienTrangLabel(customer.hienTrang) :
 Loại trừ (tránh): ${customer.exclude || 'không có'}
 Ghi chú thêm: ${customer.notes||'không có'}
 
-DANH SÁCH NHÀ HIỆN CÓ:
+DANH SÁCH NHÀ (đã lọc sơ loại bỏ nhà sai quận hẳn hoặc vượt ngân sách quá 20%, đây là toàn bộ nhà còn lại đạt điều kiện sơ bộ):
 ${propList}
 
-Hãy chọn top 3 căn phù hợp nhất và giải thích. Trả về JSON thuần:
+CÁCH ĐÁNH GIÁ ĐỘ PHÙ HỢP — phân cấp rõ theo 2 nhóm:
+1. ĐIỀU KIỆN CỨNG (vi phạm thì KHÔNG đưa vào top 3, trừ khi không còn lựa chọn nào khác — lúc đó vẫn đưa vào nhưng phải nêu rõ trong "warnings"):
+   - Vượt ngân sách tối đa của khách
+   - Vi phạm rõ ràng điều "Loại trừ" mà khách đã nêu
+2. ĐIỀU KIỆN MỀM (ưu tiên nhưng không loại trừ, dùng để xếp hạng Rất phù hợp/Phù hợp/Tạm được):
+   - Quận/khu vực, diện tích, ngang, số phòng ngủ, hướng nhà, loại hẻm, hiện trạng nhà
+   - Mục "Ưu tiên" của khách — khớp được nhiều thì xếp hạng cao hơn
+   - Nhu cầu (mua ở / cho thuê / đầu tư...) — ảnh hưởng đến việc đánh giá vị trí, thanh khoản có hợp lý không
+
+Hãy chọn top 3 căn phù hợp nhất trong toàn bộ danh sách trên (không chỉ vài căn đầu) và giải thích. Trả về JSON thuần:
 {
   "matches": [
     {
@@ -3170,7 +3302,7 @@ Hãy chọn top 3 căn phù hợp nhất và giải thích. Trả về JSON thu�
       "address": "địa chỉ căn",
       "score": "Rất phù hợp / Phù hợp / Tạm được",
       "reasons": ["lý do 1", "lý do 2"],
-      "warnings": ["điểm chưa phù hợp nếu có"],
+      "warnings": ["điểm chưa phù hợp nếu có, bắt buộc nêu nếu vi phạm điều kiện cứng"],
       "tip": "gợi ý khi giới thiệu cho khách này"
     }
   ],
@@ -3282,7 +3414,13 @@ function renderCustomerForm() {
 
       <div style="height:1px;background:#E8E8E8;margin:24px 0;"></div>
 
-      ${cfield('Quận / Khu vực', 'district', f.district, 'text', 'Vd: Phú Nhuận, Bình Thạnh')}
+      <div class="f-select-wrap" style="margin-top:20px;">
+        <span class="field-label">Quận / Khu vực</span>
+        <select class="input" onchange="updateCustomerForm('district', this.value)">
+          <option value="">Chọn quận / khu vực</option>
+          ${HCM_DISTRICTS.map(d => `<option value="${d}" ${f.district===d?'selected':''}>${d}</option>`).join('')}
+        </select>
+      </div>
       ${cfield('Ngân sách tối đa (tỷ)', 'budgetMax', f.budgetMax, 'number', '10')}
 
       <div class="f-select-wrap" style="margin-top:20px;">
@@ -3571,7 +3709,7 @@ function renderCustomerMatch() {
         <div style="text-align:center;padding:60px 20px;">
           <div style="font-size:20px;font-weight:900;color:#FF1744;margin-bottom:16px;">+AI</div>
           <div style="font-size:16px;font-weight:600;margin-bottom:8px;">AI đang phân tích...</div>
-          <div style="font-size:13px;color:#888;">Đang so sánh ${state.properties.length} hồ sơ nhà</div>
+          <div style="font-size:13px;color:#888;">Đang so sánh ${state.matchCandidateCount ?? state.properties.length} hồ sơ nhà${(state.matchCandidateCount && state.matchCandidateCount < state.properties.length) ? ' (đã lọc thô từ '+state.properties.length+')' : ''}</div>
         </div>
       ` : result ? `
 
